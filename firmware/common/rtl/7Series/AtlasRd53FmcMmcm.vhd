@@ -35,13 +35,9 @@ entity AtlasRd53FmcMmcm is
       -- Timing Clocks Interface
       clk640MHz : out sl;
       clk160MHz : out sl;
-      clk80MHz  : out sl;
-      clk40MHz  : out sl;
       -- Timing Resets Interface
       rst640MHz : out sl;
-      rst160MHz : out sl;
-      rst80MHz  : out sl;
-      rst40MHz  : out sl);
+      rst160MHz : out sl);
 end AtlasRd53FmcMmcm;
 
 architecture mapping of AtlasRd53FmcMmcm is
@@ -56,7 +52,7 @@ begin
          BANDWIDTH_G        => "OPTIMIZED",
          INPUT_BUFG_G       => true,
          FB_BUFG_G          => true,
-         NUM_CLOCKS_G       => 4,
+         NUM_CLOCKS_G       => 2,
          CLKIN_PERIOD_G     => 6.256,   -- 160 MHz
          DIVCLK_DIVIDE_G    => 1,       -- 160 MHz = 160 MHz/1
          CLKFBOUT_MULT_F_G  => 8.0,     -- 1.28 GHz = 160 MHz x 8
@@ -70,12 +66,8 @@ begin
          -- Clock Outputs
          clkOut(0) => clk640MHz,
          clkOut(1) => clk160MHz,
-         clkOut(2) => clk80MHz,
-         clkOut(3) => clk40MHz,
          -- Reset Outputs
          rstOut(0) => rst640MHz,
-         rstOut(1) => rst160MHz,
-         rstOut(2) => rst80MHz,
-         rstOut(3) => rst40MHz);
+         rstOut(1) => rst160MHz);
 
 end mapping;

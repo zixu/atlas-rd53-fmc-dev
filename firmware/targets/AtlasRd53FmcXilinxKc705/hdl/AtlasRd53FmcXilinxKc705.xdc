@@ -38,10 +38,6 @@ set_property -dict { IOSTANDARD LVDS_25 DIFF_TERM_ADV TERM_100 } [get_ports {fmc
 
 ##############################################################################
 
-set_property IODELAY_GROUP xapp_idelay [get_cells U_IDELAYCTRL]
-set_property IODELAY_GROUP xapp_idelay [get_cells U_App/GEN_DP[*].U_Core/U_RxPhyLayer/GEN_LANE[*].U_Rx/xapp1017_serdes.serdes_cmp/loop0[0].idelay_m]
-set_property IODELAY_GROUP xapp_idelay [get_cells U_App/GEN_DP[*].U_Core/U_RxPhyLayer/GEN_LANE[*].U_Rx/xapp1017_serdes.serdes_cmp/loop0[0].idelay_s]
-
 ####################
 # Timing Constraints
 ####################
@@ -51,9 +47,8 @@ create_clock -name fmcHpcLaP1 -period 6.237 [get_ports {fmcHpcLaP[1]}]
 
 create_generated_clock -name clk300MHz [get_pins {U_MMCM/MmcmGen.U_Mmcm/CLKOUT0}]
 
+create_generated_clock -name clk640MHz [get_pins {U_App/U_FmcMapping/U_FmcMmcm/U_MMCM/MmcmGen.U_Mmcm/CLKOUT0}]
 create_generated_clock -name clk160MHz [get_pins {U_App/U_FmcMapping/U_FmcMmcm/U_MMCM/MmcmGen.U_Mmcm/CLKOUT1}]
-create_generated_clock -name clk80MHz  [get_pins {U_App/U_FmcMapping/U_FmcMmcm/U_MMCM/MmcmGen.U_Mmcm/CLKOUT2}]
-create_generated_clock -name clk40MHz  [get_pins {U_App/U_FmcMapping/U_FmcMmcm/U_MMCM/MmcmGen.U_Mmcm/CLKOUT3}]
 
 set_clock_groups -asynchronous -group [get_clocks {dmaClk}] -group [get_clocks -include_generated_clocks {fmcHpcLaP0}]
 set_clock_groups -asynchronous -group [get_clocks {dmaClk}] -group [get_clocks -include_generated_clocks {fmcHpcLaP1}]

@@ -34,17 +34,11 @@ entity AtlasRd53FmcMapping is
       -- Timing Clocks Interface
       clk640MHz    : out   sl;
       clk160MHz    : out   sl;
-      clk80MHz     : out   sl;
-      clk40MHz     : out   sl;
       -- Timing Resets Interface
       rst640MHz    : out   sl;
       rst160MHz    : out   sl;
-      rst80MHz     : out   sl;
-      rst40MHz     : out   sl;
-      -- PLL Clocking Interface
-      fmcTestPoint : in    sl := '0';
-      fpgaPllClkIn : in    sl := '0';
-      -- PLL SPI Interface
+      -- PLL Interface
+      fpgaPllClkIn : in    sl;
       pllRst       : in    slv(3 downto 0);
       pllCsL       : in    sl;
       pllSck       : in    sl;
@@ -55,10 +49,6 @@ entity AtlasRd53FmcMapping is
       dPortDataN   : out   Slv4Array(3 downto 0);
       dPortCmdP    : in    slv(3 downto 0);
       dPortCmdN    : in    slv(3 downto 0);
-      -- NTC SPI Interface
-      ntcCsL       : in    slv(3 downto 0);
-      ntcSck       : in    sl;
-      ntcSdo       : out   sl;
       -- I2C Interface
       i2cScl       : inout slv(3 downto 0);
       i2cSda       : inout slv(3 downto 0);
@@ -71,7 +61,6 @@ architecture mapping of AtlasRd53FmcMapping is
 
    signal pllReset  : sl;
    signal pllClk    : slv(1 downto 0);
-   signal ntcSdoVec : slv(3 downto 0);
 
 begin
 
@@ -96,13 +85,9 @@ begin
          -- Timing Clocks Interface
          clk640MHz => clk640MHz,
          clk160MHz => clk160MHz,
-         clk80MHz  => clk80MHz,
-         clk40MHz  => clk40MHz,
          -- Timing Resets Interface
          rst640MHz => rst640MHz,
-         rst160MHz => rst160MHz,
-         rst80MHz  => rst80MHz,
-         rst40MHz  => rst40MHz);
+         rst160MHz => rst160MHz);
 
    U_fpgaPllClk : entity work.ClkOutBufDiff
       generic map (
@@ -131,33 +116,6 @@ begin
       end generate GEN_LANE;
 
    end generate GEN_DP;
-
-   fmcLaP(25)   <= ntcSck;
-   fmcLaN(25)   <= ntcCsL(0);
-   fmcLaP(26)   <= ntcCsL(1);
-   fmcLaN(26)   <= ntcCsL(2);
-   fmcLaP(27)   <= ntcCsL(3);
-   fmcLaN(27)   <= fmcTestPoint;
-   ntcSdoVec(0) <= fmcLaP(28);
-   ntcSdoVec(1) <= fmcLaN(28);
-   ntcSdoVec(2) <= fmcLaP(29);
-   ntcSdoVec(3) <= fmcLaN(29);
-
-   process(ntcCsL, ntcSdoVec)
-      variable data : sl;
-   begin
-      -- Set the default values
-      data := '0';
-      -- Loop through the channels
-      for i in 3 downto 0 loop
-         -- Check the chip select bus
-         if ntcCsL(i) = '0' then
-            data := ntcSdoVec(i);
-         end if;
-      end loop;
-      -- Return the results
-      ntcSdo <= data;
-   end process;
 
    GEN_I2C :
    for i in 3 downto 0 generate

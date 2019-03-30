@@ -10,9 +10,3 @@
 
 # Setup environment
 source /afs/slac.stanford.edu/g/reseng/rogue/anaconda/rogue_pre-release.sh
-
-# Python Package directories
-export SURF_DIR=${PWD}/../firmware/submodules/surf/python
-
-# Setup python path
-export PYTHONPATH=${PWD}/python:${SURF_DIR}:${PYTHONPATH}

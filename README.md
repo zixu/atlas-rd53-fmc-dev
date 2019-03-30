@@ -163,9 +163,7 @@ $ cd atlas-rd53-fmc-dev/software
 
 # Activate Rogue conda Environment 
 $ source /path/to/my/anaconda3/etc/profile.d/conda.sh
-
-# Setup the Python Environment
-$ source setup_env.sh
+$ conda activate rogue_env
 ```
 
 2) Run the FEB firmware update script:
@@ -191,9 +189,7 @@ $ cd atlas-rd53-fmc-dev/software
 
 # Activate Rogue conda Environment 
 $ source /path/to/my/anaconda3/etc/profile.d/conda.sh
-
-# Setup the Python Environment
-$ source setup_env.sh
+$ conda activate rogue_env
 ```
 
 2) Launch the GUI:

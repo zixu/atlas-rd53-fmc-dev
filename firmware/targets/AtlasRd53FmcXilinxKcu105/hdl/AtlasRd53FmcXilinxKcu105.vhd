@@ -1,15 +1,8 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53FmcXilinxKc705.vhd
+-- File       : AtlasRd53FmcXilinxKcu105.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: AXI PCIe Core for Xilinx KC705 board (PCIe GEN2 x 4 lanes)
---
--- https://www.xilinx.com/products/boards-and-kits/kc705.html
---
--- Note: Using the QSPI (not BPI) for booting from PROM.
---       J3 needs to have the jumper installed 
---       SW13 needs to be in the "00001" position to set FPGA.M[2:0] = "001"
---
+-- Description: 
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
 -- It is subject to the license terms in the LICENSE.txt file found in the 
@@ -24,19 +17,21 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 use work.StdRtlPkg.all;
+use work.AxiPkg.all;
 use work.AxiLitePkg.all;
 use work.AxiStreamPkg.all;
-use work.AxiPciePkg.all;
 use work.SsiPkg.all;
+use work.AxiPciePkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
 
-entity AtlasRd53FmcXilinxKc705 is
+entity AtlasRd53FmcXilinxKcu105 is
    generic (
-      TPD_G          : time    := 1 ns;
-      ROGUE_SIM_EN_G : boolean := false;
-      BUILD_INFO_G   : BuildInfoType);
+      TPD_G             : time                := 1 ns;
+      ROGUE_SIM_EN_G    : boolean             := false;
+      DMA_AXIS_CONFIG_G : AxiStreamConfigType := ssiAxiStreamConfig(8, TKEEP_COMP_C, TUSER_FIRST_LAST_C, 8, 2);  --- 8 Byte (64-bit) tData interface
+      BUILD_INFO_G      : BuildInfoType);
    port (
       ---------------------   
       --  Application Ports
@@ -47,32 +42,34 @@ entity AtlasRd53FmcXilinxKc705 is
       fmcLpcLaP  : inout slv(33 downto 0);
       fmcLpcLaN  : inout slv(33 downto 0);
       -- SFP Interface
-      sfpClk125P : in    sl;
-      sfpClk125N : in    sl;
-      sfpTxP     : out   sl;
-      sfpTxN     : out   sl;
-      sfpRxP     : in    sl;
-      sfpRxN     : in    sl;
-      -------------------
-      --  Top Level Ports
-      -------------------       
+      sfpClk156P : in    sl;
+      sfpClk156N : in    sl;
+      sfpTxP     : out   slv(1 downto 0);
+      sfpTxN     : out   slv(1 downto 0);
+      sfpRxP     : in    slv(1 downto 0);
+      sfpRxN     : in    slv(1 downto 0);
+      --------------
+      --  Core Ports
+      --------------
       -- System Ports
       emcClk     : in    sl;
-      -- Boot Memory Ports
-      bootCsL    : out   sl;
-      bootMosi   : out   sl;
-      bootMiso   : in    sl;
+      -- Boot Memory Ports 
+      flashCsL   : out   sl;
+      flashMosi  : out   sl;
+      flashMiso  : in    sl;
+      flashHoldL : out   sl;
+      flashWp    : out   sl;
       -- PCIe Ports
       pciRstL    : in    sl;
-      pciRefClkP : in    sl;            -- 100 MHz
-      pciRefClkN : in    sl;            -- 100 MHz
-      pciRxP     : in    slv(3 downto 0);
-      pciRxN     : in    slv(3 downto 0);
-      pciTxP     : out   slv(3 downto 0);
-      pciTxN     : out   slv(3 downto 0));
-end AtlasRd53FmcXilinxKc705;
+      pciRefClkP : in    sl;
+      pciRefClkN : in    sl;
+      pciRxP     : in    slv(7 downto 0);
+      pciRxN     : in    slv(7 downto 0);
+      pciTxP     : out   slv(7 downto 0);
+      pciTxN     : out   slv(7 downto 0));
+end AtlasRd53FmcXilinxKcu105;
 
-architecture top_level of AtlasRd53FmcXilinxKc705 is
+architecture top_level of AtlasRd53FmcXilinxKcu105 is
 
    signal dmaClk       : sl;
    signal dmaRst       : sl;
@@ -81,8 +78,8 @@ architecture top_level of AtlasRd53FmcXilinxKc705 is
    signal dmaIbMasters : AxiStreamMasterArray(1 downto 0);
    signal dmaIbSlaves  : AxiStreamSlaveArray(1 downto 0);
 
-   signal sfpClk125     : sl;
-   signal sfpClk62p5    : sl;
+   signal sfpClk156     : sl;
+   signal sfpClk156Bufg : sl;
    signal iDelayCtrlRdy : sl;
    signal refClk300MHz  : sl;
    signal refRst300MHz  : sl;
@@ -95,67 +92,84 @@ architecture top_level of AtlasRd53FmcXilinxKc705 is
 
 begin
 
-   IBUFDS_GTE2_Inst : IBUFDS_GTE2
+   U_TERM_GTs : entity work.Gthe3ChannelDummy
+      generic map (
+         TPD_G   => TPD_G,
+         WIDTH_G => 2)
       port map (
-         I     => sfpClk125P,
-         IB    => sfpClk125N,
-         CEB   => '0',
-         ODIV2 => sfpClk62p5,
-         O     => sfpClk125);
+         refClk => sfpClk156Bufg,
+         gtRxP  => sfpRxP,
+         gtRxN  => sfpRxN,
+         gtTxP  => sfpTxP,
+         gtTxN  => sfpTxN);
 
-   U_MMCM : entity work.ClockManager7
+   U_IBUFDS_GTE3 : IBUFDS_GTE3
+      generic map (
+         REFCLK_EN_TX_PATH  => '0',
+         REFCLK_HROW_CK_SEL => "00",    -- 2'b00: ODIV2 = O
+         REFCLK_ICNTL_RX    => "00")
+      port map (
+         I     => sfpClk156P,
+         IB    => sfpClk156N,
+         CEB   => '0',
+         ODIV2 => sfpClk156,
+         O     => open);
+
+   U_BUFG_GT : BUFG_GT
+      port map (
+         I       => sfpClk156,
+         CE      => '1',
+         CEMASK  => '1',
+         CLR     => '0',
+         CLRMASK => '1',
+         DIV     => "000",
+         O       => sfpClk156Bufg);
+
+   U_MMCM : entity work.ClockManagerUltraScale
       generic map(
          TPD_G              => TPD_G,
          SIMULATION_G       => ROGUE_SIM_EN_G,
          TYPE_G             => "MMCM",
-         INPUT_BUFG_G       => true,
+         INPUT_BUFG_G       => false,
          FB_BUFG_G          => true,
          RST_IN_POLARITY_G  => '1',
          NUM_CLOCKS_G       => 1,
          -- MMCM attributes
          BANDWIDTH_G        => "OPTIMIZED",
-         CLKIN_PERIOD_G     => 16.0,
+         CLKIN_PERIOD_G     => 6.4,
          DIVCLK_DIVIDE_G    => 1,
-         CLKFBOUT_MULT_F_G  => 15.0,
-         CLKOUT0_DIVIDE_F_G => 3.125)   -- 300 MHz = 937.5 MHz/3.125    
+         CLKFBOUT_MULT_F_G  => 6.0,
+         CLKOUT0_DIVIDE_F_G => 3.125)   -- 300 MHz = 937.5 MHz/3.125
       port map(
-         clkIn     => sfpClk62p5,
+         clkIn     => sfpClk156Bufg,
          rstIn     => dmaRst,
          clkOut(0) => refClk300MHz,
          rstOut(0) => refRst300MHz);
 
    U_IDELAYCTRL : IDELAYCTRL
+      generic map (
+         SIM_DEVICE => "ULTRASCALE")
       port map (
          RDY    => iDelayCtrlRdy,
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
 
-   U_TermGt : entity work.Gtxe2ChannelDummy
-      generic map (
-         TPD_G   => TPD_G,
-         WIDTH_G => 1)
-      port map (
-         refClk   => sfpClk125,
-         gtRxP(0) => sfpRxP,
-         gtRxN(0) => sfpRxN,
-         gtTxP(0) => sfpTxP,
-         gtTxN(0) => sfpTxN);
-
    -----------------------         
    -- axi-pcie-core module
-   -----------------------           
-   U_Core : entity work.XilinxKc705Core
+   -----------------------         
+   U_Core : entity work.XilinxKcu105Core
       generic map (
          TPD_G                => TPD_G,
          ROGUE_SIM_EN_G       => ROGUE_SIM_EN_G,
          ROGUE_SIM_PORT_NUM_G => 8000,
          ROGUE_SIM_CH_COUNT_G => 8,
          BUILD_INFO_G         => BUILD_INFO_G,
+         DMA_AXIS_CONFIG_G    => DMA_AXIS_CONFIG_G,
          DMA_SIZE_G           => 2)
       port map (
          ------------------------      
          --  Top Level Interfaces
-         ------------------------              
+         ------------------------        
          -- DMA Interfaces
          dmaClk         => dmaClk,
          dmaRst         => dmaRst,
@@ -174,15 +188,17 @@ begin
          appReadSlave   => AXI_LITE_READ_SLAVE_EMPTY_OK_C,
          appWriteMaster => open,
          appWriteSlave  => AXI_LITE_WRITE_SLAVE_EMPTY_OK_C,
-         -------------------
-         --  Top Level Ports
-         -------------------             
+         --------------
+         --  Core Ports
+         --------------
          -- System Ports
          emcClk         => emcClk,
          -- Boot Memory Ports 
-         bootCsL        => bootCsL,
-         bootMosi       => bootMosi,
-         bootMiso       => bootMiso,
+         flashCsL       => flashCsL,
+         flashMosi      => flashMosi,
+         flashMiso      => flashMiso,
+         flashHoldL     => flashHoldL,
+         flashWp        => flashWp,
          -- PCIe Ports 
          pciRstL        => pciRstL,
          pciRefClkP     => pciRefClkP,
@@ -199,9 +215,9 @@ begin
       generic map (
          TPD_G             => TPD_G,
          SIMULATION_G      => ROGUE_SIM_EN_G,
-         DMA_AXIS_CONFIG_G => DMA_AXIS_CONFIG_C,
+         DMA_AXIS_CONFIG_G => DMA_AXIS_CONFIG_G,
          DMA_CLK_FREQ_G    => DMA_CLK_FREQ_C,
-         XIL_DEVICE_G      => "7SERIES")
+         XIL_DEVICE_G      => "ULTRASCALE")
       port map (
          -- I/O Delay Interfaces
          iDelayCtrlRdy => iDelayCtrlRdy,
@@ -218,4 +234,3 @@ begin
          fmcLaN        => fmcHpcLaN);
 
 end top_level;
-
