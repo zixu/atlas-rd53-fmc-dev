@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53FmcXilinxKc705Tb.vhd
+-- File       : AtlasRd53FmcXilinxKcu105Tb.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
 -- Description: Simulation Testbed for testing the FPGA module
@@ -21,9 +21,9 @@ use ieee.std_logic_arith.all;
 use work.StdRtlPkg.all;
 use work.BuildInfoPkg.all;
 
-entity AtlasRd53FmcXilinxKc705Tb is end AtlasRd53FmcXilinxKc705Tb;
+entity AtlasRd53FmcXilinxKcu105Tb is end AtlasRd53FmcXilinxKcu105Tb;
 
-architecture testbed of AtlasRd53FmcXilinxKc705Tb is
+architecture testbed of AtlasRd53FmcXilinxKcu105Tb is
 
    constant TPD_G      : time     := 1 ns;
    constant CNT_SIZE_C : positive := 384*400;
@@ -78,8 +78,8 @@ architecture testbed of AtlasRd53FmcXilinxKc705Tb is
    signal dPortCmdP  : slv(3 downto 0)       := x"0";
    signal dPortCmdN  : slv(3 downto 0)       := x"F";
 
-   signal sfpClk125P : sl := '0';
-   signal sfpClk125N : sl := '1';
+   signal sfpClk156P : sl := '0';
+   signal sfpClk156N : sl := '1';
 
    signal fmcHpcLaP : slv(33 downto 0) := (others => 'Z');
    signal fmcHpcLaN : slv(33 downto 0) := (others => 'Z');
@@ -144,15 +144,15 @@ begin
 
    U_ClkPgp : entity work.ClkRst
       generic map (
-         CLK_PERIOD_G      => 8.0 ns,   -- 125 MHz
+         CLK_PERIOD_G      => 6.4 ns,   -- 156.25 MHz
          RST_START_DELAY_G => 0 ns,
          RST_HOLD_TIME_G   => 1000 ns)
       port map (
-         clkP => sfpClk125P,
-         clkN => sfpClk125N,
+         clkP => sfpClk156P,
+         clkN => sfpClk156N,
          rstL => dPortRstL);
 
-   U_Fpga : entity work.AtlasRd53FmcXilinxKc705
+   U_Fpga : entity work.AtlasRd53FmcXilinxKcu105
       generic map (
          TPD_G          => TPD_G,
          ROGUE_SIM_EN_G => true,
@@ -167,21 +167,23 @@ begin
          fmcLpcLaP  => fmcLpcLaP,
          fmcLpcLaN  => fmcLpcLaN,
          -- SFP Interface
-         sfpClk125P => sfpClk125P,
-         sfpClk125N => sfpClk125N,
+         sfpClk156P => sfpClk156P,
+         sfpClk156N => sfpClk156N,
          sfpTxP     => open,
          sfpTxN     => open,
-         sfpRxP     => '0',
-         sfpRxN     => '1',
+         sfpRxP     => (others => '0'),
+         sfpRxN     => (others => '1'),
          --------------
          --  Core Ports
          --------------
          -- System Ports
          emcClk     => '0',
          -- Boot Memory Ports 
-         bootCsL    => open,
-         bootMosi   => open,
-         bootMiso   => '1',
+         flashCsL   => open,
+         flashMosi  => open,
+         flashMiso  => '1',
+         flashHoldL => open,
+         flashWp    => open,
          -- PCIe Ports
          pciRstL    => '1',
          pciRefClkP => '0',

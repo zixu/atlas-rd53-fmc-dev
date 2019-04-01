@@ -32,17 +32,21 @@ entity AtlasRd53FmcMmcm is
    port (
       pllClk    : in  sl;
       pllRst    : in  sl;
-      -- Timing Clocks Interface
+      -- Timing Clock/Reset Interface
       clk640MHz : out sl;
       clk160MHz : out sl;
-      -- Timing Resets Interface
-      rst640MHz : out sl;
       rst160MHz : out sl);
 end AtlasRd53FmcMmcm;
 
 architecture mapping of AtlasRd53FmcMmcm is
 
+   signal clkOut : slv(1 downto 0);
+   signal rstOut : slv(1 downto 0);
+
 begin
+
+   clk640MHz <= clkOut(0);
+   clk160MHz <= clkOut(1);
 
    U_MMCM : entity work.ClockManagerUltraScale
       generic map(
@@ -57,17 +61,21 @@ begin
          DIVCLK_DIVIDE_G    => 1,       -- 160 MHz = 160 MHz/1
          CLKFBOUT_MULT_F_G  => 8.0,     -- 1.28 GHz = 160 MHz x 8
          CLKOUT0_DIVIDE_F_G => 2.0,     -- 640 MHz = 1.28 GHz/2
-         CLKOUT1_DIVIDE_G   => 8,       -- 160 MHz = 1.28 GHz/8
-         CLKOUT2_DIVIDE_G   => 16,      -- 80 MHz = 1.28 GHz/16
-         CLKOUT3_DIVIDE_G   => 32)      -- 40 MHz = 1.28 GHz/32
+         CLKOUT1_DIVIDE_G   => 8)       -- 160 MHz = 1.28 GHz/8
       port map(
-         clkIn     => pllClk,
-         rstIn     => pllRst,
+         clkIn  => pllClk,
+         rstIn  => pllRst,
          -- Clock Outputs
-         clkOut(0) => clk640MHz,
-         clkOut(1) => clk160MHz,
+         clkOut => clkOut,
          -- Reset Outputs
-         rstOut(0) => rst640MHz,
-         rstOut(1) => rst160MHz);
+         rstOut => rstOut);
+
+   U_Reset : entity work.RstPipeline
+      generic map (
+         TPD_G => TPD_G)
+      port map (
+         clk    => clkOut(1),
+         rstIn  => rstOut(1),
+         rstOut => rst160MHz);
 
 end mapping;

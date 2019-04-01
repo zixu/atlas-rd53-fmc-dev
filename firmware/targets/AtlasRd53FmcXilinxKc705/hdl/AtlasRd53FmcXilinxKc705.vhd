@@ -205,7 +205,6 @@ begin
       port map (
          -- I/O Delay Interfaces
          iDelayCtrlRdy => iDelayCtrlRdy,
-         refClk300MHz  => refClk300MHz,
          -- DMA Interface (dmaClk domain)
          dmaClk        => dmaClk,
          dmaRst        => dmaRst,

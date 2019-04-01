@@ -51,8 +51,8 @@ begin
 
       GEN_LANE :
       for j in 3 downto 0 generate
-         fmcLaP(6+i*5+j) <= dPortDataP(i)(j);
-         fmcLaN(6+i*5+j) <= dPortDataN(i)(j);
+         fmcLaP(6+i*5+j) <= dPortDataN(i)(3-j); -- Inverted and lane reversal
+         fmcLaN(6+i*5+j) <= dPortDataP(i)(3-j); -- Inverted and lane reversal
       end generate GEN_LANE;
 
    end generate GEN_DP;

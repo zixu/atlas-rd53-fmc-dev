@@ -36,7 +36,6 @@ entity AtlasRd53FmcCore is
    port (
       -- I/O Delay Interfaces
       iDelayCtrlRdy : in    sl;
-      refClk300MHz  : in    sl;
       -- DMA Interface (dmaClk domain)
       dmaClk        : in    sl;
       dmaRst        : in    sl;
@@ -72,7 +71,7 @@ architecture mapping of AtlasRd53FmcCore is
    constant RX_INDEX_C  : natural := 0;  -- [3:0]
    constant I2C_INDEX_C : natural := 4;  -- [7:4]
    constant PLL_INDEX_C : natural := 8;
-   constant EMU_INDEX_C : natural := 9; -- [10:9]
+   constant EMU_INDEX_C : natural := 9;  -- [10:9]
 
    constant AXIL_CONFIG_C : AxiLiteCrossbarMasterConfigArray(NUM_AXIL_MASTERS_C-1 downto 0) := genAxiLiteConfig(NUM_AXIL_MASTERS_C, x"0000_0000", 20, 16);
 
@@ -100,8 +99,6 @@ architecture mapping of AtlasRd53FmcCore is
 
    signal clk640MHz : sl;
    signal clk160MHz : sl;
-
-   signal rst640MHz : sl;
    signal rst160MHz : sl;
 
    signal pllRst : slv(3 downto 0);
@@ -129,11 +126,9 @@ begin
          SIMULATION_G => SIMULATION_G,
          XIL_DEVICE_G => XIL_DEVICE_G)
       port map (
-         -- Timing Clocks Interface
+         -- Timing Clock/Reset Interface
          clk640MHz    => clk640MHz,
          clk160MHz    => clk160MHz,
-         -- Timing Resets Interface
-         rst640MHz    => rst640MHz,
          rst160MHz    => rst160MHz,
          -- PLL Clocking Interface
          fpgaPllClkIn => fpgaPllClkIn,
@@ -209,19 +204,19 @@ begin
    ----------------------------------
    U_EmuTiming : entity work.AtlasRd53EmuTiming
       generic map(
-         TPD_G           => TPD_G,
-         NUM_AXIS_G      => 4,
-         ADDR_WIDTH_G    => 10,
-         SYNTH_MODE_G    => SYNTH_MODE_G,
-         MEMORY_TYPE_G   => MEMORY_TYPE_G)
+         TPD_G         => TPD_G,
+         NUM_AXIS_G    => 4,
+         ADDR_WIDTH_G  => 10,
+         SYNTH_MODE_G  => SYNTH_MODE_G,
+         MEMORY_TYPE_G => MEMORY_TYPE_G)
       port map(
          -- AXI-Lite Interface (axilClk domain)
-         axilClk           => dmaClk,
-         axilRst           => dmaRst,
-         axilReadMasters   => axilReadMasters(EMU_INDEX_C+1 downto EMU_INDEX_C),
-         axilReadSlaves    => axilReadSlaves(EMU_INDEX_C+1 downto EMU_INDEX_C),
-         axilWriteMasters  => axilWriteMasters(EMU_INDEX_C+1 downto EMU_INDEX_C),
-         axilWriteSlaves   => axilWriteSlaves(EMU_INDEX_C+1 downto EMU_INDEX_C),
+         axilClk          => dmaClk,
+         axilRst          => dmaRst,
+         axilReadMasters  => axilReadMasters(EMU_INDEX_C+1 downto EMU_INDEX_C),
+         axilReadSlaves   => axilReadSlaves(EMU_INDEX_C+1 downto EMU_INDEX_C),
+         axilWriteMasters => axilWriteMasters(EMU_INDEX_C+1 downto EMU_INDEX_C),
+         axilWriteSlaves  => axilWriteSlaves(EMU_INDEX_C+1 downto EMU_INDEX_C),
          -- Streaming RD53 Trig Interface (clk160MHz domain)
          clk160MHz        => clk160MHz,
          rst160MHz        => rst160MHz,
@@ -288,6 +283,7 @@ begin
       U_Core : entity work.AtlasRd53Core
          generic map (
             TPD_G         => TPD_G,
+            RX_MAPPING_G  => (0 => "11", 1 => "10", 2 => "01", 3 => "00"),  -- lane reversal in FMC layout
             AXIS_CONFIG_G => DMA_AXIS_CONFIG_G,
             VALID_THOLD_G => VALID_THOLD_G,
             SIMULATION_G  => SIMULATION_G,
@@ -320,9 +316,7 @@ begin
             -- Timing/Trigger Interface
             clk640MHz       => clk640MHz,
             clk160MHz       => clk160MHz,
-            rst640MHz       => rst640MHz,
             rst160MHz       => rst160MHz,
-            refClk300MHz    => refClk300MHz,
             -- RD53 ASIC Serial Ports
             dPortDataP      => dPortDataP(i),
             dPortDataN      => dPortDataN(i),

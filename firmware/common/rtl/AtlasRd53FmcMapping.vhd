@@ -31,11 +31,9 @@ entity AtlasRd53FmcMapping is
       SIMULATION_G : boolean := false;
       XIL_DEVICE_G : string  := "7SERIES");
    port (
-      -- Timing Clocks Interface
+      -- Timing Clock/Reset Interface
       clk640MHz    : out   sl;
       clk160MHz    : out   sl;
-      -- Timing Resets Interface
-      rst640MHz    : out   sl;
       rst160MHz    : out   sl;
       -- PLL Interface
       fpgaPllClkIn : in    sl;
@@ -59,8 +57,8 @@ end AtlasRd53FmcMapping;
 
 architecture mapping of AtlasRd53FmcMapping is
 
-   signal pllReset  : sl;
-   signal pllClk    : slv(1 downto 0);
+   signal pllReset : sl;
+   signal pllClk   : slv(1 downto 0);
 
 begin
 
@@ -82,11 +80,9 @@ begin
       port map (
          pllClk    => pllClk(0),
          pllRst    => pllReset,
-         -- Timing Clocks Interface
+         -- Timing Clock/Reset Interface
          clk640MHz => clk640MHz,
          clk160MHz => clk160MHz,
-         -- Timing Resets Interface
-         rst640MHz => rst640MHz,
          rst160MHz => rst160MHz);
 
    U_fpgaPllClk : entity work.ClkOutBufDiff
