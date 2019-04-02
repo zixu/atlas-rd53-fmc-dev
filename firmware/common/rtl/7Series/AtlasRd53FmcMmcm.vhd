@@ -20,7 +20,6 @@ use ieee.std_logic_unsigned.all;
 
 use work.StdRtlPkg.all;
 use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -30,12 +29,19 @@ entity AtlasRd53FmcMmcm is
       TPD_G        : time    := 1 ns;
       SIMULATION_G : boolean := false);
    port (
-      pllClk    : in  sl;
-      pllRst    : in  sl;
+      pllClk          : in  sl;
+      pllRst          : in  sl;
       -- Timing Clock/Reset Interface
-      clk640MHz : out sl;
-      clk160MHz : out sl;
-      rst160MHz : out sl);
+      clk640MHz       : out sl;
+      clk160MHz       : out sl;
+      rst160MHz       : out sl;
+      -- AXI-Lite Interface 
+      axilClk         : in  sl                     := '0';
+      axilRst         : in  sl                     := '0';
+      axilReadMaster  : in  AxiLiteReadMasterType  := AXI_LITE_READ_MASTER_INIT_C;
+      axilReadSlave   : out AxiLiteReadSlaveType;
+      axilWriteMaster : in  AxiLiteWriteMasterType := AXI_LITE_WRITE_MASTER_INIT_C;
+      axilWriteSlave  : out AxiLiteWriteSlaveType);
 end AtlasRd53FmcMmcm;
 
 architecture mapping of AtlasRd53FmcMmcm is
@@ -63,12 +69,19 @@ begin
          CLKOUT0_DIVIDE_F_G => 2.0,     -- 640 MHz = 1.28 GHz/2
          CLKOUT1_DIVIDE_G   => 8)       -- 160 MHz = 1.28 GHz/8
       port map(
-         clkIn  => pllClk,
-         rstIn  => pllRst,
+         clkIn           => pllClk,
+         rstIn           => pllRst,
          -- Clock Outputs
-         clkOut => clkOut,
+         clkOut          => clkOut,
          -- Reset Outputs
-         rstOut => rstOut);
+         rstOut          => rstOut,
+         -- AXI-Lite Port
+         axilClk         => axilClk,
+         axilRst         => axilRst,
+         axilReadMaster  => axilReadMaster,
+         axilReadSlave   => axilReadSlave,
+         axilWriteMaster => axilWriteMaster,
+         axilWriteSlave  => axilWriteSlave);
 
    U_Reset : entity work.RstPipeline
       generic map (

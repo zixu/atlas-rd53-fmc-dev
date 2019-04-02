@@ -47,8 +47,8 @@ create_clock -name fmcHpcLaP1 -period 6.237 [get_ports {fmcHpcLaP[1]}]
 
 create_generated_clock -name clk300MHz [get_pins {U_MMCM/MmcmGen.U_Mmcm/CLKOUT0}]
 
-create_generated_clock -name clk640MHz [get_pins {U_App/U_FmcMapping/U_FmcMmcm/U_MMCM/MmcmGen.U_Mmcm/CLKOUT0}]
-create_generated_clock -name clk160MHz [get_pins {U_App/U_FmcMapping/U_FmcMmcm/U_MMCM/MmcmGen.U_Mmcm/CLKOUT1}]
+create_generated_clock -name clk640MHz [get_pins {U_App/U_FmcMapping/U_FmcMmcm/GEN_REAL.U_PLL/CLKOUT0}]
+create_generated_clock -name clk160MHz [get_pins {U_App/U_FmcMapping/U_FmcMmcm/U_Bufg160/O}]
 
 set_clock_groups -asynchronous -group [get_clocks {dmaClk}] -group [get_clocks -include_generated_clocks {fmcHpcLaP0}]
 set_clock_groups -asynchronous -group [get_clocks {dmaClk}] -group [get_clocks -include_generated_clocks {fmcHpcLaP1}]
