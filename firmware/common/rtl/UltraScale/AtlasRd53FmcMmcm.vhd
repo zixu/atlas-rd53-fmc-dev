@@ -49,8 +49,7 @@ architecture mapping of AtlasRd53FmcMmcm is
    signal locked   : sl := '0';
    signal pllClock : sl := '0';
    signal reset    : sl := '1';
-   signal clkFbIn  : sl := '0';
-   signal clkFbOut : sl := '0';
+   signal clkFb    : sl := '0';
    signal clkout0  : sl := '0';
    signal clkout1  : sl := '0';
 
@@ -97,6 +96,7 @@ begin
    GEN_REAL : if (SIMULATION_G = false) generate
       U_PLL : PLLE3_ADV
          generic map (
+            COMPENSATION       => "AUTO",
             STARTUP_WAIT       => "FALSE",
             CLKIN_PERIOD       => 6.256,  -- 160 MHz
             DIVCLK_DIVIDE      => 1,
@@ -119,8 +119,8 @@ begin
             RST         => pllRst,
             CLKIN       => pllClock,
             CLKOUTPHYEN => '0',
-            CLKFBOUT    => clkFbOut,
-            CLKFBIN     => clkFbIn,
+            CLKFBOUT    => clkFb,
+            CLKFBIN     => clkFb,
             LOCKED      => locked,
             CLKOUT0     => clkout0,
             CLKOUT1     => open);
@@ -141,11 +141,6 @@ begin
       port map (
          I => clkout0,
          O => clk640MHz);
-         
-   U_BufgFb : BUFG
-      port map (
-         I => clkFbOut,
-         O => clkFbIn);
 
    ------------------------------------------------------------------------------------------------------
    -- 160 MHz is the ISERDESE3/OSERDESE3's CLKDIV port
