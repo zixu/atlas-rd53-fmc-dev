@@ -27,7 +27,8 @@ use unisim.vcomponents.all;
 entity AtlasRd53HsSelectio is
    generic (
       TPD_G        : time    := 1 ns;
-      SIMULATION_G : boolean := false);
+      SIMULATION_G : boolean := false;
+      XIL_DEVICE_G : string  := "ULTRASCALE");
    port (
       ref160Clk     : in  sl;
       ref160Rst     : in  sl;
@@ -53,6 +54,7 @@ architecture mapping of AtlasRd53HsSelectio is
    signal clock160MHz : sl := '0';
    signal reset       : sl := '1';
    signal reset160MHz : sl := '1';
+   signal reset640MHz : sl := '1';
 
 begin
 
@@ -91,14 +93,14 @@ begin
    GEN_SIM : if (SIMULATION_G = true) generate
       U_ClkRst : entity work.ClkRst
          generic map (
-            CLK_PERIOD_G      => 1.5625 ns,  -- 640 MHz
+            CLK_PERIOD_G      => 6.237 ns,
             RST_START_DELAY_G => 0 ns,
             RST_HOLD_TIME_G   => 1000 ns)
          port map (
             clkP => clkout0,
-            rstL => locked);
+            rstL => locked);   
    end generate GEN_SIM;
-
+   
    U_Bufg640 : BUFG
       port map (
          I => clkout0,
@@ -111,14 +113,12 @@ begin
    ------------------------------------------------------------------------------------------------------
    U_Bufg160 : BUFGCE_DIV
       generic map (
-         IS_CE_INVERTED  => '0',
-         IS_CLR_INVERTED => '1',
-         BUFGCE_DIVIDE   => 4)          -- 160 MHz = 640 MHz/4
+         BUFGCE_DIVIDE   => 4)       -- 160 MHz = 640 MHz/4
       port map (
-         I   => clkout0,                -- 640 MHz
-         CE  => locked,
-         CLR => locked,
-         O   => clock160MHz);           -- 160 MHz
+         I   => clkout0,             -- 640 MHz
+         CE  => '1',
+         CLR => '0',
+         O   => clock160MHz);        -- 160 MHz
 
    U_Rst160 : entity work.RstSync
       generic map (
@@ -136,15 +136,16 @@ begin
       port map (
          clk    => clock160MHz,
          rstIn  => reset,
-         rstOut => reset160MHz);
-         
+         rstOut => reset160MHz);   
+
    GEN_mDP :
    for i in 3 downto 0 generate
       GEN_LANE :
       for j in 3 downto 0 generate
          U_Lane : entity work.AuroraRxLaneDeser
             generic map (
-               TPD_G => TPD_G)
+               TPD_G        => TPD_G,
+               XIL_DEVICE_G => XIL_DEVICE_G)
             port map (
                -- RD53 ASIC Serial Interface
                dPortDataP    => dPortDataP(i)(j),

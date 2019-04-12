@@ -85,7 +85,8 @@ begin
    U_Selectio : entity work.AtlasRd53HsSelectio
       generic map(
          TPD_G        => TPD_G,
-         SIMULATION_G => SIMULATION_G)
+         SIMULATION_G => SIMULATION_G,
+         XIL_DEVICE_G => XIL_DEVICE_G)
       port map (
          ref160Clk     => pllClkBufg(0),
          ref160Rst     => pllReset,

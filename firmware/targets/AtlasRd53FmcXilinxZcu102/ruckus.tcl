@@ -8,9 +8,11 @@ loadRuckusTcl $::env(TOP_DIR)/submodules/rce-gen3-fw-lib/XilinxZcu102Core
 loadRuckusTcl $::env(TOP_DIR)/common
 
 # Load local Source Code and constraints
-loadSource      -dir "$::DIR_PATH/hdl"
 loadConstraints -dir "$::DIR_PATH/hdl"
-loadIpCore      -dir "$::DIR_PATH/ip"
+# loadSource -dir "$::DIR_PATH/hdl"
+# loadIpCore -dir "$::DIR_PATH/ip"
+loadSource -path "$::DIR_PATH/hdl/AtlasRd53FmcXilinxZcu102.vhd"
+loadSource -path "$::DIR_PATH/../AtlasRd53FmcXilinxKcu105/hdl/AtlasRd53HsSelectio.vhd"
 
 # Load the simulation testbed
 loadSource -sim_only -dir "$::DIR_PATH/tb"

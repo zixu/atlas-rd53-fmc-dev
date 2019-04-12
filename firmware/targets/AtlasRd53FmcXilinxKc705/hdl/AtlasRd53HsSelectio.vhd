@@ -27,7 +27,8 @@ use unisim.vcomponents.all;
 entity AtlasRd53HsSelectio is
    generic (
       TPD_G        : time    := 1 ns;
-      SIMULATION_G : boolean := false);
+      SIMULATION_G : boolean := false;
+      XIL_DEVICE_G : string  := "7SERIES");
    port (
       ref160Clk     : in  sl;
       ref160Rst     : in  sl;
@@ -76,8 +77,8 @@ begin
          clkOut(0) => clock640MHz,
          clkOut(1) => clock160MHz,
          -- Reset Outputs
-         rstOut(0)    => reset640MHz,
-         rstOut(1)    => reset160MHz);
+         rstOut(0) => reset640MHz,
+         rstOut(1) => reset160MHz);
 
    GEN_mDP :
    for i in 3 downto 0 generate

@@ -2,7 +2,7 @@
 -- File       : AtlasRd53FmcSimMapping.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: FMC mappipng
+-- Description: FMC mapping
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 DEV'.
 -- It is subject to the license terms in the LICENSE.txt file found in the 
@@ -43,6 +43,18 @@ architecture mapping of AtlasRd53FmcSimMapping is
 
 begin
 
+   GEN_PLL_CLK :
+   for i in 1 downto 0 generate
+      U_ClkRst : entity work.ClkRst
+         generic map (
+            CLK_PERIOD_G      => 6.237 ns,
+            RST_START_DELAY_G => 0 ns,
+            RST_HOLD_TIME_G   => 1000 ns)
+         port map (
+            clkP => fmcLaP(i),
+            clkN => fmcLaN(i));
+   end generate GEN_PLL_CLK;
+   
    GEN_DP :
    for i in 3 downto 0 generate
 

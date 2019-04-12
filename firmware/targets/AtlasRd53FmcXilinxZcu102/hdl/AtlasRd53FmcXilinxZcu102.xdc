@@ -31,7 +31,7 @@ set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 } [get_ports { fmcHp
 set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 } [get_ports { fmcHpc0LaP[19] fmcHpc0LaN[19] }]; # DATA[2][3] BANK67:(L13/K13)
 
 set_property -dict { IOSTANDARD LVDS }                        [get_ports { fmcHpc0LaP[20] fmcHpc0LaN[20] }]; #  CMD[3]
-set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 } [get_ports { fmcHpc0LaP[21] fmcHpc0LaN[21] }]; # DATA[3][0] BANK66:(P12/N12)
+set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 } [get_ports { fmcHpc0LaP[21] fmcHpc0LaN[21] }]; # DATA[3][0] BANK67:(P12/N12)
 set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 } [get_ports { fmcHpc0LaP[22] fmcHpc0LaN[22] }]; # DATA[3][1] BANK67:(M15/M14)
 set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 } [get_ports { fmcHpc0LaP[23] fmcHpc0LaN[23] }]; # DATA[3][2] BANK67:(L16/K16)
 set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 } [get_ports { fmcHpc0LaP[24] fmcHpc0LaN[24] }]; # DATA[3][3] BANK67:(L12/K12)
@@ -42,16 +42,20 @@ set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 } [get_ports { fmcHp
 # Timing Constraints
 ####################
 
-create_clock -name fmcHpc0LaP0 -period 6.237 [get_ports {fmcHpc0LaP[0]}]
-create_clock -name fmcHpc0LaP1 -period 6.237 [get_ports {fmcHpc0LaP[1]}]
+create_clock -name fmcHpc0LaP0 -period 6.4 [get_ports {fmcHpc0LaP[0]}]
+create_clock -name fmcHpc0LaP1 -period 6.4 [get_ports {fmcHpc0LaP[1]}]
 
 create_generated_clock -name clk300MHz [get_pins {U_MMCM/MmcmGen.U_Mmcm/CLKOUT0}]
 
-create_generated_clock -name clk160MHz [get_pins {U_App/U_FmcMapping/U_FmcMmcm/GEN_REAL.U_PLL/CLKOUT1}]
+create_generated_clock -name clk640MHz [get_pins {U_App/U_FmcMapping/U_Selectio/GEN_REAL.U_PLL/CLKOUT0}]
+create_generated_clock -name clk160MHz [get_pins {U_App/U_FmcMapping/U_Selectio/U_Bufg160/O}]
+
+set_property CLOCK_DELAY_GROUP RD53_CLK_GRP [get_nets {U_App/U_FmcMapping/U_Selectio/clk160MHz[*]}] [get_nets {U_App/U_FmcMapping/U_Selectio/clk640MHz[*]}]
+
+# create_generated_clock -name clk160MHzPhy0 [get_pins {U_App/U_FmcMapping/U_Selectio/U_Bank66/inst/top_inst/clk_rst_top_inst/clk_scheme_inst/GEN_PLL_IN_IP_USP.plle4_adv_pll0_inst/CLKOUT0}]
+# create_generated_clock -name clk160MHzPhy1 [get_pins {U_App/U_FmcMapping/U_Selectio/U_Bank67/inst/top_inst/clk_rst_top_inst/clk_scheme_inst/GEN_PLL_IN_IP_USP.plle4_adv_pll0_inst/CLKOUT0}]
 
 set_clock_groups -asynchronous -group [get_clocks {clk125}] -group [get_clocks -include_generated_clocks {fmcHpc0LaP0}]
 set_clock_groups -asynchronous -group [get_clocks {clk125}] -group [get_clocks -include_generated_clocks {fmcHpc0LaP1}]
 
 set_property UNAVAILABLE_DURING_CALIBRATION TRUE [get_ports fmcHpc0LaP[20]]
-
-# set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets {U_App/U_FmcMapping/U_FmcMmcm/clkoutphy}]

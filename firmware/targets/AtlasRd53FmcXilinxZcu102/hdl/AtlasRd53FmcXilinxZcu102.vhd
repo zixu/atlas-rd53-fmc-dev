@@ -59,6 +59,15 @@ architecture TOP_LEVEL of AtlasRd53FmcXilinxZcu102 is
 
    signal sfpClk156     : sl;
    signal sfpClk156Bufg : sl;
+   signal iDelayCtrlRdy : sl;
+   signal refClk300MHz  : sl;
+   signal refRst300MHz  : sl;
+
+   attribute IODELAY_GROUP                 : string;
+   attribute IODELAY_GROUP of U_IDELAYCTRL : label is "rd53_aurora";
+
+   attribute KEEP_HIERARCHY                 : string;
+   attribute KEEP_HIERARCHY of U_IDELAYCTRL : label is "TRUE";
 
 begin
 
@@ -86,6 +95,35 @@ begin
          CLRMASK => '1',
          DIV     => "000",
          O       => sfpClk156Bufg);
+
+   U_MMCM : entity work.ClockManagerUltraScale
+      generic map(
+         TPD_G              => TPD_G,
+         SIMULATION_G       => SIMULATION_G,
+         TYPE_G             => "MMCM",
+         INPUT_BUFG_G       => false,
+         FB_BUFG_G          => true,
+         RST_IN_POLARITY_G  => '1',
+         NUM_CLOCKS_G       => 1,
+         -- MMCM attributes
+         BANDWIDTH_G        => "OPTIMIZED",
+         CLKIN_PERIOD_G     => 6.4,
+         DIVCLK_DIVIDE_G    => 1,
+         CLKFBOUT_MULT_F_G  => 6.0,
+         CLKOUT0_DIVIDE_F_G => 3.125)   -- 300 MHz = 937.5 MHz/3.125
+      port map(
+         clkIn     => sfpClk156Bufg,
+         rstIn     => dmaRst(0),
+         clkOut(0) => refClk300MHz,
+         rstOut(0) => refRst300MHz);
+
+   U_IDELAYCTRL : IDELAYCTRL
+      generic map (
+         SIM_DEVICE => "ULTRASCALE")
+      port map (
+         RDY    => iDelayCtrlRdy,
+         REFCLK => refClk300MHz,
+         RST    => refRst300MHz);
 
    -------
    -- Core
@@ -144,16 +182,18 @@ begin
          DMA_CLK_FREQ_G    => 125.0E+6,
          XIL_DEVICE_G      => "ULTRASCALE_PLUS")
       port map (
+         -- I/O Delay Interfaces
+         iDelayCtrlRdy => iDelayCtrlRdy,
          -- DMA Interface (dmaClk domain)
-         dmaClk       => dmaClk(0),
-         dmaRst       => dmaRst(0),
-         dmaObMasters => dmaObMasters(1 downto 0),
-         dmaObSlaves  => dmaObSlaves(1 downto 0),
-         dmaIbMasters => dmaIbMasters(1 downto 0),
-         dmaIbSlaves  => dmaIbSlaves(1 downto 0),
+         dmaClk        => dmaClk(0),
+         dmaRst        => dmaRst(0),
+         dmaObMasters  => dmaObMasters(1 downto 0),
+         dmaObSlaves   => dmaObSlaves(1 downto 0),
+         dmaIbMasters  => dmaIbMasters(1 downto 0),
+         dmaIbSlaves   => dmaIbSlaves(1 downto 0),
          -- FMC LPC Ports
-         fmcLaP       => fmcHpc0LaP,
-         fmcLaN       => fmcHpc0LaN);
+         fmcLaP        => fmcHpc0LaP,
+         fmcLaN        => fmcHpc0LaN);
 
    ---------------
    -- DMA Loopback
