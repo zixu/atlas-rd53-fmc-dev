@@ -60,7 +60,7 @@ class FmcDev(pr.Root):
     def __init__(self,
             name        = 'FmcDev',
             description = 'Container for Fmc Dev',
-            hwType      = 'pcie',          # Define whether sim/rce/pcie HW config
+            hwType      = 'kc705',         # Define whether sim/rce/kc705/kcu105 HW config
             dev         = '/dev/datadev_0',# path to device
             pollEn      = True,            # Enable automatic polling registers
             initRead    = True,            # Read all registers at start of the system
@@ -115,26 +115,30 @@ class FmcDev(pr.Root):
                     function     = lambda cmd, i=i: self._frameGen[i].myFrameGen(),
                 ))                 
             
-        elif (hwType == 'pcie'): 
+        elif (hwType == 'kc705') or (hwType == 'kcu105'): 
             # BAR0 access
             self.memMap = rogue.hardware.axi.AxiMemMap(dev)     
             
             # Add the PCIe core device to base
             self.add(pcie.AxiPcieCore(
-                memBase = self.memMap ,
-                offset  = 0x00000000, 
-                expand  = False, 
+                memBase     = self.memMap ,
+                offset      = 0x00000000, 
+                numDmaLanes = 2, 
+                expand      = False, 
             ))       
 
+            # Determine the DMA's TDEST stride
+            stride = 0x80 if (hwType == 'kc705') else 0x100
+            
             # SRPv3 on DMA.Lane[1]
-            self._dmaSrp = rogue.hardware.axi.AxiStreamDma(dev,(0x100*1)+0,True)
+            self._dmaSrp = rogue.hardware.axi.AxiStreamDma(dev,(stride*1)+0,True)
             
             for i in range(4):
                 # CMD on DMA.Lane[0].VC[3:0]
-                self._dmaCmd[i]  = rogue.hardware.axi.AxiStreamDma(dev,(0x100*0)+i+0,True)
+                self._dmaCmd[i]  = rogue.hardware.axi.AxiStreamDma(dev,(stride*0)+i+0,True)
                 
                 # DATA on DMA.Lane[0].VC[7:4]
-                self._dmaData[i] = rogue.hardware.axi.AxiStreamDma(dev,(0x100*0)+i+4,True)            
+                self._dmaData[i] = rogue.hardware.axi.AxiStreamDma(dev,(stride*0)+i+4,True)            
             
         
         elif (hwType == 'rce'): 
@@ -158,7 +162,7 @@ class FmcDev(pr.Root):
                 self._dmaData[i] = rogue.hardware.axi.AxiStreamDma('/dev/axi_stream_dma_0',i+4,True)
             
         else:
-            raise ValueError(f'Invalid hwType. Must be either [sim,pcie,rce]' )
+            raise ValueError(f'Invalid hwType. Must be either [sim,kc705,kcu105,rce]' )
         
         # Connect the DMA SRPv3 stream
         self._srp = rogue.protocols.srp.SrpV3()
@@ -168,7 +172,7 @@ class FmcDev(pr.Root):
         self.add(hw.Fmc(      
             memBase     = self._srp,
             simulation  = (hwType == 'sim'),
-            expand      = False,
+            # expand      = False,
         ))         
         
         # Start the system

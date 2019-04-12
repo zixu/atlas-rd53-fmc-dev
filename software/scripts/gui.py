@@ -35,8 +35,8 @@ parser.add_argument(
     "--hwType", 
     type     = str,
     required = False,
-    default  = 'pcie',
-    help     = "Define whether sim/rce/pcie HW config",
+    default  = 'kc705',
+    help     = "Define whether sim/rce/kc705/kcu105 HW config",
 )  
 
 parser.add_argument(

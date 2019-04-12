@@ -47,8 +47,14 @@ create_clock -name fmcHpcLaP1 -period 6.237 [get_ports {fmcHpcLaP[1]}]
 
 create_generated_clock -name clk300MHz [get_pins {U_MMCM/MmcmGen.U_Mmcm/CLKOUT0}]
 
-create_generated_clock -name clk640MHz [get_pins {U_App/U_FmcMapping/U_FmcMmcm/GEN_REAL.U_PLL/CLKOUT0}]
-create_generated_clock -name clk160MHz [get_pins {U_App/U_FmcMapping/U_FmcMmcm/U_Bufg160/O}]
+create_generated_clock -name clk640MHz [get_pins {U_App/U_FmcMapping/U_Selectio/GEN_REAL.U_PLL/CLKOUT0}]
+create_generated_clock -name clk160MHz [get_pins {U_App/U_FmcMapping/U_Selectio/U_Bufg160/O}]
+
+set_property CLOCK_DELAY_GROUP RD53_CLK_GRP [get_nets {U_App/U_FmcMapping/U_Selectio/clk160MHz[*]}] [get_nets {U_App/U_FmcMapping/U_Selectio/clk640MHz[*]}]
 
 set_clock_groups -asynchronous -group [get_clocks {dmaClk}] -group [get_clocks -include_generated_clocks {fmcHpcLaP0}]
 set_clock_groups -asynchronous -group [get_clocks {dmaClk}] -group [get_clocks -include_generated_clocks {fmcHpcLaP1}]
+
+set_property UNAVAILABLE_DURING_CALIBRATION TRUE [get_ports fmcHpcLaP[10]]
+set_property UNAVAILABLE_DURING_CALIBRATION TRUE [get_ports fmcHpcLaP[20]]
+

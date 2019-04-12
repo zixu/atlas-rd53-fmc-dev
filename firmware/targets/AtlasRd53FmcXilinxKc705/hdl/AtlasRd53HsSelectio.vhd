@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53FmcMmcm.vhd
+-- File       : AtlasRd53HsSelectio.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: FMC MMCM
+-- Description: PLL and Deserialization
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 DEV'.
 -- It is subject to the license terms in the LICENSE.txt file found in the 
@@ -24,35 +24,36 @@ use work.AxiLitePkg.all;
 library unisim;
 use unisim.vcomponents.all;
 
-entity AtlasRd53FmcMmcm is
+entity AtlasRd53HsSelectio is
    generic (
       TPD_G        : time    := 1 ns;
       SIMULATION_G : boolean := false);
    port (
-      pllClk          : in  sl;
-      pllRst          : in  sl;
+      ref160Clk     : in  sl;
+      ref160Rst     : in  sl;
+      -- Deserialization Interface
+      serDesData    : out Slv8Array(15 downto 0);
+      dlyCfg        : in  Slv5Array(15 downto 0);
+      iDelayCtrlRdy : in  sl;
+      -- mDP DATA Interface
+      dPortDataP    : in  Slv4Array(3 downto 0);
+      dPortDataN    : in  Slv4Array(3 downto 0);
       -- Timing Clock/Reset Interface
-      clk640MHz       : out sl;
-      clk160MHz       : out sl;
-      rst160MHz       : out sl;
-      -- AXI-Lite Interface 
-      axilClk         : in  sl                     := '0';
-      axilRst         : in  sl                     := '0';
-      axilReadMaster  : in  AxiLiteReadMasterType  := AXI_LITE_READ_MASTER_INIT_C;
-      axilReadSlave   : out AxiLiteReadSlaveType;
-      axilWriteMaster : in  AxiLiteWriteMasterType := AXI_LITE_WRITE_MASTER_INIT_C;
-      axilWriteSlave  : out AxiLiteWriteSlaveType);
-end AtlasRd53FmcMmcm;
+      clk160MHz     : out sl;
+      rst160MHz     : out sl);
+end AtlasRd53HsSelectio;
 
-architecture mapping of AtlasRd53FmcMmcm is
+architecture mapping of AtlasRd53HsSelectio is
 
-   signal clkOut : slv(1 downto 0);
-   signal rstOut : slv(1 downto 0);
+   signal clock640MHz : sl;
+   signal reset640MHz : sl;
+   signal clock160MHz : sl;
+   signal reset160MHz : sl;
 
 begin
 
-   clk640MHz <= clkOut(0);
-   clk160MHz <= clkOut(1);
+   clk160MHz <= clock160MHz;
+   rst160MHz <= reset160MHz;
 
    U_MMCM : entity work.ClockManager7
       generic map(
@@ -69,26 +70,36 @@ begin
          CLKOUT0_DIVIDE_F_G => 2.0,     -- 640 MHz = 1.28 GHz/2
          CLKOUT1_DIVIDE_G   => 8)       -- 160 MHz = 1.28 GHz/8
       port map(
-         clkIn           => pllClk,
-         rstIn           => pllRst,
+         clkIn     => ref160Clk,
+         rstIn     => ref160Rst,
          -- Clock Outputs
-         clkOut          => clkOut,
+         clkOut(0) => clock640MHz,
+         clkOut(1) => clock160MHz,
          -- Reset Outputs
-         rstOut          => rstOut,
-         -- AXI-Lite Port
-         axilClk         => axilClk,
-         axilRst         => axilRst,
-         axilReadMaster  => axilReadMaster,
-         axilReadSlave   => axilReadSlave,
-         axilWriteMaster => axilWriteMaster,
-         axilWriteSlave  => axilWriteSlave);
+         rstOut(0)    => reset640MHz,
+         rstOut(1)    => reset160MHz);
 
-   U_Reset : entity work.RstPipeline
-      generic map (
-         TPD_G => TPD_G)
-      port map (
-         clk    => clkOut(1),
-         rstIn  => rstOut(1),
-         rstOut => rst160MHz);
+   GEN_mDP :
+   for i in 3 downto 0 generate
+      GEN_LANE :
+      for j in 3 downto 0 generate
+         U_Lane : entity work.AuroraRxLaneDeser
+            generic map (
+               TPD_G => TPD_G)
+            port map (
+               -- RD53 ASIC Serial Interface
+               dPortDataP    => dPortDataP(i)(j),
+               dPortDataN    => dPortDataN(i)(j),
+               iDelayCtrlRdy => iDelayCtrlRdy,
+               -- Timing Interface
+               clk640MHz     => clock640MHz,
+               clk160MHz     => clock160MHz,
+               rst160MHz     => reset160MHz,
+               -- Delay Configuration
+               dlyCfgIn      => dlyCfg(4*i+j),
+               -- Output
+               dataOut       => serDesData(4*i+j));
+      end generate GEN_LANE;
+   end generate GEN_mDP;
 
 end mapping;

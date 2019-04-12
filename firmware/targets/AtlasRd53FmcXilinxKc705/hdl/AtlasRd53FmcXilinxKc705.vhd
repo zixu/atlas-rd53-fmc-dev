@@ -88,7 +88,7 @@ architecture top_level of AtlasRd53FmcXilinxKc705 is
    signal refRst300MHz  : sl;
 
    attribute IODELAY_GROUP                 : string;
-   attribute IODELAY_GROUP of U_IDELAYCTRL : label is "xapp_idelay";
+   attribute IODELAY_GROUP of U_IDELAYCTRL : label is "rd53_aurora";
 
    attribute KEEP_HIERARCHY                 : string;
    attribute KEEP_HIERARCHY of U_IDELAYCTRL : label is "TRUE";

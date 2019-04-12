@@ -10,3 +10,8 @@ loadRuckusTcl $::env(TOP_DIR)/common
 # Load local Source Code and constraints
 loadSource      -dir "$::DIR_PATH/hdl"
 loadConstraints -dir "$::DIR_PATH/hdl"
+loadIpCore      -dir "$::DIR_PATH/ip"
+
+# Load the simulation testbed
+loadSource -sim_only -dir "$::DIR_PATH/tb"
+set_property top {AtlasRd53FmcXilinxZcu102Tb} [get_filesets sim_1]

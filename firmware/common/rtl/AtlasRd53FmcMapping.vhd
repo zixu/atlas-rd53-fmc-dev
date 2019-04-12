@@ -31,34 +31,39 @@ entity AtlasRd53FmcMapping is
       SIMULATION_G : boolean := false;
       XIL_DEVICE_G : string  := "7SERIES");
    port (
+      -- Deserialization Interface
+      serDesData    : out   Slv8Array(15 downto 0);
+      dlyCfg        : in    Slv5Array(15 downto 0);
+      iDelayCtrlRdy : in    sl;
       -- Timing Clock/Reset Interface
-      clk640MHz    : out   sl;
-      clk160MHz    : out   sl;
-      rst160MHz    : out   sl;
+      clk160MHz     : out   sl;
+      rst160MHz     : out   sl;
       -- PLL Interface
-      fpgaPllClkIn : in    sl;
-      pllRst       : in    slv(3 downto 0);
-      pllCsL       : in    sl;
-      pllSck       : in    sl;
-      pllSdi       : in    sl;
-      pllSdo       : out   sl;
-      -- mDP DATA/CMD Interface
-      dPortDataP   : out   Slv4Array(3 downto 0);
-      dPortDataN   : out   Slv4Array(3 downto 0);
-      dPortCmdP    : in    slv(3 downto 0);
-      dPortCmdN    : in    slv(3 downto 0);
+      fpgaPllClkIn  : in    sl;
+      pllRst        : in    slv(3 downto 0);
+      pllCsL        : in    sl;
+      pllSck        : in    sl;
+      pllSdi        : in    sl;
+      pllSdo        : out   sl;
+      -- mDP CMD Interface
+      dPortCmdP     : in    slv(3 downto 0);
+      dPortCmdN     : in    slv(3 downto 0);
       -- I2C Interface
-      i2cScl       : inout slv(3 downto 0);
-      i2cSda       : inout slv(3 downto 0);
+      i2cScl        : inout slv(3 downto 0);
+      i2cSda        : inout slv(3 downto 0);
       -- FMC LPC Ports
-      fmcLaP       : inout slv(33 downto 0);
-      fmcLaN       : inout slv(33 downto 0));
+      fmcLaP        : inout slv(33 downto 0);
+      fmcLaN        : inout slv(33 downto 0));
 end AtlasRd53FmcMapping;
 
 architecture mapping of AtlasRd53FmcMapping is
 
-   signal pllReset : sl;
-   signal pllClk   : slv(1 downto 0);
+   signal pllReset   : sl;
+   signal pllClk     : slv(1 downto 0);
+   signal pllClkBufg : slv(1 downto 0);
+
+   signal dPortDataP : Slv4Array(3 downto 0);
+   signal dPortDataN : Slv4Array(3 downto 0);
 
 begin
 
@@ -71,19 +76,29 @@ begin
             I  => fmcLaP(i+0),
             IB => fmcLaN(i+0),
             O  => pllClk(i));
+      U_BUFG : BUFG
+         port map (
+            I => pllClk(i),
+            O => pllClkBufg(i));
    end generate GEN_PLL_CLK;
 
-   U_FmcMmcm : entity work.AtlasRd53FmcMmcm
+   U_Selectio : entity work.AtlasRd53HsSelectio
       generic map(
          TPD_G        => TPD_G,
          SIMULATION_G => SIMULATION_G)
       port map (
-         pllClk    => pllClk(0),
-         pllRst    => pllReset,
+         ref160Clk     => pllClkBufg(0),
+         ref160Rst     => pllReset,
+         -- Deserialization Interface
+         serDesData    => serDesData,
+         dlyCfg        => dlyCfg,
+         iDelayCtrlRdy => iDelayCtrlRdy,
+         -- mDP DATA Interface
+         dPortDataP    => dPortDataP,
+         dPortDataN    => dPortDataN,
          -- Timing Clock/Reset Interface
-         clk640MHz => clk640MHz,
-         clk160MHz => clk160MHz,
-         rst160MHz => rst160MHz);
+         clk160MHz     => clk160MHz,
+         rst160MHz     => rst160MHz);
 
    U_fpgaPllClk : entity work.ClkOutBufDiff
       generic map (

@@ -35,7 +35,7 @@ entity AtlasRd53FmcCore is
       MEMORY_TYPE_G     : string   := "block");
    port (
       -- I/O Delay Interfaces
-      iDelayCtrlRdy : in    sl;
+      iDelayCtrlRdy : in    sl := '0';
       -- DMA Interface (dmaClk domain)
       dmaClk        : in    sl;
       dmaRst        : in    sl;
@@ -54,7 +54,7 @@ architecture mapping of AtlasRd53FmcCore is
 
    constant I2C_CONFIG_C : I2cAxiLiteDevArray(1 downto 0) := (
       0              => MakeI2cAxiLiteDevType(
-         i2cAddress  => "0100000",      -- PCA9535
+         i2cAddress  => "1010110",      -- DS32EV400
          dataSize    => 8,              -- in units of bits
          addrSize    => 8,              -- in units of bits
          endianness  => '0',            -- Little endian                   
@@ -64,7 +64,7 @@ architecture mapping of AtlasRd53FmcCore is
          dataSize    => 8,              -- in units of bits
          addrSize    => 8,              -- in units of bits
          endianness  => '0',            -- Little endian   
-         repeatStart => '1'));          -- Repeat Start     
+         repeatStart => '1'));          -- Repeat Start 
 
    constant NUM_AXIL_MASTERS_C : positive := 11;
 
@@ -97,7 +97,6 @@ architecture mapping of AtlasRd53FmcCore is
    signal mConfigMasters : AxiStreamMasterArray(3 downto 0);
    signal mConfigSlaves  : AxiStreamSlaveArray(3 downto 0);
 
-   signal clk640MHz : sl;
    signal clk160MHz : sl;
    signal rst160MHz : sl;
 
@@ -107,10 +106,11 @@ architecture mapping of AtlasRd53FmcCore is
    signal pllSdi : sl;
    signal pllSdo : sl;
 
-   signal dPortDataP : Slv4Array(3 downto 0);
-   signal dPortDataN : Slv4Array(3 downto 0);
    signal dPortCmdP  : slv(3 downto 0);
    signal dPortCmdN  : slv(3 downto 0);
+   
+   signal serDesData       : Slv8Array(15 downto 0);
+   signal dlyCfg           : Slv5Array(15 downto 0);   
 
    signal i2cScl : slv(3 downto 0);
    signal i2cSda : slv(3 downto 0);
@@ -126,29 +126,30 @@ begin
          SIMULATION_G => SIMULATION_G,
          XIL_DEVICE_G => XIL_DEVICE_G)
       port map (
-         -- Timing Clock/Reset Interface
-         clk640MHz    => clk640MHz,
-         clk160MHz    => clk160MHz,
-         rst160MHz    => rst160MHz,
+         -- Deserialization Interface
+         serDesData       => serDesData,
+         dlyCfg           => dlyCfg,
+         iDelayCtrlRdy    => iDelayCtrlRdy,
+         -- Timing/Trigger Interface
+         clk160MHz        => clk160MHz,
+         rst160MHz        => rst160MHz,
          -- PLL Clocking Interface
-         fpgaPllClkIn => fpgaPllClkIn,
+         fpgaPllClkIn     => fpgaPllClkIn,
          -- PLL SPI Interface
-         pllRst       => pllRst,
-         pllCsL       => pllCsL,
-         pllSck       => pllSck,
-         pllSdi       => pllSdi,
-         pllSdo       => pllSdo,
-         -- mDP DATA/CMD Interface
-         dPortDataP   => dPortDataP,
-         dPortDataN   => dPortDataN,
-         dPortCmdP    => dPortCmdP,
-         dPortCmdN    => dPortCmdN,
+         pllRst           => pllRst,
+         pllCsL           => pllCsL,
+         pllSck           => pllSck,
+         pllSdi           => pllSdi,
+         pllSdo           => pllSdo,
+         -- mDP CMD Interface
+         dPortCmdP        => dPortCmdP,
+         dPortCmdN        => dPortCmdN,
          -- I2C Interface
-         i2cScl       => i2cScl,
-         i2cSda       => i2cSda,
+         i2cScl           => i2cScl,
+         i2cSda           => i2cSda,
          -- FMC LPC Ports
-         fmcLaP       => fmcLaP,
-         fmcLaN       => fmcLaN);
+         fmcLaP           => fmcLaP,
+         fmcLaN           => fmcLaN);
 
    ---------------
    -- SRPv3 Module
@@ -292,36 +293,35 @@ begin
             MEMORY_TYPE_G => MEMORY_TYPE_G)
          port map (
             -- I/O Delay Interfaces
-            iDelayCtrlRdy   => iDelayCtrlRdy,
-            pllRst          => pllRst(i),
+            pllRst           => pllRst(i),
             -- AXI-Lite Interface
-            axilClk         => dmaClk,
-            axilRst         => dmaRst,
-            axilReadMaster  => axilReadMasters(i+RX_INDEX_C),
-            axilReadSlave   => axilReadSlaves(i+RX_INDEX_C),
-            axilWriteMaster => axilWriteMasters(i+RX_INDEX_C),
-            axilWriteSlave  => axilWriteSlaves(i+RX_INDEX_C),
+            axilClk          => dmaClk,
+            axilRst          => dmaRst,
+            axilReadMaster   => axilReadMasters(i+RX_INDEX_C),
+            axilReadSlave    => axilReadSlaves(i+RX_INDEX_C),
+            axilWriteMaster  => axilWriteMasters(i+RX_INDEX_C),
+            axilWriteSlave   => axilWriteSlaves(i+RX_INDEX_C),
             -- Streaming EMU Trig Interface (clk160MHz domain)
-            emuTimingMaster => emuTimingMasters(i),
-            emuTimingSlave  => emuTimingSlaves(i),
+            emuTimingMaster  => emuTimingMasters(i),
+            emuTimingSlave   => emuTimingSlaves(i),
             -- Streaming Data/Config Interface (axisClk domain)
-            axisClk         => dmaClk,
-            axisRst         => dmaRst,
-            mDataMaster     => mDataMasters(i),
-            mDataSlave      => mDataSlaves(i),
-            sConfigMaster   => sConfigMasters(i),
-            sConfigSlave    => sConfigSlaves(i),
-            mConfigMaster   => mConfigMasters(i),
-            mConfigSlave    => mConfigSlaves(i),
+            axisClk          => dmaClk,
+            axisRst          => dmaRst,
+            mDataMaster      => mDataMasters(i),
+            mDataSlave       => mDataSlaves(i),
+            sConfigMaster    => sConfigMasters(i),
+            sConfigSlave     => sConfigSlaves(i),
+            mConfigMaster    => mConfigMasters(i),
+            mConfigSlave     => mConfigSlaves(i),
             -- Timing/Trigger Interface
-            clk640MHz       => clk640MHz,
-            clk160MHz       => clk160MHz,
-            rst160MHz       => rst160MHz,
+            clk160MHz        => clk160MHz,
+            rst160MHz        => rst160MHz,
+            -- Deserialization Interface
+            serDesData       => serDesData(4*i+3 downto 4*i),
+            dlyCfg           => dlyCfg(4*i+3 downto 4*i),           
             -- RD53 ASIC Serial Ports
-            dPortDataP      => dPortDataP(i),
-            dPortDataN      => dPortDataN(i),
-            dPortCmdP       => dPortCmdP(i),
-            dPortCmdN       => dPortCmdN(i));
+            dPortCmdP        => dPortCmdP(i),
+            dPortCmdN        => dPortCmdN(i));
    end generate GEN_DP;
 
    U_Mux : entity work.AxiStreamMux

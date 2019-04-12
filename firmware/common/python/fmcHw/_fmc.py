@@ -30,7 +30,7 @@ class Fmc(pr.Device):
                 expand = False,
             ))        
         
-        if (simulation != True):
+        if not(simulation):
         
             self.add(ti.Lmk61e2(      
                 name   = 'Lmk', 
@@ -39,18 +39,19 @@ class Fmc(pr.Device):
             ))           
             
             for i in range(4):
-                self.add(ti.Pca9535(      
-                    name   = f'Gpio[{i}]', 
+                self.add(ti.Ds32Ev400(      
+                    name   = f'RxEq[{i}]', 
                     offset = 0x40000+(0x10000*i), 
                     expand = False,
                 ))          
             
-            # self.add(silabs.Si5345(      
-                # name        = 'Pll', 
-                # description = 'This device contains Jitter cleaner PLL', 
-                # offset      = 0x80000, 
+            self.add(silabs.Si5345(      
+                name        = 'Pll', 
+                description = 'This device contains Jitter cleaner PLL', 
+                offset      = 0x80000, 
+                expand      = False,
                 # hidden      = True, # Hidden in GUI because indented for scripting or YAML load
-            # ))  
+            ))  
         
         self.add(asic.EmuTimingLut(      
             name   = 'EmuTimingLut', 
