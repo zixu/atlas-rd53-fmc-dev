@@ -93,7 +93,7 @@ begin
    GEN_SIM : if (SIMULATION_G = true) generate
       U_ClkRst : entity work.ClkRst
          generic map (
-            CLK_PERIOD_G      => 6.237 ns,
+            CLK_PERIOD_G      => 1.5625 ns,  -- 640 MHz
             RST_START_DELAY_G => 0 ns,
             RST_HOLD_TIME_G   => 1000 ns)
          port map (
