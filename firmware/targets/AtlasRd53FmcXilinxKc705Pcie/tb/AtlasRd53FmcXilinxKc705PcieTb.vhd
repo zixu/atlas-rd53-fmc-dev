@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53FmcXilinxKc705Tb.vhd
+-- File       : AtlasRd53FmcXilinxKc705PcieTb.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
 -- Description: Simulation Testbed for testing the FPGA module
@@ -21,9 +21,9 @@ use ieee.std_logic_arith.all;
 use work.StdRtlPkg.all;
 use work.BuildInfoPkg.all;
 
-entity AtlasRd53FmcXilinxKc705Tb is end AtlasRd53FmcXilinxKc705Tb;
+entity AtlasRd53FmcXilinxKc705PcieTb is end AtlasRd53FmcXilinxKc705PcieTb;
 
-architecture testbed of AtlasRd53FmcXilinxKc705Tb is
+architecture testbed of AtlasRd53FmcXilinxKc705PcieTb is
 
    constant TPD_G      : time     := 1 ns;
    constant CNT_SIZE_C : positive := 384*400;
@@ -152,7 +152,7 @@ begin
          clkN => sfpClk125N,
          rstL => dPortRstL);
 
-   U_Fpga : entity work.AtlasRd53FmcXilinxKc705
+   U_Fpga : entity work.AtlasRd53FmcXilinxKc705Pcie
       generic map (
          TPD_G          => TPD_G,
          ROGUE_SIM_EN_G => true,

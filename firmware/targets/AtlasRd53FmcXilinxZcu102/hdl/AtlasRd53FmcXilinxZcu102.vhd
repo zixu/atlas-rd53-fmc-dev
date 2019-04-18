@@ -177,10 +177,11 @@ begin
    U_App : entity work.AtlasRd53FmcCore
       generic map (
          TPD_G             => TPD_G,
+         BUILD_INFO_G      => BUILD_INFO_G,
          SIMULATION_G      => SIMULATION_G,
          DMA_AXIS_CONFIG_G => RCEG3_AXIS_DMA_CONFIG_C,
          DMA_CLK_FREQ_G    => 125.0E+6,
-         XIL_DEVICE_G      => "ULTRASCALE_PLUS")
+         XIL_DEVICE_G      => "ULTRASCALE")
       port map (
          -- I/O Delay Interfaces
          iDelayCtrlRdy => iDelayCtrlRdy,

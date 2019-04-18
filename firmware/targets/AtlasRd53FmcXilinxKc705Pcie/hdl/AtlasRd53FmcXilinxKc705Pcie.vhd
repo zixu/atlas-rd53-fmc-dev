@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53FmcXilinxKc705.vhd
+-- File       : AtlasRd53FmcXilinxKc705Pcie.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
 -- Description: AXI PCIe Core for Xilinx KC705 board (PCIe GEN2 x 4 lanes)
@@ -32,7 +32,7 @@ use work.SsiPkg.all;
 library unisim;
 use unisim.vcomponents.all;
 
-entity AtlasRd53FmcXilinxKc705 is
+entity AtlasRd53FmcXilinxKc705Pcie is
    generic (
       TPD_G          : time    := 1 ns;
       ROGUE_SIM_EN_G : boolean := false;
@@ -70,9 +70,9 @@ entity AtlasRd53FmcXilinxKc705 is
       pciRxN     : in    slv(3 downto 0);
       pciTxP     : out   slv(3 downto 0);
       pciTxN     : out   slv(3 downto 0));
-end AtlasRd53FmcXilinxKc705;
+end AtlasRd53FmcXilinxKc705Pcie;
 
-architecture top_level of AtlasRd53FmcXilinxKc705 is
+architecture top_level of AtlasRd53FmcXilinxKc705Pcie is
 
    signal dmaClk       : sl;
    signal dmaRst       : sl;
@@ -198,6 +198,7 @@ begin
    U_App : entity work.AtlasRd53FmcCore
       generic map (
          TPD_G             => TPD_G,
+         BUILD_INFO_G      => BUILD_INFO_G,
          SIMULATION_G      => ROGUE_SIM_EN_G,
          DMA_AXIS_CONFIG_G => DMA_AXIS_CONFIG_C,
          DMA_CLK_FREQ_G    => DMA_CLK_FREQ_C,

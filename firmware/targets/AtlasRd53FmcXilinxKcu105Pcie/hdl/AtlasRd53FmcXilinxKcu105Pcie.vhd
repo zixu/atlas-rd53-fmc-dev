@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53FmcXilinxKcu105.vhd
+-- File       : AtlasRd53FmcXilinxKcu105Pcie.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
 -- Description: 
@@ -17,7 +17,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 use work.StdRtlPkg.all;
-use work.AxiPkg.all;
 use work.AxiLitePkg.all;
 use work.AxiStreamPkg.all;
 use work.SsiPkg.all;
@@ -26,7 +25,7 @@ use work.AxiPciePkg.all;
 library unisim;
 use unisim.vcomponents.all;
 
-entity AtlasRd53FmcXilinxKcu105 is
+entity AtlasRd53FmcXilinxKcu105Pcie is
    generic (
       TPD_G             : time                := 1 ns;
       ROGUE_SIM_EN_G    : boolean             := false;
@@ -67,9 +66,9 @@ entity AtlasRd53FmcXilinxKcu105 is
       pciRxN     : in    slv(7 downto 0);
       pciTxP     : out   slv(7 downto 0);
       pciTxN     : out   slv(7 downto 0));
-end AtlasRd53FmcXilinxKcu105;
+end AtlasRd53FmcXilinxKcu105Pcie;
 
-architecture top_level of AtlasRd53FmcXilinxKcu105 is
+architecture top_level of AtlasRd53FmcXilinxKcu105Pcie is
 
    signal dmaClk       : sl;
    signal dmaRst       : sl;
@@ -214,6 +213,7 @@ begin
    U_App : entity work.AtlasRd53FmcCore
       generic map (
          TPD_G             => TPD_G,
+         BUILD_INFO_G      => BUILD_INFO_G,
          SIMULATION_G      => ROGUE_SIM_EN_G,
          DMA_AXIS_CONFIG_G => DMA_AXIS_CONFIG_G,
          DMA_CLK_FREQ_G    => DMA_CLK_FREQ_C,

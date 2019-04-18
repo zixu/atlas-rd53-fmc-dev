@@ -26,6 +26,7 @@ use work.I2cPkg.all;
 entity AtlasRd53FmcCore is
    generic (
       TPD_G             : time     := 1 ns;
+      BUILD_INFO_G      : BuildInfoType;
       SIMULATION_G      : boolean  := false;
       DMA_AXIS_CONFIG_G : AxiStreamConfigType;
       DMA_CLK_FREQ_G    : real;         -- units of Hz
@@ -66,12 +67,13 @@ architecture mapping of AtlasRd53FmcCore is
          endianness  => '0',            -- Little endian   
          repeatStart => '1'));          -- Repeat Start 
 
-   constant NUM_AXIL_MASTERS_C : positive := 11;
+   constant NUM_AXIL_MASTERS_C : positive := 12;
 
-   constant RX_INDEX_C  : natural := 0;  -- [3:0]
-   constant I2C_INDEX_C : natural := 4;  -- [7:4]
-   constant PLL_INDEX_C : natural := 8;
-   constant EMU_INDEX_C : natural := 9;  -- [10:9]
+   constant RX_INDEX_C      : natural := 0;  -- [3:0]
+   constant I2C_INDEX_C     : natural := 4;  -- [7:4]
+   constant PLL_INDEX_C     : natural := 8;
+   constant EMU_INDEX_C     : natural := 9;  -- [10:9]
+   constant VERSION_INDEX_C : natural := 11;
 
    constant AXIL_CONFIG_C : AxiLiteCrossbarMasterConfigArray(NUM_AXIL_MASTERS_C-1 downto 0) := genAxiLiteConfig(NUM_AXIL_MASTERS_C, x"0000_0000", 20, 16);
 
@@ -199,6 +201,23 @@ begin
          mAxiWriteSlaves     => axilWriteSlaves,
          mAxiReadMasters     => axilReadMasters,
          mAxiReadSlaves      => axilReadSlaves);
+
+   --------------------
+   -- AxiVersion Module
+   --------------------         
+   U_AxiVersion : entity work.AxiVersion
+      generic map (
+         TPD_G        => TPD_G,
+         CLK_PERIOD_G => (1.0/DMA_CLK_FREQ_G),
+         BUILD_INFO_G => BUILD_INFO_G,
+         XIL_DEVICE_G => XIL_DEVICE_G)
+      port map (
+         axiReadMaster  => axilReadMasters(VERSION_INDEX_C),
+         axiReadSlave   => axilReadSlaves(VERSION_INDEX_C),
+         axiWriteMaster => axilWriteMasters(VERSION_INDEX_C),
+         axiWriteSlave  => axilWriteSlaves(VERSION_INDEX_C),
+         axiClk         => dmaClk,
+         axiRst         => dmaRst);
 
    ----------------------------------
    -- Emulation Timing/Trigger Module

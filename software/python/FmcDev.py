@@ -60,7 +60,7 @@ class FmcDev(pr.Root):
     def __init__(self,
             name        = 'FmcDev',
             description = 'Container for Fmc Dev',
-            hwType      = 'kc705',         # Define whether sim/rce/kc705/kcu105 HW config
+            hwType      = 'eth',         # Define whether sim/rce/pcie/eth HW config
             dev         = '/dev/datadev_0',# path to device
             pollEn      = True,            # Enable automatic polling registers
             initRead    = True,            # Read all registers at start of the system
@@ -78,8 +78,34 @@ class FmcDev(pr.Root):
         self._pollEn   = pollEn
         self._initRead = initRead        
         
-        # Check for sim HW type
-        if (hwType == 'sim'): 
+        # Check for HW type
+        if (hwType == 'eth'): 
+        
+            # Connected to FW DMA.Lane[0]
+            self.rudpData = pr.protocols.UdpRssiPack(
+                host    = ip,
+                port    = 8192,
+                packVer = 2,
+            )                
+        
+            # Connected to FW DMA.Lane[1]
+            self.rudpSrp = pr.protocols.UdpRssiPack(
+                host    = ip,
+                port    = 8193,
+                packVer = 2,
+            )         
+            
+            # SRPv3 on DMA.Lane[1]
+            self._dmaSrp  = self.rudpSrp.application(0)
+            
+            for i in range(4):
+                # CMD on DMA.Lane[0].VC[3:0]
+                self._dmaCmd[i]  = self.rudpData.application(i+0)
+                
+                # DATA on DMA.Lane[0].VC[7:4]
+                self._dmaData[i] = self.rudpData.application(i+4)            
+        
+        elif (hwType == 'sim'): 
             # FW/SW co-simulation
             self.memMap = rogue.interfaces.memory.TcpClient('localhost',8000)  
             
@@ -115,7 +141,7 @@ class FmcDev(pr.Root):
                     function     = lambda cmd, i=i: self._frameGen[i].myFrameGen(),
                 ))                 
             
-        elif (hwType == 'kc705') or (hwType == 'kcu105'): 
+        elif (hwType == 'pcie'): 
             # BAR0 access
             self.memMap = rogue.hardware.axi.AxiMemMap(dev)     
             
@@ -126,19 +152,16 @@ class FmcDev(pr.Root):
                 numDmaLanes = 2, 
                 expand      = False, 
             ))       
-
-            # Determine the DMA's TDEST stride
-            stride = 0x80 if (hwType == 'kc705') else 0x100
             
             # SRPv3 on DMA.Lane[1]
-            self._dmaSrp = rogue.hardware.axi.AxiStreamDma(dev,(stride*1)+0,True)
+            self._dmaSrp = rogue.hardware.axi.AxiStreamDma(dev,(0x80*1)+0,True)
             
             for i in range(4):
                 # CMD on DMA.Lane[0].VC[3:0]
-                self._dmaCmd[i]  = rogue.hardware.axi.AxiStreamDma(dev,(stride*0)+i+0,True)
+                self._dmaCmd[i]  = rogue.hardware.axi.AxiStreamDma(dev,(0x80*0)+i+0,True)
                 
                 # DATA on DMA.Lane[0].VC[7:4]
-                self._dmaData[i] = rogue.hardware.axi.AxiStreamDma(dev,(stride*0)+i+4,True)            
+                self._dmaData[i] = rogue.hardware.axi.AxiStreamDma(dev,(0x80*0)+i+4,True)            
             
         
         elif (hwType == 'rce'): 

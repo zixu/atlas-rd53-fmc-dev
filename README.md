@@ -43,6 +43,34 @@ $ git clone --recursive git@github.com:slaclab/atlas-rd53-fmc-dev
 
 <!--- ########################################################################################### -->
 
+# How to build the KC705 1 GbE firmware
+
+Note: For KC705, using the SGMII on the Marvel PHY
+      J29: Jumper over pins 2-3 (non-default)
+      J30: Jumper over pins 2-3 (non-default)
+      J64: No jumper  (default)
+
+1) Setup Xilinx licensing
+
+> If you are on the SLAC network, here's how to setup the Xilinx licensing
+
+```
+$ source atlas-rd53-fmc-dev/firmware/setup_env_slac.sh
+```
+
+2) Go to the target directory and make the firmware:
+```
+$ cd atlas-rd53-fmc-dev/firmware/targets/AtlasRd53FmcXilinxKc705_RJ45_1GbE/
+$ make
+```
+
+3) Optional: Review the results in GUI mode
+```
+$ make gui
+```
+
+<!--- ########################################################################################### -->
+
 # How to build the KC705 PCIe firmware
 
 Note: For KC705, using the QSPI (not BPI) for booting from PROM.
@@ -59,7 +87,7 @@ $ source atlas-rd53-fmc-dev/firmware/setup_env_slac.sh
 
 2) Go to the target directory and make the firmware:
 ```
-$ cd atlas-rd53-fmc-dev/firmware/targets/AtlasRd53FmcXilinxKc705/
+$ cd atlas-rd53-fmc-dev/firmware/targets/AtlasRd53FmcXilinxKc705Pcie/
 $ make
 ```
 
@@ -82,7 +110,31 @@ $ source atlas-rd53-fmc-dev/firmware/setup_env_slac.sh
 
 2) Go to the target directory and make the firmware:
 ```
-$ cd atlas-rd53-fmc-dev/firmware/targets/AtlasRd53FmcXilinxKcu105/
+$ cd atlas-rd53-fmc-dev/firmware/targets/AtlasRd53FmcXilinxKcu105_RJ45_1GbE/
+$ make
+```
+
+3) Optional: Review the results in GUI mode
+```
+$ make gui
+```
+
+
+<!--- ########################################################################################### -->
+
+# How to build the KCU105 PCIe firmware
+
+1) Setup Xilinx licensing
+
+> If you are on the SLAC network, here's how to setup the Xilinx licensing
+
+```
+$ source atlas-rd53-fmc-dev/firmware/setup_env_slac.sh
+```
+
+2) Go to the target directory and make the firmware:
+```
+$ cd atlas-rd53-fmc-dev/firmware/targets/AtlasRd53FmcXilinxKcu105Pcie/
 $ make
 ```
 
@@ -148,6 +200,47 @@ $ cat /proc/data_dev0
 
 > https://slaclab.github.io/rogue/installing/anaconda.html
 
+
+<!--- ########################################################################################### -->
+
+
+# How to run the Rogue PyQT GUI for the 1GbE Communication 
+
+1) Setup the rogue environment
+```
+# Go to software directory
+$ cd atlas-rd53-fmc-dev/software
+
+# Activate Rogue conda Environment 
+$ source /path/to/my/anaconda3/etc/profile.d/conda.sh
+$ conda activate rogue_env
+```
+
+2) Launch the GUI:
+```
+$ python3 scripts/guiPcie.py --hwType eth --ip <IP_ADDRRESS>
+```
+
+<!--- ########################################################################################### -->
+
+
+# How to run the Rogue PyQT GUI for the PCIe platforms
+
+1) Setup the rogue environment
+```
+# Go to software directory
+$ cd atlas-rd53-fmc-dev/software
+
+# Activate Rogue conda Environment 
+$ source /path/to/my/anaconda3/etc/profile.d/conda.sh
+$ conda activate rogue_env
+```
+
+2) Launch the GUI:
+```
+$ python3 scripts/guiPcie.py --hwType pcie
+```
+
 <!--- ########################################################################################### -->
 
 # How to reprogram the PCIe firmware via Rogue software
@@ -175,26 +268,6 @@ where <PATH_TO_IMAGE_DIR> is path to image directory (example: ../firmware/targe
 3) Reboot the computer
 ```
 sudo reboot
-```
-
-<!--- ########################################################################################### -->
-
-
-# How to run the Rogue PyQT GUI for the PCIe platforms
-
-1) Setup the rogue environment
-```
-# Go to software directory
-$ cd atlas-rd53-fmc-dev/software
-
-# Activate Rogue conda Environment 
-$ source /path/to/my/anaconda3/etc/profile.d/conda.sh
-$ conda activate rogue_env
-```
-
-2) Launch the GUI:
-```
-$ python3 scripts/guiPcie.py
 ```
 
 <!--- ########################################################################################### -->

@@ -35,9 +35,17 @@ parser.add_argument(
     "--hwType", 
     type     = str,
     required = False,
-    default  = 'kc705',
-    help     = "Define whether sim/rce/kc705/kcu105 HW config",
+    default  = 'eth',
+    help     = "Define whether sim/rce/pcie/eth HW config",
 )  
+
+parser.add_argument(
+    "--ip", 
+    type     = str,
+    required = False,
+    default  = '192.168.2.10',
+    help     = "IP address for hwType=eth",
+) 
 
 parser.add_argument(
     "--pollEn", 
@@ -63,6 +71,7 @@ args = parser.parse_args()
 cl = FmcDev.FmcDev(
     dev      = args.dev,
     hwType   = args.hwType,
+    ip       = args.ip,
     pollEn   = args.pollEn,
     initRead = args.initRead,
 )
