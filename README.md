@@ -98,7 +98,7 @@ $ make gui
 
 <!--- ########################################################################################### -->
 
-# How to build the KCU105 PCIe firmware
+# How to build the KCU105 1 GbE firmware
 
 1) Setup Xilinx licensing
 
