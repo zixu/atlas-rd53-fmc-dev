@@ -62,3 +62,5 @@ set_property CLOCK_DELAY_GROUP ETH_CLK_GRP [get_nets {U_MarvelWrap/U_1GigE/sysCl
 set_clock_groups -asynchronous -group [get_clocks {ethClk312MHz}] -group [get_clocks {ethClk125MHz}]
 
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks {lvdsClkP}] -group [get_clocks -include_generated_clocks {sysClk300P}]
+
+set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins U_MarvelWrap/U_1GigE/U_sysClk125/O]] -group [get_clocks -of_objects [get_pins U_App/U_FmcMapping/U_Selectio/U_Bufg160/O]]

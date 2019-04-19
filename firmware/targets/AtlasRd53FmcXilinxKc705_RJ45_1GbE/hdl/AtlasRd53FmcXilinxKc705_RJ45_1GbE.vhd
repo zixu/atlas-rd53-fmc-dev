@@ -42,11 +42,17 @@ entity AtlasRd53FmcXilinxKc705_RJ45_1GbE is
       BUILD_INFO_G : BuildInfoType);
    port (
       extRst     : in    sl;
+      led        : out   slv(7 downto 0);
       -- SGMII Interface
-      sgmiiTxP     : out   sl;
-      sgmiiTxN     : out   sl;
-      sgmiiRxP     : in    sl;
-      sgmiiRxN     : in    sl;      
+      sgmiiTxP   : out   sl;
+      sgmiiTxN   : out   sl;
+      sgmiiRxP   : in    sl;
+      sgmiiRxN   : in    sl;
+      -- ETH external PHY pins
+      phyMdc     : out   sl;
+      phyMdio    : inout sl;
+      phyRstN    : out   sl;            -- active low
+      phyIrqN    : in    sl;            -- active low      
       -- FMC Interface
       fmcHpcLaP  : inout slv(33 downto 0);
       fmcHpcLaN  : inout slv(33 downto 0);
@@ -85,6 +91,20 @@ architecture top_level of AtlasRd53FmcXilinxKc705_RJ45_1GbE is
    signal iDelayCtrlRdy : sl;
    signal refClk300MHz  : sl;
    signal refRst300MHz  : sl;
+
+   signal phyMdo      : sl;
+   signal phyMdi      : sl;
+   signal phyReady    : sl;
+   signal extPhyReady : sl;
+   signal phyInitRst  : sl;
+   signal extPhyRstN  : sl;
+   signal initDone    : sl;
+   signal sp10_100    : sl := '0';
+   signal sp100       : sl := '0';
+   signal speed1000   : sl := '0';
+   signal speed100    : sl := '0';
+   signal speed10     : sl := '0';
+   signal linkUp      : sl := '0';
 
    signal efuse    : slv(31 downto 0);
    signal localMac : slv(47 downto 0);
@@ -135,7 +155,7 @@ begin
          RDY    => iDelayCtrlRdy,
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
-         
+
    U_TermGt : entity work.Gtxe2ChannelDummy
       generic map (
          TPD_G   => TPD_G,
@@ -145,7 +165,7 @@ begin
          gtRxP(0) => sfpRxP,
          gtRxN(0) => sfpRxN,
          gtTxP(0) => sfpTxP,
-         gtTxN(0) => sfpTxN);         
+         gtTxN(0) => sfpTxN);
 
    U_EFuse : EFUSE_USR
       port map (
@@ -182,12 +202,86 @@ begin
          extRst          => extRst,
          phyClk          => dmaClk,
          phyRst          => dmaRst,
+         phyReady(0)     => phyReady,
          -- MGT Ports
          gtRefClk        => sfpClk62p5,
          gtTxP(0)        => sgmiiTxP,
          gtTxN(0)        => sgmiiTxN,
          gtRxP(0)        => sgmiiRxP,
          gtRxN(0)        => sgmiiRxN);
+
+   U_PwrUpRst0 : entity work.PwrUpRst
+      generic map(
+         TPD_G          => TPD_G,
+         IN_POLARITY_G  => '1',
+         OUT_POLARITY_G => '0',
+         DURATION_G     => getTimeRatio(300.0E+6, 100.0))  -- 10 ms reset
+      port map (
+         arst   => extRst,
+         clk    => refClk300MHz,
+         rstOut => extPhyRstN);
+
+   U_PwrUpRst1 : entity work.PwrUpRst
+      generic map(
+         TPD_G          => TPD_G,
+         IN_POLARITY_G  => '0',
+         OUT_POLARITY_G => '0',
+         DURATION_G     => getTimeRatio(300.0E+6, 100.0))  -- 10 ms reset
+      port map (
+         arst   => extPhyRstN,
+         clk    => refClk300MHz,
+         rstOut => extPhyReady);
+
+   U_PhyInitRstSync : entity work.RstSync
+      generic map (
+         IN_POLARITY_G  => '0',
+         OUT_POLARITY_G => '1')
+      port map (
+         clk      => dmaClk,
+         asyncRst => extPhyReady,
+         syncRst  => phyInitRst);
+
+   U_PhyCtrl : entity work.Sgmii88E1111Mdio
+      generic map (
+         TPD_G => TPD_G,
+         PHY_G => 7,
+         DIV_G => 100)
+      port map (
+         clk             => dmaClk,
+         rst             => phyInitRst,
+         initDone        => initDone,
+         speed_is_10_100 => sp10_100,
+         speed_is_100    => sp100,
+         linkIsUp        => linkUp,
+         mdi             => phyMdi,
+         mdc             => phyMdc,
+         mdo             => phyMdo,
+         linkIrq         => phyIrqN);
+
+   phyRstN   <= extPhyRstN;
+   speed10   <= sp10_100 and not sp100;
+   speed100  <= sp10_100 and not sp100;
+   speed1000 <= not sp10_100 and not sp100;
+
+   -- Tri-state driver for phyMdio
+   phyMdio <= 'Z' when phyMdo = '1' else '0';
+
+   U_SyncMdi : entity work.Synchronizer
+      generic map (
+         TPD_G => TPD_G)
+      port map (
+         clk     => dmaClk,
+         dataIn  => phyMdio,
+         dataOut => phyMdi);
+
+   led(7) <= linkUp;
+   led(6) <= speed1000;
+   led(5) <= speed100;
+   led(4) <= speed100;
+   led(3) <= initDone;
+   led(2) <= phyReady;
+   led(1) <= phyReady;
+   led(0) <= '1';
 
    ----------------------
    -- RUDP Wrapper Module

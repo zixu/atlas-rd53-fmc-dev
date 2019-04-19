@@ -8,6 +8,18 @@
 ## the terms contained in the LICENSE.txt file.
 ##############################################################################
 
+set_property PACKAGE_PIN N30     [get_ports "phyIrqN"]
+set_property IOSTANDARD LVCMOS25 [get_ports "phyIrqN"]
+
+set_property PACKAGE_PIN R23     [get_ports "phyMdc"]
+set_property IOSTANDARD LVCMOS25 [get_ports "phyMdc"]
+
+set_property PACKAGE_PIN J21     [get_ports "phyMdio"]
+set_property IOSTANDARD LVCMOS25 [get_ports "phyMdio"]
+
+set_property PACKAGE_PIN N30     [get_ports "phyRstN"]
+set_property IOSTANDARD LVCMOS25 [get_ports "phyRstN"]
+
 set_property PACKAGE_PIN J4 [get_ports sgmiiTxP]
 set_property PACKAGE_PIN J3 [get_ports sgmiiTxN]
 set_property PACKAGE_PIN H6 [get_ports sgmiiRxP]
