@@ -17,7 +17,7 @@ set_property IOSTANDARD LVCMOS25 [get_ports "phyMdc"]
 set_property PACKAGE_PIN J21     [get_ports "phyMdio"]
 set_property IOSTANDARD LVCMOS25 [get_ports "phyMdio"]
 
-set_property PACKAGE_PIN N30     [get_ports "phyRstN"]
+set_property PACKAGE_PIN L20     [get_ports "phyRstN"]
 set_property IOSTANDARD LVCMOS25 [get_ports "phyRstN"]
 
 set_property PACKAGE_PIN J4 [get_ports sgmiiTxP]
@@ -27,3 +27,4 @@ set_property PACKAGE_PIN H5 [get_ports sgmiiRxN]
 
 set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins IBUFDS_GTE2_Inst/ODIV2]] -group [get_clocks -of_objects [get_pins U_ETH_PHY_MAC/U_MMCM/MmcmGen.U_Mmcm/CLKOUT0]]
 set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins U_ETH_PHY_MAC/U_MMCM/MmcmGen.U_Mmcm/CLKOUT0]] -group [get_clocks -of_objects [get_pins U_App/U_FmcMapping/U_Selectio/U_MMCM/MmcmGen.U_Mmcm/CLKOUT1]]
+set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins U_MMCM/MmcmGen.U_Mmcm/CLKOUT0]] -group [get_clocks -of_objects [get_pins U_ETH_PHY_MAC/U_MMCM/MmcmGen.U_Mmcm/CLKOUT0]]
