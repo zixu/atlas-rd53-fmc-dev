@@ -27,10 +27,9 @@ use unisim.vcomponents.all;
 
 entity AtlasRd53FmcXilinxKcu105Pcie is
    generic (
-      TPD_G             : time                := 1 ns;
-      ROGUE_SIM_EN_G    : boolean             := false;
-      DMA_AXIS_CONFIG_G : AxiStreamConfigType := ssiAxiStreamConfig(8, TKEEP_COMP_C, TUSER_FIRST_LAST_C, 8, 2);  --- 8 Byte (64-bit) tData interface
-      BUILD_INFO_G      : BuildInfoType);
+      TPD_G          : time    := 1 ns;
+      ROGUE_SIM_EN_G : boolean := false;
+      BUILD_INFO_G   : BuildInfoType);
    port (
       ---------------------   
       --  Application Ports
@@ -69,6 +68,15 @@ entity AtlasRd53FmcXilinxKcu105Pcie is
 end AtlasRd53FmcXilinxKcu105Pcie;
 
 architecture top_level of AtlasRd53FmcXilinxKcu105Pcie is
+
+   constant DMA_AXIS_CONFIG_C : AxiStreamConfigType := (
+      TSTRB_EN_C    => false,
+      TDATA_BYTES_C => 8,               -- 64-bit data interface
+      TDEST_BITS_C  => 8,
+      TID_BITS_C    => 0,
+      TKEEP_MODE_C  => TKEEP_COMP_C,
+      TUSER_BITS_C  => 2,
+      TUSER_MODE_C  => TUSER_FIRST_LAST_C);
 
    signal dmaClk       : sl;
    signal dmaRst       : sl;
@@ -163,7 +171,7 @@ begin
          ROGUE_SIM_PORT_NUM_G => 8000,
          ROGUE_SIM_CH_COUNT_G => 8,
          BUILD_INFO_G         => BUILD_INFO_G,
-         DMA_AXIS_CONFIG_G    => DMA_AXIS_CONFIG_G,
+         DMA_AXIS_CONFIG_G    => DMA_AXIS_CONFIG_C,
          DMA_SIZE_G           => 2)
       port map (
          ------------------------      
@@ -215,7 +223,7 @@ begin
          TPD_G             => TPD_G,
          BUILD_INFO_G      => BUILD_INFO_G,
          SIMULATION_G      => ROGUE_SIM_EN_G,
-         DMA_AXIS_CONFIG_G => DMA_AXIS_CONFIG_G,
+         DMA_AXIS_CONFIG_G => DMA_AXIS_CONFIG_C,
          DMA_CLK_FREQ_G    => DMA_CLK_FREQ_C,
          XIL_DEVICE_G      => "ULTRASCALE")
       port map (
