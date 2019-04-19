@@ -181,7 +181,7 @@ begin
          SIMULATION_G      => SIMULATION_G,
          DMA_AXIS_CONFIG_G => RCEG3_AXIS_DMA_CONFIG_C,
          DMA_CLK_FREQ_G    => 125.0E+6,
-         XIL_DEVICE_G      => "ULTRASCALE")
+         XIL_DEVICE_G      => "ULTRASCALE_PLUS")
       port map (
          -- I/O Delay Interfaces
          iDelayCtrlRdy => iDelayCtrlRdy,
