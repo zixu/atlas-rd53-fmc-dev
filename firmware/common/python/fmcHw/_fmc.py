@@ -12,6 +12,7 @@
 import pyrogue as pr
 
 import AtlasRd53           as asic
+import surf.axi            as axi
 import surf.devices.silabs as silabs
 import surf.devices.ti     as ti
        
@@ -65,3 +66,7 @@ class Fmc(pr.Device):
             expand = False,
         ))
         
+        self.add(axi.AxiVersion(
+            offset = 0xB0000,
+            expand = False,
+        ))        

@@ -12,6 +12,7 @@ import pyrogue as pr
 
 import rogue.hardware.axi
 import rogue.protocols
+import pyrogue.protocols
 import pyrogue.interfaces.simulation
 
 import RceG3   as rce
@@ -61,6 +62,7 @@ class FmcDev(pr.Root):
             name        = 'FmcDev',
             description = 'Container for Fmc Dev',
             hwType      = 'eth',         # Define whether sim/rce/pcie/eth HW config
+            ip          = '192.168.2.10',
             dev         = '/dev/datadev_0',# path to device
             pollEn      = True,            # Enable automatic polling registers
             initRead    = True,            # Read all registers at start of the system
@@ -185,7 +187,7 @@ class FmcDev(pr.Root):
                 self._dmaData[i] = rogue.hardware.axi.AxiStreamDma('/dev/axi_stream_dma_0',i+4,True)
             
         else:
-            raise ValueError(f'Invalid hwType. Must be either [sim,kc705,kcu105,rce]' )
+            raise ValueError(f'Invalid hwType. Must be either [sim,rce,pcie,eth]' )
         
         # Connect the DMA SRPv3 stream
         self._srp = rogue.protocols.srp.SrpV3()
