@@ -100,13 +100,13 @@ begin
          NUM_CLOCKS_G       => 2,
          -- MMCM attributes
          BANDWIDTH_G        => "OPTIMIZED",
-         CLKIN_PERIOD_G     => 6.4,
+         CLKIN_PERIOD_G     => 8.0,
          DIVCLK_DIVIDE_G    => 1,
-         CLKFBOUT_MULT_F_G  => 6.0,
+         CLKFBOUT_MULT_F_G  => 7.5,
          CLKOUT0_DIVIDE_F_G => 3.125,   -- 300 MHz = 937.5 MHz/3.125
          CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6   
       port map(
-         clkIn     => sfpClk156,
+         clkIn     => dmaClk,
          clkOut(0) => refClk300MHz,
          clkOut(1) => open,
          rstOut(0) => refRst300MHz,

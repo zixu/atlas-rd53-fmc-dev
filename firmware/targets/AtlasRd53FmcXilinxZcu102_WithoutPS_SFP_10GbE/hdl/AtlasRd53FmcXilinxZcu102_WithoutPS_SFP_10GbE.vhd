@@ -106,7 +106,7 @@ begin
          CLKOUT0_DIVIDE_F_G => 3.125,   -- 300 MHz = 937.5 MHz/3.125
          CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6   
       port map(
-         clkIn     => sfpClk156,
+         clkIn     => dmaClk,
          clkOut(0) => refClk300MHz,
          clkOut(1) => open,
          rstOut(0) => refRst300MHz,
