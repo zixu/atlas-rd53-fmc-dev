@@ -2,7 +2,7 @@
 -- File       : AtlasRd53FmcXilinxKc705_RJ45_1GbE.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: AXI PCIe Core for Xilinx KC705 board (1 GbE on the SFP)
+-- Description: AXI PCIe Core for Xilinx KC705 board (1 GbE on the RJ45)
 --
 -- https://www.xilinx.com/products/boards-and-kits/kc705.html
 --
