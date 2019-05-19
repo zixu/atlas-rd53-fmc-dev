@@ -53,19 +53,22 @@ end AtlasRd53FmcCore;
 
 architecture mapping of AtlasRd53FmcCore is
 
-   constant I2C_CONFIG_C : I2cAxiLiteDevArray(1 downto 0) := (
+   constant RX_EQ_I2C_CONFIG_C : I2cAxiLiteDevArray(0 to 0) := (
       0              => MakeI2cAxiLiteDevType(
          i2cAddress  => "1010110",      -- DS32EV400
          dataSize    => 8,              -- in units of bits
          addrSize    => 8,              -- in units of bits
          endianness  => '0',            -- Little endian                   
-         repeatStart => '1'),           -- Repeat Start                   
+         repeatStart => '1'));          -- Repeat Start 
+
+   constant PLL_RX_EQ_I2C_CONFIG_C : I2cAxiLiteDevArray(0 to 1) := (
+      0              => RX_EQ_I2C_CONFIG_C(0),
       1              => MakeI2cAxiLiteDevType(
          i2cAddress  => "1011000",      -- LMK61E2
          dataSize    => 8,              -- in units of bits
          addrSize    => 8,              -- in units of bits
          endianness  => '0',            -- Little endian   
-         repeatStart => '1'));          -- Repeat Start 
+         repeatStart => '1'));          -- Repeat Start          
 
    constant NUM_AXIL_MASTERS_C : positive := 12;
 
@@ -268,16 +271,37 @@ begin
             coreSDout      => pllSdi,
             coreCsb        => pllCsL);
 
-      ----------------------
-      -- AXI-Lite: Power I2C
-      ----------------------
+      ---------------------------
+      -- AXI-Lite: I2C Reg Access
+      ---------------------------
+      U_PLL_RX_QUAL : entity work.AxiI2cRegMaster
+         generic map (
+            TPD_G          => TPD_G,
+            DEVICE_MAP_G   => PLL_RX_EQ_I2C_CONFIG_C,
+            -- I2C_SCL_FREQ_G => 400.0E+3,  -- units of Hz
+            I2C_SCL_FREQ_G => 100.0E+3,  -- units of Hz
+            AXI_CLK_FREQ_G => DMA_CLK_FREQ_G)
+         port map (
+            -- I2C Ports
+            scl            => i2cScl(0),
+            sda            => i2cSda(0),
+            -- AXI-Lite Register Interface
+            axiReadMaster  => axilReadMasters(I2C_INDEX_C),
+            axiReadSlave   => axilReadSlaves(I2C_INDEX_C),
+            axiWriteMaster => axilWriteMasters(I2C_INDEX_C),
+            axiWriteSlave  => axilWriteSlaves(I2C_INDEX_C),
+            -- Clocks and Resets
+            axiClk         => dmaClk,
+            axiRst         => dmaRst);
+
       GEN_I2C :
-      for i in 3 downto 0 generate
-         U_PwrI2C : entity work.AxiI2cRegMaster
+      for i in 3 downto 1 generate
+         U_RX_QUAL_ONLY : entity work.AxiI2cRegMaster
             generic map (
                TPD_G          => TPD_G,
-               DEVICE_MAP_G   => I2C_CONFIG_C,
-               I2C_SCL_FREQ_G => 400.0E+3,  -- units of Hz
+               DEVICE_MAP_G   => RX_EQ_I2C_CONFIG_C,
+               -- I2C_SCL_FREQ_G => 400.0E+3,  -- units of Hz
+               I2C_SCL_FREQ_G => 100.0E+3,  -- units of Hz
                AXI_CLK_FREQ_G => DMA_CLK_FREQ_G)
             port map (
                -- I2C Ports
