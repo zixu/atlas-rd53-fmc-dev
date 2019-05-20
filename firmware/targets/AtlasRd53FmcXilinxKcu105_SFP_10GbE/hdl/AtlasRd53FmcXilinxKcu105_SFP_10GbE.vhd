@@ -63,7 +63,7 @@ end AtlasRd53FmcXilinxKcu105_SFP_10GbE;
 
 architecture top_level of AtlasRd53FmcXilinxKcu105_SFP_10GbE is
 
-   constant DMA_CLK_FREQ_C : real := 125.0E+6;  -- Units of Hz
+   constant DMA_CLK_FREQ_C : real := 156.25E+6;  -- Units of Hz
    constant DMA_AXIS_CONFIG_C : AxiStreamConfigType := (
       TSTRB_EN_C    => false,
       TDATA_BYTES_C => 8,                       -- 64-bit data interface
