@@ -332,8 +332,7 @@ begin
             VALID_THOLD_G => VALID_THOLD_G,
             SIMULATION_G  => SIMULATION_G,
             XIL_DEVICE_G  => XIL_DEVICE_G,
-            SYNTH_MODE_G  => SYNTH_MODE_G,
-            MEMORY_TYPE_G => MEMORY_TYPE_G)
+            SYNTH_MODE_G  => SYNTH_MODE_G)
          port map (
             -- I/O Delay Interfaces
             pllRst          => pllRst(i),
