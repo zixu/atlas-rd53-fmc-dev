@@ -39,6 +39,7 @@ entity AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_10GbE is
       -- SFP Interface
       sfpClk156P : in    sl;
       sfpClk156N : in    sl;
+      sfpEnTx    : out   slv(3 downto 0) := x"F";
       sfpTxP     : out   slv(3 downto 0);
       sfpTxN     : out   slv(3 downto 0);
       sfpRxP     : in    slv(3 downto 0);

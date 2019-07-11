@@ -42,6 +42,7 @@ entity AtlasRd53FmcXilinxZcu102 is
       -- SFP Interface
       sfpClk156P : in    sl;
       sfpClk156N : in    sl;
+      sfpEnTx    : out   slv(3 downto 0) := x"F";
       sfpTxP     : out   slv(3 downto 0);
       sfpTxN     : out   slv(3 downto 0);
       sfpRxP     : in    slv(3 downto 0);
