@@ -28,9 +28,11 @@ use unisim.vcomponents.all;
 entity AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_10GbE is
    generic (
       TPD_G        : time    := 1 ns;
-      SIMULATION_G : boolean := false;  
+      SIMULATION_G : boolean := false;
       BUILD_INFO_G : BuildInfoType);
    port (
+      extRst     : in    sl;
+      led        : out   slv(7 downto 0);
       -- FMC Interface
       fmcHpc0LaP : inout slv(33 downto 0);
       fmcHpc0LaN : inout slv(33 downto 0);
@@ -51,7 +53,7 @@ architecture TOP_LEVEL of AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_10GbE is
    constant DMA_CLK_FREQ_C : real := 156.25E+6;  -- Units of Hz
    constant DMA_AXIS_CONFIG_C : AxiStreamConfigType := (
       TSTRB_EN_C    => false,
-      TDATA_BYTES_C => 8,                       -- 64-bit data interface
+      TDATA_BYTES_C => 8,                        -- 64-bit data interface
       TDEST_BITS_C  => 8,
       TID_BITS_C    => 0,
       TKEEP_MODE_C  => TKEEP_COMP_C,
@@ -77,7 +79,8 @@ architecture TOP_LEVEL of AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_10GbE is
    signal iDelayCtrlRdy : sl;
    signal refClk300MHz  : sl;
    signal refRst300MHz  : sl;
-   signal phyReady  : sl;   
+   signal phyReady      : sl;
+   signal phyRst        : sl;
 
    attribute IODELAY_GROUP                 : string;
    attribute IODELAY_GROUP of U_IDELAYCTRL : label is "rd53_aurora";
@@ -86,6 +89,15 @@ architecture TOP_LEVEL of AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_10GbE is
    attribute KEEP_HIERARCHY of U_IDELAYCTRL : label is "TRUE";
 
 begin
+
+   led(0) <= '1';
+   led(1) <= not(extRst);
+   led(2) <= extRst;
+   led(3) <= not(refRst300MHz);
+   led(4) <= iDelayCtrlRdy;
+   led(5) <= not(dmaRst);
+   led(6) <= not(phyRst);
+   led(7) <= phyReady;
 
    --------------------------
    -- Reference 300 MHz clock 
@@ -112,7 +124,7 @@ begin
          clkOut(1) => open,
          rstOut(0) => refRst300MHz,
          rstOut(1) => open);
-         
+
    U_IDELAYCTRL : IDELAYCTRL
       generic map (
          SIM_DEVICE => "ULTRASCALE")
@@ -120,7 +132,7 @@ begin
          RDY    => iDelayCtrlRdy,
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
-         
+
    U_10GigE : entity work.TenGigEthGthUltraScaleWrapper
       generic map (
          TPD_G             => TPD_G,
@@ -140,10 +152,15 @@ begin
          dmaObMasters(0) => ibMacMaster,
          dmaObSlaves(0)  => ibMacSlave,
          -- Misc. Signals
-         extRst          => '0',
+         extRst          => extRst,
          coreClk         => dmaClk,
          coreRst         => dmaRst,
          phyReady(0)     => phyReady,
+         phyRst(0)       => phyRst,
+         -- Transceiver Debug Interface
+         gtTxPreCursor   => "00011",
+         gtTxPostCursor  => "00011",
+         gtTxDiffCtrl    => "11111",
          -- MGT Clock Port
          gtClkP          => sfpClk156P,
          gtClkN          => sfpClk156N,
@@ -152,7 +169,7 @@ begin
          gtTxN(0)        => sfpTxN(0),
          gtRxP(0)        => sfpRxP(0),
          gtRxN(0)        => sfpRxN(0));
-         
+
    U_TERM_GTs : entity work.Gthe4ChannelDummy
       generic map (
          TPD_G   => TPD_G,
@@ -162,8 +179,8 @@ begin
          gtRxP  => sfpRxP(3 downto 1),
          gtRxN  => sfpRxN(3 downto 1),
          gtTxP  => sfpTxP(3 downto 1),
-         gtTxN  => sfpTxN(3 downto 1));           
-         
+         gtTxN  => sfpTxN(3 downto 1));
+
    U_EFuse : EFUSE_USR
       port map (
          EFUSEUSR => efuse);
@@ -197,7 +214,7 @@ begin
          dmaObSlaves  => dmaObSlaves,
          dmaIbMasters => dmaIbMasters,
          dmaIbSlaves  => dmaIbSlaves);
-         
+
    -------------
    -- FMC Module
    -------------
