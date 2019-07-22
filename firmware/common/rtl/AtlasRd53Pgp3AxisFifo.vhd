@@ -88,7 +88,7 @@ begin
             SYNTH_MODE_G        => SYNTH_MODE_G,
             MEMORY_TYPE_G       => "block",
             GEN_SYNC_FIFO_G     => false,
-            FIFO_ADDR_WIDTH_G   => 10,
+            FIFO_ADDR_WIDTH_G   => 12,
             FIFO_FIXED_THRESH_G => true,
             FIFO_PAUSE_THRESH_G => 128,
             SLAVE_AXI_CONFIG_G  => PGP3_AXIS_CONFIG_C,
