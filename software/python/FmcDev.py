@@ -24,14 +24,18 @@ import os
 class LoadSimConfig(rogue.interfaces.stream.Master):
 
     # Init method must call the parent class init
-    def __init__(self):
+    def __init__(self, fullRate):
         super().__init__()
+        self.fullRate = fullRate
 
     # Method for generating a frame
     def myFrameGen(self):
         
         # Set the config file path
-        configFile = (os.path.dirname(os.path.realpath(__file__)) + '/../config/txstream_1p28GHz.hex')
+        if self.fullRate:
+            configFile = (os.path.dirname(os.path.realpath(__file__)) + '/../config/rd53a_config_1280MHz.hex')
+        else:
+            configFile = (os.path.dirname(os.path.realpath(__file__)) + '/../config/rd53a_config_160MHz.hex')
         
         # Determine the frame size
         size = len(open(configFile).readlines()) << 2
@@ -64,6 +68,7 @@ class FmcDev(pr.Root):
             hwType      = 'eth',         # Define whether sim/rce/pcie/eth HW config
             ip          = '192.168.2.10',
             dev         = '/dev/datadev_0',# path to device
+            fullRate    = True,            # For simulation: True=1.28Gb/s, False=160Mb/s
             pollEn      = True,            # Enable automatic polling registers
             initRead    = True,            # Read all registers at start of the system
             fmcFru      = False,           # True if configuring the FMC's FRU
@@ -141,7 +146,7 @@ class FmcDev(pr.Root):
                 # Create a command to execute the frame generator
                 self.add(pr.BaseCommand(   
                     name         = f'SimConfig[{i}]',
-                    function     = lambda cmd, i=i: self._frameGen[i].myFrameGen(),
+                    function     = lambda cmd, i=i: self._frameGen[i].myFrameGen(fullRate),
                 ))                 
             
         elif (hwType == 'pcie'): 
