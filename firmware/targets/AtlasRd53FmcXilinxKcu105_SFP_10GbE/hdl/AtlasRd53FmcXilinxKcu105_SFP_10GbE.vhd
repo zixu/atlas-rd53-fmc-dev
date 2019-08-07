@@ -232,6 +232,7 @@ begin
       generic map (
          TPD_G             => TPD_G,
          BUILD_INFO_G      => BUILD_INFO_G,
+         BUILD_FMC_I2C_G   => true,
          DMA_AXIS_CONFIG_G => DMA_AXIS_CONFIG_C,
          DMA_CLK_FREQ_G    => DMA_CLK_FREQ_C,
          XIL_DEVICE_G      => "ULTRASCALE")

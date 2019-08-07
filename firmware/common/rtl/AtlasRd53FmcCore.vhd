@@ -28,6 +28,7 @@ entity AtlasRd53FmcCore is
       TPD_G             : time     := 1 ns;
       BUILD_INFO_G      : BuildInfoType;
       SIMULATION_G      : boolean  := false;
+      BUILD_FMC_I2C_G   : boolean  := false;
       DMA_AXIS_CONFIG_G : AxiStreamConfigType;
       DMA_CLK_FREQ_G    : real;         -- units of Hz
       VALID_THOLD_G     : positive := 128;  -- Hold until enough to burst into the interleaving MUX
@@ -328,24 +329,29 @@ begin
                axiRst         => dmaRst);
       end generate GEN_I2C;
 
-      U_FMC_FRU : entity work.AxiI2cRegMaster
-         generic map (
-            TPD_G          => TPD_G,
-            DEVICE_MAP_G   => FMC_FRU_CONFIG_C,
-            I2C_SCL_FREQ_G => 100.0E+3,  -- units of Hz
-            AXI_CLK_FREQ_G => DMA_CLK_FREQ_G)
-         port map (
-            -- I2C Ports
-            scl            => fmcScl,
-            sda            => fmcSda,
-            -- AXI-Lite Register Interface
-            axiReadMaster  => axilReadMasters(FMC_FRU_INDEX_C),
-            axiReadSlave   => axilReadSlaves(FMC_FRU_INDEX_C),
-            axiWriteMaster => axilWriteMasters(FMC_FRU_INDEX_C),
-            axiWriteSlave  => axilWriteSlaves(FMC_FRU_INDEX_C),
-            -- Clocks and Resets
-            axiClk         => dmaClk,
-            axiRst         => dmaRst);
+
+      BUILD_FMC_I2C : if (BUILD_FMC_I2C_G = true) generate
+
+         U_FMC_FRU : entity work.AxiI2cRegMaster
+            generic map (
+               TPD_G          => TPD_G,
+               DEVICE_MAP_G   => FMC_FRU_CONFIG_C,
+               I2C_SCL_FREQ_G => 100.0E+3,  -- units of Hz
+               AXI_CLK_FREQ_G => DMA_CLK_FREQ_G)
+            port map (
+               -- I2C Ports
+               scl            => fmcScl,
+               sda            => fmcSda,
+               -- AXI-Lite Register Interface
+               axiReadMaster  => axilReadMasters(FMC_FRU_INDEX_C),
+               axiReadSlave   => axilReadSlaves(FMC_FRU_INDEX_C),
+               axiWriteMaster => axilWriteMasters(FMC_FRU_INDEX_C),
+               axiWriteSlave  => axilWriteSlaves(FMC_FRU_INDEX_C),
+               -- Clocks and Resets
+               axiClk         => dmaClk,
+               axiRst         => dmaRst);
+
+      end generate;
 
    end generate;
 
