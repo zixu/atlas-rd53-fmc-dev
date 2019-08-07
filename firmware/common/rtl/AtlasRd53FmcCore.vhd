@@ -47,6 +47,8 @@ entity AtlasRd53FmcCore is
       -- Misc. Interfaces
       fpgaPllClkIn  : in    sl := '0';
       -- FMC LPC Ports
+      fmcScl        : inout sl := 'Z';
+      fmcSda        : inout sl := 'Z';
       fmcLaP        : inout slv(33 downto 0);
       fmcLaN        : inout slv(33 downto 0)); use work.I2cPkg.all;
 end AtlasRd53FmcCore;
@@ -61,6 +63,14 @@ architecture mapping of AtlasRd53FmcCore is
          endianness  => '0',            -- Little endian                   
          repeatStart => '1'));          -- Repeat Start 
 
+   constant FMC_FRU_CONFIG_C : I2cAxiLiteDevArray(0 to 0) := (
+      0              => MakeI2cAxiLiteDevType(
+         i2cAddress  => "1010000",      -- 2kbit PROM
+         dataSize    => 8,              -- in units of bits
+         addrSize    => 8,              -- in units of bits
+         endianness  => '0',            -- Little endian                   
+         repeatStart => '0'));          -- Repeat Start          
+
    constant PLL_RX_EQ_I2C_CONFIG_C : I2cAxiLiteDevArray(0 to 1) := (
       0              => RX_EQ_I2C_CONFIG_C(0),
       1              => MakeI2cAxiLiteDevType(
@@ -70,13 +80,14 @@ architecture mapping of AtlasRd53FmcCore is
          endianness  => '0',            -- Little endian   
          repeatStart => '1'));          -- Repeat Start          
 
-   constant NUM_AXIL_MASTERS_C : positive := 12;
+   constant NUM_AXIL_MASTERS_C : positive := 13;
 
    constant RX_INDEX_C      : natural := 0;  -- [3:0]
    constant I2C_INDEX_C     : natural := 4;  -- [7:4]
    constant PLL_INDEX_C     : natural := 8;
    constant EMU_INDEX_C     : natural := 9;  -- [10:9]
    constant VERSION_INDEX_C : natural := 11;
+   constant FMC_FRU_INDEX_C : natural := 12;
 
    constant AXIL_CONFIG_C : AxiLiteCrossbarMasterConfigArray(NUM_AXIL_MASTERS_C-1 downto 0) := genAxiLiteConfig(NUM_AXIL_MASTERS_C, x"0000_0000", 20, 16);
 
@@ -316,6 +327,25 @@ begin
                axiClk         => dmaClk,
                axiRst         => dmaRst);
       end generate GEN_I2C;
+
+      U_FMC_FRU : entity work.AxiI2cRegMaster
+         generic map (
+            TPD_G          => TPD_G,
+            DEVICE_MAP_G   => FMC_FRU_CONFIG_C,
+            I2C_SCL_FREQ_G => 100.0E+3,  -- units of Hz
+            AXI_CLK_FREQ_G => DMA_CLK_FREQ_G)
+         port map (
+            -- I2C Ports
+            scl            => fmcScl,
+            sda            => fmcSda,
+            -- AXI-Lite Register Interface
+            axiReadMaster  => axilReadMasters(FMC_FRU_INDEX_C),
+            axiReadSlave   => axilReadSlaves(FMC_FRU_INDEX_C),
+            axiWriteMaster => axilWriteMasters(FMC_FRU_INDEX_C),
+            axiWriteSlave  => axilWriteSlaves(FMC_FRU_INDEX_C),
+            -- Clocks and Resets
+            axiClk         => dmaClk,
+            axiRst         => dmaRst);
 
    end generate;
 

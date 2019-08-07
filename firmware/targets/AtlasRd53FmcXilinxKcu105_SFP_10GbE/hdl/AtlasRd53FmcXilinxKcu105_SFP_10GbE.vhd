@@ -48,6 +48,8 @@ entity AtlasRd53FmcXilinxKcu105_SFP_10GbE is
       sysClk300P : in    sl;
       sysClk300N : in    sl;
       -- FMC Interface
+      fmcScl     : inout sl;
+      fmcSda     : inout sl;
       fmcHpcLaP  : inout slv(33 downto 0);
       fmcHpcLaN  : inout slv(33 downto 0);
       fmcLpcLaP  : inout slv(33 downto 0);
@@ -244,6 +246,8 @@ begin
          dmaIbMasters  => dmaIbMasters,
          dmaIbSlaves   => dmaIbSlaves,
          -- FMC LPC Ports
+         fmcScl        => fmcScl,
+         fmcSda        => fmcSda,
          fmcLaP        => fmcHpcLaP,
          fmcLaN        => fmcHpcLaN);
 

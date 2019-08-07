@@ -16,11 +16,27 @@ import surf.axi            as axi
 import surf.devices.silabs as silabs
 import surf.devices.ti     as ti
        
+class Fru(pr.Device):
+    def __init__(self,name='Fru',**kwargs):
+        super().__init__(name=name,**kwargs)
+
+        self.addRemoteVariables(       
+            name        = 'MEM', 
+            offset      = 0x0, 
+            number      = 2**8, 
+            bitSize     = 8, 
+            bitOffset   = 0, 
+            stride      = 4,
+            mode        = 'RW', 
+            hidden      = True,
+        )
+
 class Fmc(pr.Device):
     def __init__(   self,       
             name        = "Fmc",
             description = "FMC Container",
             simulation  = False,
+            fmcFru      = False,
             **kwargs):
         super().__init__(name=name, description=description, **kwargs) 
         
@@ -70,3 +86,10 @@ class Fmc(pr.Device):
             offset = 0xB0000,
             expand = False,
         ))        
+
+        if (fmcFru):
+            self.add(Fru(
+                offset = 0xC0000,
+                hidden = True,
+                expand = False,
+            ))  

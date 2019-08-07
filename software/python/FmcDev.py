@@ -66,6 +66,7 @@ class FmcDev(pr.Root):
             dev         = '/dev/datadev_0',# path to device
             pollEn      = True,            # Enable automatic polling registers
             initRead    = True,            # Read all registers at start of the system
+            fmcFru      = False,           # True if configuring the FMC's FRU
             **kwargs):
         super().__init__(name=name, description=description, **kwargs)
         
@@ -197,7 +198,8 @@ class FmcDev(pr.Root):
         self.add(hw.Fmc(      
             memBase     = self._srp,
             simulation  = (hwType == 'sim'),
-            # expand      = False,
+            fmcFru      = fmcFru,
+            expand      = True,
         ))         
         
         # Start the system
