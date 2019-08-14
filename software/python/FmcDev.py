@@ -10,6 +10,7 @@
 #-----------------------------------------------------------------------------
 import pyrogue as pr
 
+import rogue
 import rogue.hardware.axi
 import rogue.protocols
 import pyrogue.protocols
@@ -20,6 +21,8 @@ import axipcie as pcie
 import fmcHw   as hw
 
 import os
+
+rogue.Version.minVersion('3.7.0') 
 
 class LoadSimConfig(rogue.interfaces.stream.Master):
 
@@ -36,6 +39,9 @@ class LoadSimConfig(rogue.interfaces.stream.Master):
             configFile = (os.path.dirname(os.path.realpath(__file__)) + '/../config/rd53a_config_1280MHz.hex')
         else:
             configFile = (os.path.dirname(os.path.realpath(__file__)) + '/../config/rd53a_config_160MHz.hex')
+        
+        # Print the config file path
+        print (configFile)        
         
         # Determine the frame size
         size = len(open(configFile).readlines()) << 2
@@ -138,7 +144,7 @@ class FmcDev(pr.Root):
                 self._dmaData[i]  = rogue.interfaces.stream.TcpClient('localhost',8002+(512*0)+2*(i+4))
                 
                 # Create the frame generator
-                self._frameGen[i] = LoadSimConfig()
+                self._frameGen[i] = LoadSimConfig(fullRate)
             
                 # Connect the frame generator
                 pr.streamConnect(self._frameGen[i],self._dmaCmd[i])
@@ -146,7 +152,7 @@ class FmcDev(pr.Root):
                 # Create a command to execute the frame generator
                 self.add(pr.BaseCommand(   
                     name         = f'SimConfig[{i}]',
-                    function     = lambda cmd, i=i: self._frameGen[i].myFrameGen(fullRate),
+                    function     = lambda cmd, i=i: self._frameGen[i].myFrameGen(),
                 ))                 
             
         elif (hwType == 'pcie'): 
