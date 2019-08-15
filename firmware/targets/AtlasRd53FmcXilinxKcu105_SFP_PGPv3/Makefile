@@ -2,7 +2,7 @@
 export INCLUDE_PGP3_6G = 1
 
 # Define Firmware Version Number
-export PRJ_VERSION = 0x000000002
+export PRJ_VERSION = 0x000000003
 
 # Define target output
 target: bit
