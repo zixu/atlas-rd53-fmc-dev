@@ -83,7 +83,7 @@ cl = FmcDev.FmcDev(
 
 # Create GUI
 appTop = pyrogue.gui.application(sys.argv)
-guiTop = pyrogue.gui.GuiTop(group='FmcDev')
+guiTop = pyrogue.gui.GuiTop()
 guiTop.addTree(cl)
 guiTop.resize(800, 1000)
 

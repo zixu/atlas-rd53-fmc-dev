@@ -57,6 +57,7 @@ class LoadSimConfig(rogue.interfaces.stream.Master):
             for line in f.readlines():
                 # Convert HEX string to byte array
                 ba = bytearray.fromhex(line)
+                ba = bytearray(reversed(ba))
                 # Write the data to the frame at offset 
                 frame.write(ba,offset)
                 # Increment the offset
@@ -74,7 +75,7 @@ class FmcDev(pr.Root):
             hwType      = 'eth',         # Define whether sim/rce/pcie/eth HW config
             ip          = '192.168.2.10',
             dev         = '/dev/datadev_0',# path to device
-            fullRate    = True,            # For simulation: True=1.28Gb/s, False=160Mb/s
+            fullRate    = False,           # For simulation: True=1.28Gb/s, False=160Mb/s
             pollEn      = True,            # Enable automatic polling registers
             initRead    = True,            # Read all registers at start of the system
             fmcFru      = False,           # True if configuring the FMC's FRU
