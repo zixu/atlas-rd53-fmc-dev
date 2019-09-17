@@ -102,17 +102,17 @@ architecture mapping of AtlasRd53FmcCore is
    signal axilReadMasters  : AxiLiteReadMasterArray(NUM_AXIL_MASTERS_C-1 downto 0);
    signal axilReadSlaves   : AxiLiteReadSlaveArray(NUM_AXIL_MASTERS_C-1 downto 0)  := (others => AXI_LITE_READ_SLAVE_EMPTY_OK_C);
 
-   signal emuTimingMasters : AxiStreamMasterArray(3 downto 0);
-   signal emuTimingSlaves  : AxiStreamSlaveArray(3 downto 0);
+   signal emuTimingMasters : AxiStreamMasterArray(3 downto 0) := (others => AXI_STREAM_MASTER_INIT_C);
+   signal emuTimingSlaves  : AxiStreamSlaveArray(3 downto 0)  := (others => AXI_STREAM_SLAVE_FORCE_C);
 
-   signal mDataMasters : AxiStreamMasterArray(3 downto 0);
-   signal mDataSlaves  : AxiStreamSlaveArray(3 downto 0);
+   signal mDataMasters : AxiStreamMasterArray(3 downto 0) := (others => AXI_STREAM_MASTER_INIT_C);
+   signal mDataSlaves  : AxiStreamSlaveArray(3 downto 0)  := (others => AXI_STREAM_SLAVE_FORCE_C);
 
-   signal sConfigMasters : AxiStreamMasterArray(3 downto 0);
-   signal sConfigSlaves  : AxiStreamSlaveArray(3 downto 0);
+   signal sConfigMasters : AxiStreamMasterArray(3 downto 0) := (others => AXI_STREAM_MASTER_INIT_C);
+   signal sConfigSlaves  : AxiStreamSlaveArray(3 downto 0)  := (others => AXI_STREAM_SLAVE_FORCE_C);
 
-   signal mConfigMasters : AxiStreamMasterArray(3 downto 0);
-   signal mConfigSlaves  : AxiStreamSlaveArray(3 downto 0);
+   signal mConfigMasters : AxiStreamMasterArray(3 downto 0) := (others => AXI_STREAM_MASTER_INIT_C);
+   signal mConfigSlaves  : AxiStreamSlaveArray(3 downto 0)  := (others => AXI_STREAM_SLAVE_FORCE_C);
 
    signal clk160MHz : sl;
    signal rst160MHz : sl;
