@@ -1,25 +1,19 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53FmcXilinxKc705_SFP_PGPv3.vhd
+-- File       : AtlasRd53FebPgp3.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: AXI PCIe Core for Xilinx KC705 board (PGPv3 on the SFP)
+-- Description: Top-Level module using four lanes of 6.0 Gbps PGPv3 communication
 --
--- https://www.xilinx.com/products/boards-and-kits/kc705.html
---
---       ------------------------------------------------------------
---       Refer to UG801(v1.9): Table 1-16: PHY Default Interface Mode
---       ------------------------------------------------------------
---       J29: Jumper over pins 2-3 (non-default)
---       J30: Jumper over pins 2-3 (non-default)
---       J64: No jumper  (default)
---       ------------------------------------------------------------
+-- Note: 10 Gbps is the standard link rate for PGPv3.  This means the back-end 
+--       receiver will need to have special firmware to run at this 
+--       non-standard rate of 6 Gpbs
 --
 -------------------------------------------------------------------------------
--- This file is part of 'ATLAS RD53 FMC DEV'.
+-- This file is part of 'ATLAS RD53 DEV'.
 -- It is subject to the license terms in the LICENSE.txt file found in the 
 -- top-level directory of this distribution and at: 
 --    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
+-- No part of 'ATLAS RD53 DEV', including this file, 
 -- may be copied, modified, propagated, or distributed except according to 
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
@@ -36,28 +30,34 @@ use work.Pgp3Pkg.all;
 library unisim;
 use unisim.vcomponents.all;
 
-entity AtlasRd53FmcXilinxKc705_SFP_PGPv3 is
+entity AtlasRd53FebPgp3 is
    generic (
       TPD_G        : time := 1 ns;
       BUILD_INFO_G : BuildInfoType);
    port (
-      extRst     : in    sl;
-      led        : out   slv(7 downto 0);
-      -- FMC Interface
-      fmcHpcLaP  : inout slv(33 downto 0);
-      fmcHpcLaN  : inout slv(33 downto 0);
-      fmcLpcLaP  : inout slv(33 downto 0);
-      fmcLpcLaN  : inout slv(33 downto 0);
-      -- SFP Interface
-      sfpClk125P : in    sl;
-      sfpClk125N : in    sl;
-      sfpTxP     : out   sl;
-      sfpTxN     : out   sl;
-      sfpRxP     : in    sl;
-      sfpRxN     : in    sl);
-end AtlasRd53FmcXilinxKc705_SFP_PGPv3;
+      -- RD53 ASIC Serial Ports
+      dPortDataP    : in  Slv4Array(3 downto 0);
+      dPortDataN    : in  Slv4Array(3 downto 0);
+      dPortCmdP     : out slv(3 downto 0);
+      dPortCmdN     : out slv(3 downto 0);
+      -- Reference Clock
+      refClk160MHzP : in  sl;
+      refClk160MHzN : in  sl;
+      -- QSFP Ports
+      led           : out slv(3 downto 0);
+      qsfpLpMode    : out sl;
+      qsfpRst       : out sl;
+      qsfpSel       : out sl;
+      -- PGP Ports
+      pgpClkP       : in  sl;
+      pgpClkN       : in  sl;
+      pgpRxP        : in  slv(3 downto 0);
+      pgpRxN        : in  slv(3 downto 0);
+      pgpTxP        : out slv(3 downto 0);
+      pgpTxN        : out slv(3 downto 0));
+end AtlasRd53FebPgp3;
 
-architecture top_level of AtlasRd53FmcXilinxKc705_SFP_PGPv3 is
+architecture top_level of AtlasRd53FebPgp3 is
 
    constant DMA_CLK_FREQ_C    : real                := 156.25E+6;  -- Units of Hz
    constant DMA_AXIS_CONFIG_C : AxiStreamConfigType := PGP3_AXIS_CONFIG_C;
@@ -69,8 +69,7 @@ architecture top_level of AtlasRd53FmcXilinxKc705_SFP_PGPv3 is
    signal dmaIbMasters : AxiStreamMasterArray(1 downto 0);
    signal dmaIbSlaves  : AxiStreamSlaveArray(1 downto 0);
 
-   signal sfpClk125     : sl;
-   signal sfpClk62p5    : sl;
+   signal pgpRefClkDiv2 : sl;
    signal iDelayCtrlRdy : sl;
    signal refClk300MHz  : sl;
    signal refRst300MHz  : sl;
@@ -98,13 +97,13 @@ architecture top_level of AtlasRd53FmcXilinxKc705_SFP_PGPv3 is
 
 begin
 
-   led(7) <= pgpRxOut.linkReady;
-   led(6) <= pgpRxOut.linkReady;
-   led(5) <= pgpRxOut.linkReady;
-   led(4) <= pgpRxOut.linkReady;
-   led(3) <= pgpTxOut.linkReady;
+   qsfpLpMode <= '0';
+   qsfpRst    <= dmaRst;
+   qsfpSel    <= '1';
+
+   led(3) <= pgpRxOut.linkReady;
    led(2) <= pgpTxOut.linkReady;
-   led(1) <= pgpTxOut.linkReady;
+   led(1) <= not(dmaRst);
    led(0) <= '1';
 
    U_MMCM : entity work.ClockManager7
@@ -117,13 +116,13 @@ begin
          NUM_CLOCKS_G       => 2,
          -- MMCM attributes
          BANDWIDTH_G        => "OPTIMIZED",
-         CLKIN_PERIOD_G     => 16.0,
+         CLKIN_PERIOD_G     => 6.4,
          DIVCLK_DIVIDE_G    => 1,
-         CLKFBOUT_MULT_F_G  => 15.0,
+         CLKFBOUT_MULT_F_G  => 6.0,
          CLKOUT0_DIVIDE_F_G => 3.125,   -- 300 MHz = 937.5 MHz/3.125    
          CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6     
       port map(
-         clkIn     => sfpClk62p5,
+         clkIn     => pgpRefClkDiv2,
          clkOut(0) => refClk300MHz,
          clkOut(1) => dmaClk,
          rstOut(0) => refRst300MHz,
@@ -141,7 +140,7 @@ begin
          NUM_LANES_G   => 1,
          NUM_VC_G      => 9,
          RATE_G        => "6.25Gbps",
-         REFCLK_TYPE_G => PGP3_REFCLK_125_C,
+         REFCLK_TYPE_G => PGP3_REFCLK_312_C,
          EN_PGP_MON_G  => false,
          EN_GTH_DRP_G  => false,
          EN_QPLL_DRP_G => false)
@@ -150,14 +149,14 @@ begin
          stableClk         => dmaClk,
          stableRst         => dmaRst,
          -- Gt Serial IO
-         pgpGtTxP(0)       => sfpTxP,
-         pgpGtTxN(0)       => sfpTxN,
-         pgpGtRxP(0)       => sfpRxP,
-         pgpGtRxN(0)       => sfpRxN,
+         pgpGtTxP(0)       => pgpTxP(0),
+         pgpGtTxN(0)       => pgpTxN(0),
+         pgpGtRxP(0)       => pgpRxP(0),
+         pgpGtRxN(0)       => pgpRxN(0),
          -- GT Clocking
-         pgpRefClkP        => sfpClk125P,
-         pgpRefClkN        => sfpClk125N,
-         pgpRefClkDiv2Bufg => sfpClk62p5,
+         pgpRefClkP        => pgpClkP,
+         pgpRefClkN        => pgpClkN,
+         pgpRefClkDiv2Bufg => pgpRefClkDiv2,
          -- Clocking
          pgpClk(0)         => pgpClk,
          pgpClkRst(0)      => pgpRst,
@@ -181,7 +180,18 @@ begin
          axilReadSlave     => open,
          axilWriteMaster   => AXI_LITE_WRITE_MASTER_INIT_C,
          axilWriteSlave    => open);
-         
+
+   U_Gtxe2ChannelDummy : entity work.Gtxe2ChannelDummy
+      generic map (
+         TPD_G   => TPD_G,
+         WIDTH_G => 3)
+      port map (
+         refClk => dmaClk,
+         gtRxP  => pgpRxP(3 downto 1),
+         gtRxN  => pgpRxN(3 downto 1),
+         gtTxP  => pgpTxP(3 downto 1),
+         gtTxN  => pgpTxN(3 downto 1));
+
    -----------------------
    -- PGPv3-to-DMA Mapping
    -----------------------
@@ -206,9 +216,9 @@ begin
          pgpRxCtrl    => pgpRxCtrl);
 
    -------------
-   -- FMC Module
+   -- FEB Module
    -------------         
-   U_App : entity work.AtlasRd53FmcCore
+   U_App : entity work.AtlasRd53FebCore
       generic map (
          TPD_G             => TPD_G,
          BUILD_INFO_G      => BUILD_INFO_G,
@@ -225,8 +235,13 @@ begin
          dmaObSlaves   => dmaObSlaves,
          dmaIbMasters  => dmaIbMasters,
          dmaIbSlaves   => dmaIbSlaves,
-         -- FMC LPC Ports
-         fmcLaP        => fmcHpcLaP,
-         fmcLaN        => fmcHpcLaN);
+         -- RD53 ASIC Serial Ports
+         dPortDataP    => dPortDataP,
+         dPortDataN    => dPortDataN,
+         dPortCmdP     => dPortCmdP,
+         dPortCmdN     => dPortCmdN,
+         -- Reference Clock
+         refClk160MHzP => refClk160MHzP,
+         refClk160MHzN => refClk160MHzN);
 
 end top_level;

@@ -55,7 +55,7 @@ create_clock -name sysClk300P -period 3.333 [get_ports {sysClk300P}]
 
 create_generated_clock -name ethClk625MHz [get_pins {U_MarvelWrap/U_1GigE/U_PLL/CLKOUT0}] 
 create_generated_clock -name ethClk312MHz [get_pins {U_MarvelWrap/U_1GigE/U_PLL/CLKOUT1}] 
-create_generated_clock -name ethClk125MHz [get_pins {U_MarvelWrap/U_1GigE/U_sysClk125/O}]
+create_generated_clock -name ethClk125MHz [get_pins {U_MarvelWrap/U_1GigE/GEN_BUFG.U_sysClk125/O}]
 
 set_property CLOCK_DELAY_GROUP ETH_CLK_GRP [get_nets {U_MarvelWrap/U_1GigE/sysClk312}] [get_nets {U_MarvelWrap/U_1GigE/sysClk625}]
 
@@ -63,4 +63,4 @@ set_clock_groups -asynchronous -group [get_clocks {ethClk312MHz}] -group [get_cl
 
 set_clock_groups -asynchronous -group [get_clocks -include_generated_clocks {lvdsClkP}] -group [get_clocks -include_generated_clocks {sysClk300P}]
 
-set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins U_MarvelWrap/U_1GigE/U_sysClk125/O]] -group [get_clocks -of_objects [get_pins U_App/U_FmcMapping/U_Selectio/U_Bufg160/O]]
+set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins U_MarvelWrap/U_1GigE/GEN_BUFG.U_sysClk125/O]] -group [get_clocks -of_objects [get_pins U_App/U_FmcMapping/U_Selectio/U_Bufg160/O]]

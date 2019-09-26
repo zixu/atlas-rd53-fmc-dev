@@ -1,6 +1,3 @@
-# Define Firmware Version Number
-export PRJ_VERSION = 0x000000001
-
 # Define target output
 target: prom
 
@@ -12,4 +9,5 @@ export PRJ_PART = XCKU040-FFVA1156-2-E
 export TOP_DIR = $(abspath $(PWD)/../..)
 
 # Use top level makefile
+include ../shared_config.mk
 include $(TOP_DIR)/submodules/ruckus/system_vivado.mk

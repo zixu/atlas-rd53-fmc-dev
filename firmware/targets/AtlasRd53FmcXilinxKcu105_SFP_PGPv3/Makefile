@@ -1,9 +1,6 @@
 # Use the PGPv3 6G core
 export INCLUDE_PGP3_6G = 1
 
-# Define Firmware Version Number
-export PRJ_VERSION = 0x000000003
-
 # Define target output
 target: bit
 
@@ -15,4 +12,5 @@ export PRJ_PART = XCKU040-FFVA1156-2-E
 export TOP_DIR = $(abspath $(PWD)/../..)
 
 # Use top level makefile
+include ../shared_config.mk
 include $(TOP_DIR)/submodules/ruckus/system_vivado.mk

@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53FmcCore.vhd
+-- File       : AtlasRd53FebCore.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: RX PHY Core module
+-- Description: AD53 FEB readout core module
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 DEV'.
 -- It is subject to the license terms in the LICENSE.txt file found in the 
@@ -15,15 +15,15 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_arith.all;
-use ieee.std_logic_unsigned.all;
 
 use work.StdRtlPkg.all;
 use work.AxiLitePkg.all;
 use work.AxiStreamPkg.all;
-use work.I2cPkg.all;
 
-entity AtlasRd53FmcCore is
+library unisim;
+use unisim.vcomponents.all;
+
+entity AtlasRd53FebCore is
    generic (
       TPD_G             : time     := 1 ns;
       BUILD_INFO_G      : BuildInfoType;
@@ -37,49 +37,25 @@ entity AtlasRd53FmcCore is
       MEMORY_TYPE_G     : string   := "block");
    port (
       -- I/O Delay Interfaces
-      iDelayCtrlRdy : in    sl := '0';
+      iDelayCtrlRdy : in  sl := '0';
       -- DMA Interface (dmaClk domain)
-      dmaClk        : in    sl;
-      dmaRst        : in    sl;
-      dmaObMasters  : in    AxiStreamMasterArray(1 downto 0);
-      dmaObSlaves   : out   AxiStreamSlaveArray(1 downto 0);
-      dmaIbMasters  : out   AxiStreamMasterArray(1 downto 0);
-      dmaIbSlaves   : in    AxiStreamSlaveArray(1 downto 0);
-      -- Misc. Interfaces
-      fpgaPllClkIn  : in    sl := '0';
-      -- FMC LPC Ports
-      fmcScl        : inout sl := 'Z';
-      fmcSda        : inout sl := 'Z';
-      fmcLaP        : inout slv(33 downto 0);
-      fmcLaN        : inout slv(33 downto 0)); use work.I2cPkg.all;
-end AtlasRd53FmcCore;
+      dmaClk        : in  sl;
+      dmaRst        : in  sl;
+      dmaObMasters  : in  AxiStreamMasterArray(1 downto 0);
+      dmaObSlaves   : out AxiStreamSlaveArray(1 downto 0);
+      dmaIbMasters  : out AxiStreamMasterArray(1 downto 0);
+      dmaIbSlaves   : in  AxiStreamSlaveArray(1 downto 0);
+      -- RD53 ASIC Serial Ports
+      dPortDataP    : in  Slv4Array(3 downto 0);
+      dPortDataN    : in  Slv4Array(3 downto 0);
+      dPortCmdP     : out slv(3 downto 0);
+      dPortCmdN     : out slv(3 downto 0);
+      -- Reference Clock
+      refClk160MHzP : in  sl;
+      refClk160MHzN : in  sl);
+end AtlasRd53FebCore;
 
-architecture mapping of AtlasRd53FmcCore is
-
-   constant RX_EQ_I2C_CONFIG_C : I2cAxiLiteDevArray(0 to 0) := (
-      0              => MakeI2cAxiLiteDevType(
-         i2cAddress  => "1010110",      -- DS32EV400
-         dataSize    => 8,              -- in units of bits
-         addrSize    => 8,              -- in units of bits
-         endianness  => '0',            -- Little endian                   
-         repeatStart => '1'));          -- Repeat Start 
-
-   constant FMC_FRU_CONFIG_C : I2cAxiLiteDevArray(0 to 0) := (
-      0              => MakeI2cAxiLiteDevType(
-         i2cAddress  => "1010000",      -- 2kbit PROM
-         dataSize    => 8,              -- in units of bits
-         addrSize    => 8,              -- in units of bits
-         endianness  => '0',            -- Little endian                   
-         repeatStart => '0'));          -- Repeat Start          
-
-   constant PLL_RX_EQ_I2C_CONFIG_C : I2cAxiLiteDevArray(0 to 1) := (
-      0              => RX_EQ_I2C_CONFIG_C(0),
-      1              => MakeI2cAxiLiteDevType(
-         i2cAddress  => "1011000",      -- LMK61E2
-         dataSize    => 8,              -- in units of bits
-         addrSize    => 8,              -- in units of bits
-         endianness  => '0',            -- Little endian   
-         repeatStart => '1'));          -- Repeat Start          
+architecture mapping of AtlasRd53FebCore is
 
    constant NUM_AXIL_MASTERS_C : positive := 13;
 
@@ -114,59 +90,68 @@ architecture mapping of AtlasRd53FmcCore is
    signal mConfigMasters : AxiStreamMasterArray(3 downto 0) := (others => AXI_STREAM_MASTER_INIT_C);
    signal mConfigSlaves  : AxiStreamSlaveArray(3 downto 0)  := (others => AXI_STREAM_SLAVE_FORCE_C);
 
+   signal refClk160MHz : sl;
+
+   signal clk640MHz : sl;
+   signal rst640MHz : sl;
    signal clk160MHz : sl;
    signal rst160MHz : sl;
-
-   signal pllRst : slv(3 downto 0);
-   signal pllCsL : sl;
-   signal pllSck : sl;
-   signal pllSdi : sl;
-   signal pllSdo : sl;
-
-   signal dPortCmdP : slv(3 downto 0);
-   signal dPortCmdN : slv(3 downto 0);
 
    signal serDesData : Slv8Array(15 downto 0);
    signal dlyCfg     : Slv5Array(15 downto 0);
 
-   signal i2cScl : slv(3 downto 0);
-   signal i2cSda : slv(3 downto 0);
-
 begin
 
-   -------------------
-   -- FMC Port Mapping
-   -------------------
-   U_FmcMapping : entity work.AtlasRd53FmcMapping
-      generic map (
-         TPD_G        => TPD_G,
-         SIMULATION_G => SIMULATION_G,
-         XIL_DEVICE_G => XIL_DEVICE_G)
+   U_IBUFDS : IBUFDS
       port map (
-         -- Deserialization Interface
-         serDesData    => serDesData,
-         dlyCfg        => dlyCfg,
-         iDelayCtrlRdy => iDelayCtrlRdy,
-         -- Timing/Trigger Interface
-         clk160MHz     => clk160MHz,
-         rst160MHz     => rst160MHz,
-         -- PLL Clocking Interface
-         fpgaPllClkIn  => fpgaPllClkIn,
-         -- PLL SPI Interface
-         pllRst        => pllRst,
-         pllCsL        => pllCsL,
-         pllSck        => pllSck,
-         pllSdi        => pllSdi,
-         pllSdo        => pllSdo,
-         -- mDP CMD Interface
-         dPortCmdP     => dPortCmdP,
-         dPortCmdN     => dPortCmdN,
-         -- I2C Interface
-         i2cScl        => i2cScl,
-         i2cSda        => i2cSda,
-         -- FMC LPC Ports
-         fmcLaP        => fmcLaP,
-         fmcLaN        => fmcLaN);
+         I  => refClk160MHzP,
+         IB => refClk160MHzN,
+         O  => refClk160MHz);
+
+   U_PLL : entity work.ClockManager7
+      generic map(
+         TPD_G            => TPD_G,
+         TYPE_G           => "PLL",
+         INPUT_BUFG_G     => true,
+         FB_BUFG_G        => true,
+         NUM_CLOCKS_G     => 2,
+         CLKIN_PERIOD_G   => 6.256,  -- 160 MHz
+         DIVCLK_DIVIDE_G  => 1,      -- 160 MHz = 160 MHz/1
+         CLKFBOUT_MULT_G  => 8,      -- 1.28 GHz = 160 MHz x 8
+         CLKOUT0_DIVIDE_G => 2,      -- 640 MHz = 1.28 GHz/2
+         CLKOUT1_DIVIDE_G => 8)      -- 160 MHz = 1.28 GHz/8
+      port map(
+         clkIn     => refClk160MHz,
+         rstIn     => dmaRst,
+         -- Clock Outputs
+         clkOut(0) => clk640MHz,
+         clkOut(1) => clk160MHz,
+         -- Reset Outputs
+         rstOut(0) => rst640MHz,
+         rstOut(1) => rst160MHz);
+         
+   GEN_mDP :
+   for i in 3 downto 0 generate
+      GEN_LANE :
+      for j in 3 downto 0 generate
+         U_Lane : entity work.AuroraRxLaneDeser
+            generic map (
+               TPD_G => TPD_G)
+            port map (
+               -- RD53 ASIC Serial Interface
+               dPortDataP    => dPortDataP(i)(j),
+               dPortDataN    => dPortDataN(i)(j),
+               iDelayCtrlRdy => iDelayCtrlRdy,
+               -- Timing Interface
+               clk640MHz     => clk640MHz,
+               clk160MHz     => clk160MHz,
+               rst160MHz     => rst160MHz,
+               -- Delay Configuration
+               dlyCfgIn      => dlyCfg(4*i+j),
+               -- Output
+               dataOut       => serDesData(4*i+j));
+      end generate GEN_LANE;
+   end generate GEN_mDP;
 
    ---------------
    -- SRPv3 Module
@@ -258,103 +243,6 @@ begin
          emuTimingMasters => emuTimingMasters,
          emuTimingSlaves  => emuTimingSlaves);
 
-
-   NOT_SIM : if (SIMULATION_G = false) generate
-
-      --------------------
-      -- AXI-Lite: PLL SPI
-      --------------------
-      U_PLL : entity work.Si5345
-         generic map (
-            TPD_G             => TPD_G,
-            CLK_PERIOD_G      => (1/DMA_CLK_FREQ_G),
-            SPI_SCLK_PERIOD_G => (1/10.0E+6))  -- 1/(10 MHz SCLK)
-         port map (
-            -- AXI-Lite Register Interface
-            axiClk         => dmaClk,
-            axiRst         => dmaRst,
-            axiReadMaster  => axilReadMasters(PLL_INDEX_C),
-            axiReadSlave   => axilReadSlaves(PLL_INDEX_C),
-            axiWriteMaster => axilWriteMasters(PLL_INDEX_C),
-            axiWriteSlave  => axilWriteSlaves(PLL_INDEX_C),
-            -- SPI Ports
-            coreSclk       => pllSck,
-            coreSDin       => pllSdo,
-            coreSDout      => pllSdi,
-            coreCsb        => pllCsL);
-
-      ---------------------------
-      -- AXI-Lite: I2C Reg Access
-      ---------------------------
-      U_PLL_RX_QUAL : entity work.AxiI2cRegMaster
-         generic map (
-            TPD_G          => TPD_G,
-            DEVICE_MAP_G   => PLL_RX_EQ_I2C_CONFIG_C,
-            -- I2C_SCL_FREQ_G => 400.0E+3,  -- units of Hz
-            I2C_SCL_FREQ_G => 100.0E+3,  -- units of Hz
-            AXI_CLK_FREQ_G => DMA_CLK_FREQ_G)
-         port map (
-            -- I2C Ports
-            scl            => i2cScl(0),
-            sda            => i2cSda(0),
-            -- AXI-Lite Register Interface
-            axiReadMaster  => axilReadMasters(I2C_INDEX_C),
-            axiReadSlave   => axilReadSlaves(I2C_INDEX_C),
-            axiWriteMaster => axilWriteMasters(I2C_INDEX_C),
-            axiWriteSlave  => axilWriteSlaves(I2C_INDEX_C),
-            -- Clocks and Resets
-            axiClk         => dmaClk,
-            axiRst         => dmaRst);
-
-      GEN_I2C :
-      for i in 3 downto 1 generate
-         U_RX_QUAL_ONLY : entity work.AxiI2cRegMaster
-            generic map (
-               TPD_G          => TPD_G,
-               DEVICE_MAP_G   => RX_EQ_I2C_CONFIG_C,
-               -- I2C_SCL_FREQ_G => 400.0E+3,  -- units of Hz
-               I2C_SCL_FREQ_G => 100.0E+3,  -- units of Hz
-               AXI_CLK_FREQ_G => DMA_CLK_FREQ_G)
-            port map (
-               -- I2C Ports
-               scl            => i2cScl(i),
-               sda            => i2cSda(i),
-               -- AXI-Lite Register Interface
-               axiReadMaster  => axilReadMasters(i+I2C_INDEX_C),
-               axiReadSlave   => axilReadSlaves(i+I2C_INDEX_C),
-               axiWriteMaster => axilWriteMasters(i+I2C_INDEX_C),
-               axiWriteSlave  => axilWriteSlaves(i+I2C_INDEX_C),
-               -- Clocks and Resets
-               axiClk         => dmaClk,
-               axiRst         => dmaRst);
-      end generate GEN_I2C;
-
-
-      BUILD_FMC_I2C : if (BUILD_FMC_I2C_G = true) generate
-
-         U_FMC_FRU : entity work.AxiI2cRegMaster
-            generic map (
-               TPD_G          => TPD_G,
-               DEVICE_MAP_G   => FMC_FRU_CONFIG_C,
-               I2C_SCL_FREQ_G => 100.0E+3,  -- units of Hz
-               AXI_CLK_FREQ_G => DMA_CLK_FREQ_G)
-            port map (
-               -- I2C Ports
-               scl            => fmcScl,
-               sda            => fmcSda,
-               -- AXI-Lite Register Interface
-               axiReadMaster  => axilReadMasters(FMC_FRU_INDEX_C),
-               axiReadSlave   => axilReadSlaves(FMC_FRU_INDEX_C),
-               axiWriteMaster => axilWriteMasters(FMC_FRU_INDEX_C),
-               axiWriteSlave  => axilWriteSlaves(FMC_FRU_INDEX_C),
-               -- Clocks and Resets
-               axiClk         => dmaClk,
-               axiRst         => dmaRst);
-
-      end generate;
-
-   end generate;
-
    ------------------------   
    -- Rd53 CMD/DATA Modules
    ------------------------   
@@ -363,15 +251,12 @@ begin
       U_Core : entity work.AtlasRd53Core
          generic map (
             TPD_G         => TPD_G,
-            RX_MAPPING_G  => (0 => "11", 1 => "10", 2 => "01", 3 => "00"),  -- lane reversal in FMC layout
             AXIS_CONFIG_G => DMA_AXIS_CONFIG_G,
             VALID_THOLD_G => VALID_THOLD_G,
             SIMULATION_G  => SIMULATION_G,
             XIL_DEVICE_G  => XIL_DEVICE_G,
             SYNTH_MODE_G  => SYNTH_MODE_G)
          port map (
-            -- I/O Delay Interfaces
-            pllRst          => pllRst(i),
             -- AXI-Lite Interface
             axilClk         => dmaClk,
             axilRst         => dmaRst,
