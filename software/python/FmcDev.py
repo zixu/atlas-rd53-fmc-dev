@@ -95,7 +95,7 @@ class PrintSlaveStream(rogue.interfaces.stream.Slave):
             wrdData = np.frombuffer(fullData, dtype='uint64', count=(size>>3))
             
             for i in range(len(wrdData)):
-                print("StreamData = {:#}".format(wrdData[i]))
+                print(hex(wrdData[i]))
 
 class FmcDev(pr.Root):
 
