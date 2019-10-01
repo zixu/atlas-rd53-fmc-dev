@@ -10,6 +10,8 @@
 #-----------------------------------------------------------------------------
 import pyrogue as pr
 
+import numpy as np
+
 import rogue
 import rogue.hardware.axi
 import rogue.protocols
@@ -84,11 +86,16 @@ class PrintSlaveStream(rogue.interfaces.stream.Slave):
 
             # To access the data we need to create a byte array to hold the data
             fullData = bytearray(size)
-
+            
             # Next we read the frame data into the byte array, from offset 0
             frame.read(fullData,0)
 
-            print("StreamData = {:#}".format(fullData))
+            # Fill an array of 32-bit formatted word
+            wrdData = [None for i in range(128)]
+            wrdData = np.frombuffer(fullData, dtype='uint64', count=(size>>3))
+            
+            for i in range(len(wrdData)):
+                print("StreamData = {:#}".format(wrdData[i]))
 
 class FmcDev(pr.Root):
 
