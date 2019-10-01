@@ -66,6 +66,29 @@ class LoadSimConfig(rogue.interfaces.stream.Master):
         # Send the frame to the currently attached slaves
         self._sendFrame(frame)
     
+    
+class PrintSlaveStream(rogue.interfaces.stream.Slave):
+
+    # Init method must call the parent class init
+    def __init__(self):
+        super().__init__()
+
+    # Method which is called when a frame is received
+    def _acceptFrame(self,frame):
+
+        # First it is good practice to hold a lock on the frame data.
+        with frame.lock():
+
+            # Next we can get the size of the frame payload
+            size = frame.getPayload()
+
+            # To access the data we need to create a byte array to hold the data
+            fullData = bytearray(size)
+
+            # Next we read the frame data into the byte array, from offset 0
+            frame.read(fullData,0)
+
+            print("StreamData = {:#}".format(fullData))
 
 class FmcDev(pr.Root):
 
@@ -75,7 +98,7 @@ class FmcDev(pr.Root):
             hwType      = 'eth',         # Define whether sim/rce/pcie/eth HW config
             ip          = '192.168.2.10',
             dev         = '/dev/datadev_0',# path to device
-            fullRate    = False,           # For simulation: True=1.28Gb/s, False=160Mb/s
+            fullRate    = True,            # For simulation: True=1.28Gb/s, False=160Mb/s
             pollEn      = True,            # Enable automatic polling registers
             initRead    = True,            # Read all registers at start of the system
             fmcFru      = False,           # True if configuring the FMC's FRU
@@ -133,6 +156,7 @@ class FmcDev(pr.Root):
             
             # Create arrays to be filled
             self._frameGen = [None for lane in range(4)]            
+            self._printFrame = [None for lane in range(4)]            
             
             # SRPv3 on DMA.Lane[1]
             self._dmaSrp = rogue.interfaces.stream.TcpClient('localhost',8002+(512*1)+2*0)
@@ -146,9 +170,11 @@ class FmcDev(pr.Root):
                 
                 # Create the frame generator
                 self._frameGen[i] = LoadSimConfig(fullRate)
+                self._printFrame[i] = PrintSlaveStream()
             
                 # Connect the frame generator
                 pr.streamConnect(self._frameGen[i],self._dmaCmd[i])
+                pr.streamConnect(self._dmaData[i],self._printFrame[i])
                 
                 # Create a command to execute the frame generator
                 self.add(pr.BaseCommand(   

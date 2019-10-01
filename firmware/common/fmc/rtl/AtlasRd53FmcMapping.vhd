@@ -33,7 +33,7 @@ entity AtlasRd53FmcMapping is
    port (
       -- Deserialization Interface
       serDesData    : out   Slv8Array(15 downto 0);
-      dlyCfg        : in    Slv5Array(15 downto 0);
+      dlySlip       : in    slv(15 downto 0);
       iDelayCtrlRdy : in    sl;
       -- Timing Clock/Reset Interface
       clk160MHz     : out   sl;
@@ -92,7 +92,7 @@ begin
          ref160Rst     => pllReset,
          -- Deserialization Interface
          serDesData    => serDesData,
-         dlyCfg        => dlyCfg,
+         dlySlip       => dlySlip,
          iDelayCtrlRdy => iDelayCtrlRdy,
          -- mDP DATA Interface
          dPortDataP    => dPortDataP,

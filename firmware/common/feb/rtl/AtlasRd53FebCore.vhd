@@ -98,7 +98,7 @@ architecture mapping of AtlasRd53FebCore is
    signal rst160MHz : sl;
 
    signal serDesData : Slv8Array(15 downto 0);
-   signal dlyCfg     : Slv5Array(15 downto 0);
+   signal dlySlip    : slv(15 downto 0);
 
 begin
 
@@ -147,7 +147,7 @@ begin
                clk160MHz     => clk160MHz,
                rst160MHz     => rst160MHz,
                -- Delay Configuration
-               dlyCfgIn      => dlyCfg(4*i+j),
+               dlySlipIn      => dlySlip(4*i+j),
                -- Output
                dataOut       => serDesData(4*i+j));
       end generate GEN_LANE;
@@ -281,7 +281,7 @@ begin
             rst160MHz       => rst160MHz,
             -- Deserialization Interface
             serDesData      => serDesData(4*i+3 downto 4*i),
-            dlyCfg          => dlyCfg(4*i+3 downto 4*i),
+            dlySlip         => dlySlip(4*i+3 downto 4*i),
             -- RD53 ASIC Serial Ports
             dPortCmdP       => dPortCmdP(i),
             dPortCmdN       => dPortCmdN(i));

@@ -66,7 +66,7 @@ architecture testbed of AtlasRd53FmcXilinxKc705PcieTb is
    end component;
 
    signal hitClk  : sl                            := '0';
-   signal cnt     : slv(3 downto 0)               := (others => '0');
+   signal cnt     : slv(15 downto 0)              := (others => '0');
    signal hit     : slv(CNT_SIZE_C-1 downto 0)    := (others => '0');
    signal hitPntr : natural range 0 to CNT_SIZE_C := 0;
 
@@ -88,6 +88,24 @@ architecture testbed of AtlasRd53FmcXilinxKc705PcieTb is
 
 begin
 
+   -- process(hitClk)
+   -- begin
+   -- if rising_edge(hitClk) then
+
+   -- -- Reset the bus
+   -- hit <= (others => '0') after TPD_G;
+
+   -- -- Check the counter
+   -- if cnt = 0 then
+   -- hit <= toSlv(1, CNT_SIZE_C) after TPD_G;
+   -- end if;
+
+   -- -- Increment the counter
+   -- cnt <= cnt + 1 after TPD_G;
+
+   -- end if;
+   -- end process;
+
    ---------------------------------------------------
    -- Only simulating 1 of the 4 DPORT pair interfaces
    ---------------------------------------------------
@@ -95,7 +113,8 @@ begin
       U_ASIC : Rd53aWrapper
          port map (
             HIT_CLK         => hitClk,
-            HIT             => hit,
+            -- HIT             => hit,
+            HIT             => (others => '1'),
             ------------------------
             -- Power-on Resets (POR)
             ------------------------
