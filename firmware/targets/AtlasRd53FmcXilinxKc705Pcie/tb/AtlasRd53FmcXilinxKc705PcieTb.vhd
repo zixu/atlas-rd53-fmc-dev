@@ -88,24 +88,6 @@ architecture testbed of AtlasRd53FmcXilinxKc705PcieTb is
 
 begin
 
-   -- process(hitClk)
-   -- begin
-   -- if rising_edge(hitClk) then
-
-   -- -- Reset the bus
-   -- hit <= (others => '0') after TPD_G;
-
-   -- -- Check the counter
-   -- if cnt = 0 then
-   -- hit <= toSlv(1, CNT_SIZE_C) after TPD_G;
-   -- end if;
-
-   -- -- Increment the counter
-   -- cnt <= cnt + 1 after TPD_G;
-
-   -- end if;
-   -- end process;
-
    ---------------------------------------------------
    -- Only simulating 1 of the 4 DPORT pair interfaces
    ---------------------------------------------------

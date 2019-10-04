@@ -95,7 +95,8 @@ begin
       U_ASIC : Rd53aWrapper
          port map (
             HIT_CLK         => hitClk,
-            HIT             => hit,
+            -- HIT             => hit,
+            HIT             => (others => '1'),
             ------------------------
             -- Power-on Resets (POR)
             ------------------------

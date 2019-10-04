@@ -23,8 +23,10 @@ import axipcie as pcie
 import fmcHw   as hw
 
 import os
+import time
+import click
 
-rogue.Version.minVersion('3.7.0') 
+rogue.Version.minVersion('4.1.0') 
 
 class LoadSimConfig(rogue.interfaces.stream.Master):
 
@@ -34,7 +36,7 @@ class LoadSimConfig(rogue.interfaces.stream.Master):
         self.fullRate = fullRate
 
     # Method for generating a frame
-    def myFrameGen(self):
+    def config(self):
         
         # Set the config file path
         if self.fullRate:
@@ -67,6 +69,38 @@ class LoadSimConfig(rogue.interfaces.stream.Master):
                 
         # Send the frame to the currently attached slaves
         self._sendFrame(frame)
+        
+    # Method for generating a frame
+    def scan(self):
+        
+        # Set the config file path
+        configFile = (os.path.dirname(os.path.realpath(__file__)) + '/../config/tx_scan_multiPix.hex')
+        
+        # Print the config file path
+        print (configFile)        
+        
+        # Determine the frame size
+        size = len(open(configFile).readlines()) << 2
+        
+        # First request an empty from from the primary slave
+        # The first arg is the size, the second arg is a boolean
+        # indicating if we can allow zero copy buffers, usually set to true
+        frame = self._reqFrame(size, True)
+        
+        # Load the configuration into the frame
+        with open(configFile, 'r') as f:
+            offset = 0
+            for line in f.readlines():
+                # Convert HEX string to byte array
+                ba = bytearray.fromhex(line)
+                ba = bytearray(reversed(ba))
+                # Write the data to the frame at offset 
+                frame.write(ba,offset)
+                # Increment the offset
+                offset=offset+4
+                
+        # Send the frame to the currently attached slaves
+        self._sendFrame(frame)        
     
     
 class PrintSlaveStream(rogue.interfaces.stream.Slave):
@@ -74,7 +108,15 @@ class PrintSlaveStream(rogue.interfaces.stream.Slave):
     # Init method must call the parent class init
     def __init__(self):
         super().__init__()
+        self.wrdCnt = 0
+        self.datCnt = 0
+        self.hdrCnt = 0
 
+    def cntRst(self):
+        self.wrdCnt = 0
+        self.datCnt = 0
+        self.hdrCnt = 0
+        
     # Method which is called when a frame is received
     def _acceptFrame(self,frame):
 
@@ -95,7 +137,22 @@ class PrintSlaveStream(rogue.interfaces.stream.Slave):
             wrdData = np.frombuffer(fullData, dtype='uint64', count=(size>>3))
             
             for i in range(len(wrdData)):
-                print(hex(wrdData[i]))
+                self.wrdCnt = self.wrdCnt + 1
+                rawData = hex(wrdData[i])
+                
+                rawWord = [0,0]
+                rawWord[0] = (int(rawData,16) >> 0) & 0xFFFFFFFF
+                rawWord[1] = (int(rawData,16) >> 32) & 0xFFFFFFFF
+                
+                for i in range(2):
+                    if (rawWord[i] >> 25) == 1:
+                        self.hdrCnt = self.hdrCnt + 1
+                    elif rawWord[i] != 0xFFFFFFFF:
+                        self.datCnt = self.datCnt + 1
+                        # col = (rawWord[i] >> 26) & 0x3F
+                        # row = (rawWord[i] >> 17) & 0x1FF                    
+                        
+                print(f'wrdCnt = {self.wrdCnt}, hdrCnt = {self.hdrCnt}, datCnt = {self.datCnt}, rawData = {rawData}')
 
 class FmcDev(pr.Root):
 
@@ -105,16 +162,24 @@ class FmcDev(pr.Root):
             hwType      = 'eth',         # Define whether sim/rce/pcie/eth HW config
             ip          = '192.168.2.10',
             dev         = '/dev/datadev_0',# path to device
+            pllConfig   = 'config/pll-config/Si5345-RevD-Registers.csv',
             fullRate    = True,            # For simulation: True=1.28Gb/s, False=160Mb/s
             pollEn      = True,            # Enable automatic polling registers
             initRead    = True,            # Read all registers at start of the system
             fmcFru      = False,           # True if configuring the FMC's FRU
+            testPattern = False,      
             **kwargs):
         super().__init__(name=name, description=description, **kwargs)
         
-        self._dmaSrp  =  None       
-        self._dmaCmd  = [None for i in range(4)]
-        self._dmaData = [None for i in range(4)]
+        self._dmaSrp     =  None       
+        self._dmaCmd     = [None for i in range(4)]
+        self._dmaData    = [None for i in range(4)]
+        self._frameGen   = [None for lane in range(4)]            
+        self._printFrame = [None for lane in range(4)]    
+        
+        self.pllConfig   = pllConfig
+        self.hwType      = hwType
+        self.testPattern = True if hwType == 'sim' else testPattern
         
         # Set the timeout
         self._timeout = 1.0 # 1.0 default    
@@ -160,11 +225,7 @@ class FmcDev(pr.Root):
             # Start up flags
             self._pollEn   = False
             self._initRead = False            
-            
-            # Create arrays to be filled
-            self._frameGen = [None for lane in range(4)]            
-            self._printFrame = [None for lane in range(4)]            
-            
+                        
             # SRPv3 on DMA.Lane[1]
             self._dmaSrp = rogue.interfaces.stream.TcpClient('localhost',8002+(512*1)+2*0)
             
@@ -174,21 +235,7 @@ class FmcDev(pr.Root):
                 
                 # DATA on DMA.Lane[0].VC[7:4]
                 self._dmaData[i]  = rogue.interfaces.stream.TcpClient('localhost',8002+(512*0)+2*(i+4))
-                
-                # Create the frame generator
-                self._frameGen[i] = LoadSimConfig(fullRate)
-                self._printFrame[i] = PrintSlaveStream()
-            
-                # Connect the frame generator
-                pr.streamConnect(self._frameGen[i],self._dmaCmd[i])
-                pr.streamConnect(self._dmaData[i],self._printFrame[i])
-                
-                # Create a command to execute the frame generator
-                self.add(pr.BaseCommand(   
-                    name         = f'SimConfig[{i}]',
-                    function     = lambda cmd, i=i: self._frameGen[i].myFrameGen(),
-                ))                 
-            
+                           
         elif (hwType == 'pcie'): 
             # BAR0 access
             self.memMap = rogue.hardware.axi.AxiMemMap(dev)     
@@ -239,6 +286,32 @@ class FmcDev(pr.Root):
         self._srp = rogue.protocols.srp.SrpV3()
         pr.streamConnectBiDir(self._dmaSrp,self._srp)        
 
+        # Check if doing test patterns
+        if self.testPattern:
+            for i in range(4):
+                
+                # Create the frame generator
+                self._frameGen[i] = LoadSimConfig(fullRate)
+                self._printFrame[i] = PrintSlaveStream()
+            
+                # Connect the frame generator
+                pr.streamConnect(self._frameGen[i],self._dmaCmd[i])
+                pr.streamConnect(self._dmaData[i],self._printFrame[i])
+                
+                # Create a command to execute the frame generator
+                self.add(pr.BaseCommand(   
+                    name         = f'SimConfig[{i}]',
+                    function     = lambda cmd, i=i: self._frameGen[i].config(),
+                ))  
+                self.add(pr.BaseCommand(   
+                    name         = f'SimScan[{i}]',
+                    function     = lambda cmd, i=i: [self.CountReset(), self._printFrame[i].cntRst(), self._frameGen[i].scan()],
+                ))  
+                # self.add(pr.BaseCommand(   
+                    # name         = f'SimCntRst[{i}]',
+                    # function     = lambda cmd, i=i: self._printFrame[i].cntRst(),
+                # ))                  
+
         # FMC Board
         self.add(hw.Fmc(      
             memBase     = self._srp,
@@ -254,3 +327,40 @@ class FmcDev(pr.Root):
             timeout  = self._timeout,
         )
         
+    def start(self,**kwargs):
+        super(FmcDev, self).start(**kwargs)         
+        
+        # Check for non-simulation
+        if (self.hwType != 'sim'):
+        
+            # Load the PLL configurations
+            self.Fmc.Pll.CsvFilePath.set(self.pllConfig)
+            self.Fmc.Pll.LoadCsvFile()
+            self.Fmc.Pll.Locked.get()        
+        
+            # Wait for the SiLab PLL to lock
+            print ('Waiting for SiLab PLLs to lock')
+            time.sleep(5.0)
+            
+            # Loop through the devices
+            retry = 0
+            while (retry<2):
+                if (self.Fmc.Pll.Locked.get()):
+                    break
+                else:
+                    retry = retry + 1
+                    self.Fmc.Pll.LoadCsvFile() 
+                    time.sleep(5.0)          
+                    
+            # Print the results
+            if (retry<2):
+                print (f'PLL locks established')
+            else:
+                click.secho(
+                    "\n\n\
+                    ***************************************************\n\
+                    ***************************************************\n\
+                    Failed to establish PLL locking after 10 seconds\n\
+                    ***************************************************\n\
+                    ***************************************************\n\n",bg='red')          
+                
