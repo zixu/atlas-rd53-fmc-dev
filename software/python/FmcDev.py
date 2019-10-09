@@ -162,7 +162,7 @@ class FmcDev(pr.Root):
             hwType      = 'eth',         # Define whether sim/rce/pcie/eth HW config
             ip          = '192.168.2.10',
             dev         = '/dev/datadev_0',# path to device
-            pllConfig   = 'config/pll-config/Si5345-RevD-Registers.csv',
+            pllConfig   = 'config/pll-config/Si5345-RevD-Registers-160MHz.csv',
             fullRate    = True,            # For simulation: True=1.28Gb/s, False=160Mb/s
             pollEn      = True,            # Enable automatic polling registers
             initRead    = True,            # Read all registers at start of the system
