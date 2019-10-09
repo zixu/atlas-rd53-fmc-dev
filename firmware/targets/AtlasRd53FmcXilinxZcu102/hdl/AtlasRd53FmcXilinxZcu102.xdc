@@ -42,8 +42,28 @@ set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE EQUALIZATION EQ_LEVEL4 } [ge
 # Timing Constraints
 ####################
 
-create_clock -name fmcHpc0LaP0 -period 6.237 [get_ports {fmcHpc0LaP[0]}]
-create_clock -name fmcHpc0LaP1 -period 6.237 [get_ports {fmcHpc0LaP[1]}]
+create_clock -name fmcHpc0LaP0 -period 6.400 [get_ports {fmcHpc0LaP[0]}]
+create_clock -name fmcHpc0LaP1 -period 6.400 [get_ports {fmcHpc0LaP[1]}]
+
+########################################################################################################################################
+# https://www.xilinx.com/support/documentation/data_sheets/ds922-kintex-ultrascale-plus.pdf
+# See page 19 and Table 23 and Table 24.
+#
+# For `Ultrascale` FPGAs, the "LVDS Component Mode Performance" and "LVDS Native Mode Performance" are the same
+# For `Ultrascale+` FPGAs, the "LVDS Component Mode Performance" and "LVDS Native Mode Performance" are not the same.
+#
+# For the FMC FW library, the deserializer is implemented in "LVDS Component Mode".  For the ATCA board (which is an Ultrascale+ FPGA), 
+# I am using the SelectIO Wizard to generate the "LVDS Native Mode Performance" (able to do pin planning ahead of time). 
+# For the ZCU102 I tried to  SelectIO Wizard  for "LVDS Native Mode Performance" but issue with pin assignments and compatibility 
+# with existing FMC pin out (you really have to plan out the bit slice assignment per byte location ahead a time).
+#
+# As a work around, I am going to reduce the ZCU102 clock to 156.25 MHz (instead of 160 MHz) in the .XDC.  
+# The consequence is that we will need to update the PLL to output 156.25 MHz (instead of 160 MHz) when using the ZCU102.   
+# I'll have a new PLL configuration and ZCU102 .BIN file this morning for you to test
+########################################################################################################################################
+
+# create_clock -name fmcHpc0LaP0 -period 6.237 [get_ports {fmcHpc0LaP[0]}]
+# create_clock -name fmcHpc0LaP1 -period 6.237 [get_ports {fmcHpc0LaP[1]}]
 
 create_generated_clock -name clk300MHz [get_pins {U_MMCM/MmcmGen.U_Mmcm/CLKOUT0}]
 
