@@ -38,3 +38,4 @@ build*
 *.gz
 *.ltx
 *.hdf
+*.dcp

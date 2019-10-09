@@ -7,11 +7,12 @@ loadRuckusTcl $::env(TOP_DIR)/submodules/atlas-rd53-fw-lib
 loadRuckusTcl $::env(TOP_DIR)/submodules/rce-gen3-fw-lib/XilinxZcu102Core
 loadRuckusTcl $::env(TOP_DIR)/common/fmc
 
+# loadSource           -dir  "$::env(TOP_DIR)/common/fmc/rtl"
+# loadSource -sim_only -dir  "$::env(TOP_DIR)/common/fmc/tb"
+# loadSource      -dir       "$::DIR_PATH/hdl/legacy"
+# loadIpCore      -dir       "$::DIR_PATH/ip"
+
 # Load local Source Code and constraints
-loadSource      -dir "$::DIR_PATH/hdl"
-
+loadSource      -dir  "$::DIR_PATH/hdl"
+loadConstraints -dir  "$::DIR_PATH/hdl"
 loadConstraints -path "$::DIR_PATH/../AtlasRd53FmcXilinxZcu102/hdl/AtlasRd53FmcXilinxZcu102.xdc"
-loadConstraints -dir "$::DIR_PATH/hdl"
-
-# loadIpCore -dir "$::DIR_PATH/../AtlasRd53FmcXilinxZcu102/ip"
-loadSource -path "$::DIR_PATH/../AtlasRd53FmcXilinxZcu102/hdl/AtlasRd53FmcXilinxZcu102.vhd"
