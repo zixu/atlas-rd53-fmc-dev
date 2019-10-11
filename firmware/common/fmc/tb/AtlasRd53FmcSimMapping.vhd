@@ -30,13 +30,13 @@ entity AtlasRd53FmcSimMapping is
       TPD_G : time := 1 ns);
    port (
       -- mDP DATA/CMD Interface
-      dPortDataP : in    Slv4Array(3 downto 0) := (others => x"0");
-      dPortDataN : in    Slv4Array(3 downto 0) := (others => x"F");
-      dPortCmdP  : out   slv(3 downto 0)       := (others => '0');
-      dPortCmdN  : out   slv(3 downto 0)       := (others => '1');
+      dPortDataP : in    Slv4Array(3 downto 0);
+      dPortDataN : in    Slv4Array(3 downto 0);
+      dPortCmdP  : out   slv(3 downto 0);
+      dPortCmdN  : out   slv(3 downto 0);
       -- FMC LPC Ports
-      fmcLaP     : inout slv(33 downto 0)      := (others => '0');
-      fmcLaN     : inout slv(33 downto 0)      := (others => '1'));
+      fmcLaP     : inout slv(33 downto 0);
+      fmcLaN     : inout slv(33 downto 0));
 end AtlasRd53FmcSimMapping;
 
 architecture mapping of AtlasRd53FmcSimMapping is
@@ -54,7 +54,7 @@ begin
             clkP => fmcLaP(i),
             clkN => fmcLaN(i));
    end generate GEN_PLL_CLK;
-
+   
    GEN_DP :
    for i in 3 downto 0 generate
 
@@ -63,8 +63,8 @@ begin
 
       GEN_LANE :
       for j in 3 downto 0 generate
-         fmcLaP(6+i*5+j) <= dPortDataN(i)(3-j);  -- Inverted and lane reversal
-         fmcLaN(6+i*5+j) <= dPortDataP(i)(3-j);  -- Inverted and lane reversal
+         fmcLaP(6+i*5+j) <= dPortDataN(i)(3-j); -- Inverted and lane reversal
+         fmcLaN(6+i*5+j) <= dPortDataP(i)(3-j); -- Inverted and lane reversal
       end generate GEN_LANE;
 
    end generate GEN_DP;
