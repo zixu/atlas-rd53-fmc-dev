@@ -98,7 +98,7 @@ architecture mapping of AtlasRd53FebCore is
    signal rst160MHz : sl;
 
    signal serDesData : Slv8Array(15 downto 0);
-   signal dlySlip    : slv(15 downto 0);
+   signal dlyCfg     : Slv9Array(15 downto 0);
 
 begin
 
@@ -115,11 +115,11 @@ begin
          INPUT_BUFG_G     => true,
          FB_BUFG_G        => true,
          NUM_CLOCKS_G     => 2,
-         CLKIN_PERIOD_G   => 6.256,  -- 160 MHz
-         DIVCLK_DIVIDE_G  => 1,      -- 160 MHz = 160 MHz/1
-         CLKFBOUT_MULT_G  => 8,      -- 1.28 GHz = 160 MHz x 8
-         CLKOUT0_DIVIDE_G => 2,      -- 640 MHz = 1.28 GHz/2
-         CLKOUT1_DIVIDE_G => 8)      -- 160 MHz = 1.28 GHz/8
+         CLKIN_PERIOD_G   => 6.256,     -- 160 MHz
+         DIVCLK_DIVIDE_G  => 1,         -- 160 MHz = 160 MHz/1
+         CLKFBOUT_MULT_G  => 8,         -- 1.28 GHz = 160 MHz x 8
+         CLKOUT0_DIVIDE_G => 2,         -- 640 MHz = 1.28 GHz/2
+         CLKOUT1_DIVIDE_G => 8)         -- 160 MHz = 1.28 GHz/8
       port map(
          clkIn     => refClk160MHz,
          rstIn     => dmaRst,
@@ -129,7 +129,7 @@ begin
          -- Reset Outputs
          rstOut(0) => rst640MHz,
          rstOut(1) => rst160MHz);
-         
+
    GEN_mDP :
    for i in 3 downto 0 generate
       GEN_LANE :
@@ -147,7 +147,7 @@ begin
                clk160MHz     => clk160MHz,
                rst160MHz     => rst160MHz,
                -- Delay Configuration
-               dlySlipIn      => dlySlip(4*i+j),
+               dlyCfg        => dlyCfg(4*i+j),
                -- Output
                dataOut       => serDesData(4*i+j));
       end generate GEN_LANE;
@@ -281,7 +281,7 @@ begin
             rst160MHz       => rst160MHz,
             -- Deserialization Interface
             serDesData      => serDesData(4*i+3 downto 4*i),
-            dlySlip         => dlySlip(4*i+3 downto 4*i),
+            dlyCfg          => dlyCfg(4*i+3 downto 4*i),
             -- RD53 ASIC Serial Ports
             dPortCmdP       => dPortCmdP(i),
             dPortCmdN       => dPortCmdN(i));

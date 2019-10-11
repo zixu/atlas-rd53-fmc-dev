@@ -34,7 +34,7 @@ entity AtlasRd53HsSelectio is
       ref160Rst     : in  sl;
       -- Deserialization Interface
       serDesData    : out Slv8Array(15 downto 0);
-      dlySlip       : in  slv(15 downto 0);
+      dlyCfg        : in  Slv9Array(15 downto 0);
       iDelayCtrlRdy : in  sl;
       -- mDP DATA Interface
       dPortDataP    : in  Slv4Array(3 downto 0);
@@ -98,9 +98,9 @@ begin
             RST_HOLD_TIME_G   => 1000 ns)
          port map (
             clkP => clkout0,
-            rstL => locked);   
+            rstL => locked);
    end generate GEN_SIM;
-   
+
    U_Bufg640 : BUFG
       port map (
          I => clkout0,
@@ -113,12 +113,12 @@ begin
    ------------------------------------------------------------------------------------------------------
    U_Bufg160 : BUFGCE_DIV
       generic map (
-         BUFGCE_DIVIDE   => 4)       -- 160 MHz = 640 MHz/4
+         BUFGCE_DIVIDE => 4)            -- 160 MHz = 640 MHz/4
       port map (
-         I   => clkout0,             -- 640 MHz
+         I   => clkout0,                -- 640 MHz
          CE  => '1',
          CLR => '0',
-         O   => clock160MHz);        -- 160 MHz
+         O   => clock160MHz);           -- 160 MHz
 
    U_Rst160 : entity work.RstSync
       generic map (
@@ -136,7 +136,7 @@ begin
       port map (
          clk    => clock160MHz,
          rstIn  => reset,
-         rstOut => reset160MHz);   
+         rstOut => reset160MHz);
 
    GEN_mDP :
    for i in 3 downto 0 generate
@@ -156,7 +156,7 @@ begin
                clk160MHz     => clock160MHz,
                rst160MHz     => reset160MHz,
                -- Delay Configuration
-               dlySlipIn     => dlySlip(4*i+j),
+               dlyCfg        => dlyCfg(4*i+j),
                -- Output
                dataOut       => serDesData(4*i+j));
       end generate GEN_LANE;

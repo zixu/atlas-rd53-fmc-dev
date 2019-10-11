@@ -33,7 +33,7 @@ entity AtlasRd53FmcMapping is
    port (
       -- Deserialization Interface
       serDesData    : out   Slv8Array(15 downto 0);
-      dlySlip       : in    slv(15 downto 0);
+      dlyCfg        : in    Slv9Array(15 downto 0);
       iDelayCtrlRdy : in    sl;
       -- Timing Clock/Reset Interface
       clk160MHz     : out   sl;
@@ -49,11 +49,11 @@ entity AtlasRd53FmcMapping is
       dPortCmdP     : in    slv(3 downto 0);
       dPortCmdN     : in    slv(3 downto 0);
       -- I2C Interface
-      i2cScl        : inout slv(3 downto 0);
-      i2cSda        : inout slv(3 downto 0);
+      i2cScl        : inout slv(3 downto 0)  := (others => '1');
+      i2cSda        : inout slv(3 downto 0)  := (others => '1');
       -- FMC LPC Ports
-      fmcLaP        : inout slv(33 downto 0);
-      fmcLaN        : inout slv(33 downto 0));
+      fmcLaP        : inout slv(33 downto 0) := (others => '0');
+      fmcLaN        : inout slv(33 downto 0) := (others => '1'));
 end AtlasRd53FmcMapping;
 
 architecture mapping of AtlasRd53FmcMapping is
@@ -92,7 +92,7 @@ begin
          ref160Rst     => pllReset,
          -- Deserialization Interface
          serDesData    => serDesData,
-         dlySlip       => dlySlip,
+         dlyCfg        => dlyCfg,
          iDelayCtrlRdy => iDelayCtrlRdy,
          -- mDP DATA Interface
          dPortDataP    => dPortDataP,
