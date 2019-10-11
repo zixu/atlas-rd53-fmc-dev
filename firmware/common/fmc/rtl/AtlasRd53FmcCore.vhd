@@ -127,6 +127,7 @@ architecture mapping of AtlasRd53FmcCore is
    signal dPortCmdN : slv(3 downto 0);
 
    signal serDesData : Slv8Array(15 downto 0);
+   signal dlyLoad    : slv(15 downto 0);
    signal dlyCfg     : Slv9Array(15 downto 0);
 
    signal i2cScl : slv(3 downto 0);
@@ -145,6 +146,7 @@ begin
       port map (
          -- Deserialization Interface
          serDesData    => serDesData,
+         dlyLoad       => dlyLoad,
          dlyCfg        => dlyCfg,
          iDelayCtrlRdy => iDelayCtrlRdy,
          -- Timing/Trigger Interface
@@ -396,6 +398,7 @@ begin
             rst160MHz       => rst160MHz,
             -- Deserialization Interface
             serDesData      => serDesData(4*i+3 downto 4*i),
+            dlyLoad         => dlyLoad(4*i+3 downto 4*i),
             dlyCfg          => dlyCfg(4*i+3 downto 4*i),
             -- RD53 ASIC Serial Ports
             dPortCmdP       => dPortCmdP(i),

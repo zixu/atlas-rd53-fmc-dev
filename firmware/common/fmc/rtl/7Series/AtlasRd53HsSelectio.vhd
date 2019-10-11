@@ -34,6 +34,7 @@ entity AtlasRd53HsSelectio is
       ref160Rst     : in  sl;
       -- Deserialization Interface
       serDesData    : out Slv8Array(15 downto 0);
+      dlyLoad       : in  slv(15 downto 0);
       dlyCfg        : in  Slv9Array(15 downto 0);
       iDelayCtrlRdy : in  sl;
       -- mDP DATA Interface
@@ -97,6 +98,7 @@ begin
                clk160MHz     => clock160MHz,
                rst160MHz     => reset160MHz,
                -- Delay Configuration
+               dlyLoad       => dlyLoad(4*i+j),
                dlyCfg        => dlyCfg(4*i+j),
                -- Output
                dataOut       => serDesData(4*i+j));
