@@ -1,3 +1,5 @@
+export TIG_PULSE = 1
+
 # Define target output
 target: bit
 
