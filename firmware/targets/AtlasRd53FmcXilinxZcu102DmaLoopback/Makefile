@@ -1,5 +1,5 @@
-# Define Firmware Version Number
-export PRJ_VERSION = 0x000000020
+# ZCU102 builds use .BIN files
+export GEN_BIN_IMAGE = 1
 
 # Define target output
 target: bit
@@ -12,4 +12,5 @@ export PRJ_PART = XCZU9EG-FFVB1156-2-E
 export TOP_DIR = $(abspath $(PWD)/../..)
 
 # Use top level makefile
+include ../shared_config.mk
 include $(TOP_DIR)/submodules/ruckus/system_vivado.mk
