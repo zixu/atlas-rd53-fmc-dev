@@ -70,7 +70,7 @@ fmcFru = myRoot.Fmc.Fru
 
 # Load the FRU binary file into python array
 data = array('B')
-with open('config/fmc-fru/PC_256_101_00_C01_FRU.bin', 'rb') as f:
+with open('config/fmc-fru/PC_256_101_00_C03_FRU.bin', 'rb') as f:
     data.fromfile(f, 256)
 
 # Load the FRU into the PROM
