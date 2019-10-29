@@ -268,9 +268,10 @@ begin
       --------------------
       U_PLL : entity work.Si5345
          generic map (
-            TPD_G             => TPD_G,
-            CLK_PERIOD_G      => (1/DMA_CLK_FREQ_G),
-            SPI_SCLK_PERIOD_G => (1/10.0E+6))  -- 1/(10 MHz SCLK)
+            TPD_G              => TPD_G,
+            MEMORY_INIT_FILE_G => "Si5345-RevD-Registers-160MHz.mem",
+            CLK_PERIOD_G       => (1/DMA_CLK_FREQ_G),
+            SPI_SCLK_PERIOD_G  => (1/10.0E+6))  -- 1/(10 MHz SCLK)
          port map (
             -- AXI-Lite Register Interface
             axiClk         => dmaClk,
