@@ -177,6 +177,7 @@ class FmcDev(pr.Root):
         self._frameGen   = [None for lane in range(4)]            
         self._printFrame = [None for lane in range(4)]    
         
+        self.fmcFru      = fmcFru       
         self.pllConfig   = pllConfig
         self.hwType      = hwType
         self.testPattern = True if hwType == 'sim' else testPattern
@@ -327,40 +328,3 @@ class FmcDev(pr.Root):
             timeout  = self._timeout,
         )
         
-    def start(self,**kwargs):
-        super(FmcDev, self).start(**kwargs)         
-        
-        # Check for non-simulation
-        if (self.hwType != 'sim'):
-        
-            # Load the PLL configurations
-            self.Fmc.Pll.CsvFilePath.set(self.pllConfig)
-            self.Fmc.Pll.LoadCsvFile()
-            self.Fmc.Pll.Locked.get()        
-        
-            # Wait for the SiLab PLL to lock
-            print ('Waiting for SiLab PLLs to lock')
-            time.sleep(5.0)
-            
-            # Loop through the devices
-            retry = 0
-            while (retry<2):
-                if (self.Fmc.Pll.Locked.get()):
-                    break
-                else:
-                    retry = retry + 1
-                    self.Fmc.Pll.LoadCsvFile() 
-                    time.sleep(5.0)          
-                    
-            # Print the results
-            if (retry<2):
-                print (f'PLL locks established')
-            else:
-                click.secho(
-                    "\n\n\
-                    ***************************************************\n\
-                    ***************************************************\n\
-                    Failed to establish PLL locking after 10 seconds\n\
-                    ***************************************************\n\
-                    ***************************************************\n\n",bg='red')          
-                

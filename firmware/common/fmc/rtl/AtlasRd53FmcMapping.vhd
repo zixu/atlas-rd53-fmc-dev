@@ -50,8 +50,8 @@ entity AtlasRd53FmcMapping is
       dPortCmdP     : in    slv(3 downto 0);
       dPortCmdN     : in    slv(3 downto 0);
       -- I2C Interface
-      i2cScl        : inout slv(3 downto 0);
-      i2cSda        : inout slv(3 downto 0);
+      i2cScl        : inout sl;
+      i2cSda        : inout sl;
       -- FMC LPC Ports
       fmcLaP        : inout slv(33 downto 0);
       fmcLaN        : inout slv(33 downto 0));
@@ -131,10 +131,7 @@ begin
 
    end generate GEN_DP;
 
-   GEN_I2C :
-   for i in 3 downto 0 generate
-      fmcLaP(30+i) <= i2cScl(i);
-      fmcLaN(30+i) <= i2cSda(i);
-   end generate GEN_I2C;
+   fmcLaP(25) <= i2cScl;
+   fmcLaN(25) <= i2cSda;
 
 end mapping;

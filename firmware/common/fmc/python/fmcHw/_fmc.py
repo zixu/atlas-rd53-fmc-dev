@@ -14,6 +14,7 @@ import pyrogue as pr
 import AtlasRd53           as asic
 import surf.axi            as axi
 import surf.devices.silabs as silabs
+import surf.devices.nxp    as nxp
 import surf.devices.ti     as ti
        
 class Fru(pr.Device):
@@ -49,18 +50,17 @@ class Fmc(pr.Device):
         
         if not(simulation):
         
+            self.add(nxp.Pca9506(      
+                name   = 'Gpio', 
+                offset = 0x40000, 
+                expand = False,
+            ))          
+            
             self.add(ti.Lmk61e2(      
                 name   = 'Lmk', 
                 offset = 0x40400,
                 expand = False,
             ))           
-            
-            for i in range(4):
-                self.add(ti.Ds32Ev400(      
-                    name   = f'RxEq[{i}]', 
-                    offset = 0x40000+(0x10000*i), 
-                    expand = False,
-                ))          
             
             self.add(silabs.Si5345(      
                 name        = 'Pll', 
