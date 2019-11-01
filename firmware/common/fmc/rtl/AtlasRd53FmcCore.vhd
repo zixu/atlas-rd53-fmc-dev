@@ -56,14 +56,6 @@ end AtlasRd53FmcCore;
 
 architecture mapping of AtlasRd53FmcCore is
 
-   constant GPIO_I2C_CONFIG_C : I2cAxiLiteDevArray(0 to 0) := (
-      0              => MakeI2cAxiLiteDevType(
-         i2cAddress  => "0100000",      -- PCA9505DGG
-         dataSize    => 8,              -- in units of bits
-         addrSize    => 8,              -- in units of bits
-         endianness  => '0',            -- Little endian                   
-         repeatStart => '1'));          -- Repeat Start 
-
    constant FMC_FRU_CONFIG_C : I2cAxiLiteDevArray(0 to 0) := (
       0              => MakeI2cAxiLiteDevType(
          i2cAddress  => "1010000",      -- 2kbit PROM
@@ -73,9 +65,14 @@ architecture mapping of AtlasRd53FmcCore is
          repeatStart => '0'));          -- Repeat Start          
 
    constant PLL_GPIO_I2C_CONFIG_C : I2cAxiLiteDevArray(0 to 1) := (
-      0              => GPIO_I2C_CONFIG_C(0),
+      0              => MakeI2cAxiLiteDevType(
+         i2cAddress  => "0100000",      -- PCA9505DGG
+         dataSize    => 8,              -- in units of bits
+         addrSize    => 8,              -- in units of bits
+         endianness  => '0',            -- Little endian                   
+         repeatStart => '1'),           -- Repeat Start 
       1              => MakeI2cAxiLiteDevType(
-         i2cAddress  => "1011000",      -- PCA9505DGG
+         i2cAddress  => "1011000",      -- LMK61E2
          dataSize    => 8,              -- in units of bits
          addrSize    => 8,              -- in units of bits
          endianness  => '0',            -- Little endian   
