@@ -16,11 +16,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.SsiPkg.all;
-use work.EthMacPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.SsiPkg.all;
+use surf.EthMacPkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -102,7 +103,7 @@ begin
    --------------------------
    -- Reference 300 MHz clock 
    --------------------------
-   U_MMCM : entity work.ClockManagerUltraScale
+   U_MMCM : entity surf.ClockManagerUltraScale
       generic map(
          TPD_G              => TPD_G,
          SIMULATION_G       => SIMULATION_G,
@@ -133,7 +134,7 @@ begin
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
 
-   U_10GigE : entity work.TenGigEthGthUltraScaleWrapper
+   U_10GigE : entity surf.TenGigEthGthUltraScaleWrapper
       generic map (
          TPD_G             => TPD_G,
          NUM_LANE_G        => 1,
@@ -170,7 +171,7 @@ begin
          gtRxP(0)        => sfpRxP(0),
          gtRxN(0)        => sfpRxN(0));
 
-   U_TERM_GTs : entity work.Gthe4ChannelDummy
+   U_TERM_GTs : entity surf.Gthe4ChannelDummy
       generic map (
          TPD_G   => TPD_G,
          WIDTH_G => 3)

@@ -27,11 +27,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.SsiPkg.all;
-use work.EthMacPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.SsiPkg.all;
+use surf.EthMacPkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -130,7 +131,7 @@ begin
          ODIV2 => sfpClk62p5,
          O     => sfpClk125);
 
-   U_MMCM : entity work.ClockManager7
+   U_MMCM : entity surf.ClockManager7
       generic map(
          TPD_G              => TPD_G,
          TYPE_G             => "MMCM",
@@ -156,7 +157,7 @@ begin
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
 
-   U_TermGt : entity work.Gtxe2ChannelDummy
+   U_TermGt : entity surf.Gtxe2ChannelDummy
       generic map (
          TPD_G   => TPD_G,
          WIDTH_G => 1)
@@ -177,7 +178,7 @@ begin
    -------------------------
    -- GigE Core for KINTEX-7
    -------------------------
-   U_ETH_PHY_MAC : entity work.GigEthGtx7Wrapper
+   U_ETH_PHY_MAC : entity surf.GigEthGtx7Wrapper
       generic map (
          TPD_G              => TPD_G,
          NUM_LANE_G         => 1,
@@ -210,7 +211,7 @@ begin
          gtRxP(0)        => sgmiiRxP,
          gtRxN(0)        => sgmiiRxN);
 
-   U_PwrUpRst0 : entity work.PwrUpRst
+   U_PwrUpRst0 : entity surf.PwrUpRst
       generic map(
          TPD_G          => TPD_G,
          IN_POLARITY_G  => '1',
@@ -221,7 +222,7 @@ begin
          clk    => refClk300MHz,
          rstOut => extPhyRstN);
 
-   U_PwrUpRst1 : entity work.PwrUpRst
+   U_PwrUpRst1 : entity surf.PwrUpRst
       generic map(
          TPD_G          => TPD_G,
          IN_POLARITY_G  => '0',
@@ -232,7 +233,7 @@ begin
          clk    => refClk300MHz,
          rstOut => extPhyReady);
 
-   U_PhyInitRstSync : entity work.RstSync
+   U_PhyInitRstSync : entity surf.RstSync
       generic map (
          IN_POLARITY_G  => '0',
          OUT_POLARITY_G => '1')
@@ -241,7 +242,7 @@ begin
          asyncRst => extPhyReady,
          syncRst  => phyInitRst);
 
-   U_PhyCtrl : entity work.Sgmii88E1111Mdio
+   U_PhyCtrl : entity surf.Sgmii88E1111Mdio
       generic map (
          TPD_G => TPD_G,
          PHY_G => 7,
@@ -266,7 +267,7 @@ begin
    -- Tri-state driver for phyMdio
    phyMdio <= 'Z' when phyMdo = '1' else '0';
 
-   U_SyncMdi : entity work.Synchronizer
+   U_SyncMdi : entity surf.Synchronizer
       generic map (
          TPD_G => TPD_G)
       port map (

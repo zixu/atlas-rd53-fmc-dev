@@ -18,11 +18,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiStreamPkg.all;
-use work.SsiPkg.all;
-use work.AxiLitePkg.all;
-use work.EthMacPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiStreamPkg.all;
+use surf.SsiPkg.all;
+use surf.AxiLitePkg.all;
+use surf.EthMacPkg.all;
 
 entity RudpServers is
    generic (
@@ -70,7 +71,7 @@ begin
    ----------------------
    -- IPv4/ARP/UDP Engine
    ----------------------
-   U_UDP : entity work.UdpEngineWrapper
+   U_UDP : entity surf.UdpEngineWrapper
       generic map (
          -- Simulation Generics
          TPD_G          => TPD_G,
@@ -104,7 +105,7 @@ begin
 
    GEN_VEC :
    for i in NUM_SERVERS_C-1 downto 0 generate
-      U_RssiServer : entity work.RssiCoreWrapper
+      U_RssiServer : entity surf.RssiCoreWrapper
          generic map (
             TPD_G               => TPD_G,
             SERVER_G            => true,

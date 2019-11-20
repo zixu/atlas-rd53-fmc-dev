@@ -16,9 +16,10 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
-use work.StdRtlPkg.all;
-use work.AxiStreamPkg.all;
-use work.Pgp3Pkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiStreamPkg.all;
+use surf.Pgp3Pkg.all;
 
 entity Zcu102PgpLaneRx is
    generic (
@@ -69,7 +70,7 @@ begin
    GEN_VEC :
    for i in NUM_VC_G-1 downto 0 generate
 
-      BUFFER_FIFO : entity work.AxiStreamFifoV2
+      BUFFER_FIFO : entity surf.AxiStreamFifoV2
          generic map (
             -- General Configurations
             TPD_G               => TPD_G,
@@ -95,7 +96,7 @@ begin
             mAxisMaster => rxMasters(i),
             mAxisSlave  => rxSlaves(i));
 
-      BURST_RESIZE_FIFO : entity work.AxiStreamFifoV2
+      BURST_RESIZE_FIFO : entity surf.AxiStreamFifoV2
          generic map (
             -- General Configurations
             TPD_G               => TPD_G,
@@ -122,7 +123,7 @@ begin
 
    end generate GEN_VEC;
 
-   U_Mux : entity work.AxiStreamMux
+   U_Mux : entity surf.AxiStreamMux
       generic map (
          TPD_G                => TPD_G,
          NUM_SLAVES_G         => NUM_VC_G,

@@ -16,10 +16,11 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.Pgp3Pkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.Pgp3Pkg.all;
 
 entity Zcu102Pgp3Lane is
    generic (
@@ -78,7 +79,7 @@ architecture mapping of Zcu102Pgp3Lane is
 
 begin
 
-   U_Trig : entity work.SynchronizerOneShot
+   U_Trig : entity surf.SynchronizerOneShot
       generic map (
          TPD_G => TPD_G)
       port map (
@@ -86,7 +87,7 @@ begin
          dataIn  => trigger,
          dataOut => pgpTxIn.opCodeEn);
 
-   U_Wtd : entity work.WatchDogRst
+   U_Wtd : entity surf.WatchDogRst
       generic map(
          TPD_G      => TPD_G,
          DURATION_G => getTimeRatio(AXIL_CLK_FREQ_G, 0.2))  -- 5 s timeout
@@ -95,7 +96,7 @@ begin
          monIn  => pgpRxOut.remRxLinkReady,
          rstOut => wdtRst);
 
-   U_PwrUpRst : entity work.PwrUpRst
+   U_PwrUpRst : entity surf.PwrUpRst
       generic map (
          TPD_G         => TPD_G,
          SIM_SPEEDUP_G => ROGUE_SIM_EN_G,
@@ -109,7 +110,7 @@ begin
    -- PGP Core
    -----------
    REAL_PGP : if (not ROGUE_SIM_EN_G) generate
-      U_Pgp : entity work.Pgp3GthUs
+      U_Pgp : entity surf.Pgp3GthUs
          generic map (
             TPD_G            => TPD_G,
             EN_PGP_MON_G     => true,
@@ -157,7 +158,7 @@ begin
 
    SIM_PGP : if (ROGUE_SIM_EN_G) generate
 
-      U_Rogue : entity work.RoguePgp3Sim
+      U_Rogue : entity surf.RoguePgp3Sim
          generic map(
             TPD_G      => TPD_G,
             PORT_NUM_G => ROGUE_SIM_PORT_NUM_G,

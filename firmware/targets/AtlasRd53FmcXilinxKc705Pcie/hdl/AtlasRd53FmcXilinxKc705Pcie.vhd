@@ -23,11 +23,14 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.AxiPciePkg.all;
-use work.SsiPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.SsiPkg.all;
+
+library axi_pcie_core;
+use axi_pcie_core.AxiPciePkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -103,7 +106,7 @@ begin
          ODIV2 => sfpClk62p5,
          O     => sfpClk125);
 
-   U_MMCM : entity work.ClockManager7
+   U_MMCM : entity surf.ClockManager7
       generic map(
          TPD_G              => TPD_G,
          SIMULATION_G       => ROGUE_SIM_EN_G,
@@ -130,7 +133,7 @@ begin
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
 
-   U_TermGt : entity work.Gtxe2ChannelDummy
+   U_TermGt : entity surf.Gtxe2ChannelDummy
       generic map (
          TPD_G   => TPD_G,
          WIDTH_G => 1)
@@ -144,7 +147,7 @@ begin
    -----------------------         
    -- axi-pcie-core module
    -----------------------           
-   U_Core : entity work.XilinxKc705Core
+   U_Core : entity axi_pcie_core.XilinxKc705Core
       generic map (
          TPD_G                => TPD_G,
          ROGUE_SIM_EN_G       => ROGUE_SIM_EN_G,

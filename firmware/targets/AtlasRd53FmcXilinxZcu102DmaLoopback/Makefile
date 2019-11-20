@@ -1,4 +1,3 @@
-# ZCU102 builds use .BIN files
 export GEN_BIN_IMAGE = 1
 
 # Define target output

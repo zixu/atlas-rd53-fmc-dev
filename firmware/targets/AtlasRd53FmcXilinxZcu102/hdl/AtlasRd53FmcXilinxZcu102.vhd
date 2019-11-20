@@ -16,11 +16,14 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiPkg.all;
-use work.AxiStreamPkg.all;
-use work.RceG3Pkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiPkg.all;
+use surf.AxiStreamPkg.all;
+
+library rce_gen3_fw_lib;
+use rce_gen3_fw_lib.RceG3Pkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -82,7 +85,7 @@ begin
    -----------
    -- RCE Core
    -----------
-   U_Core : entity work.XilinxZcu102Core
+   U_Core : entity rce_gen3_fw_lib.XilinxZcu102Core
       generic map (
          TPD_G              => TPD_G,
          SIMULATION_G       => SIMULATION_G,
@@ -116,7 +119,7 @@ begin
    --------------------------
    -- Reference 300 MHz clock 
    --------------------------
-   U_MMCM : entity work.ClockManagerUltraScale
+   U_MMCM : entity surf.ClockManagerUltraScale
       generic map(
          TPD_G              => TPD_G,
          SIMULATION_G       => SIMULATION_G,

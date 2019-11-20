@@ -18,8 +18,13 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.std_logic_arith.all;
 
-use work.StdRtlPkg.all;
-use work.BuildInfoPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+
+library ruckus;
+use ruckus.BuildInfoPkg.all;
+
+library atlas_rd53_fw_lib;
 
 entity AtlasRd53FmcXilinxZcu102Tb is end AtlasRd53FmcXilinxZcu102Tb;
 
@@ -129,7 +134,7 @@ begin
             GTX3_N_PAD      => dPortDataN(i)(3));
    end generate GEN_VEC;
 
-   U_FmcMapping : entity work.AtlasRd53FmcSimMapping
+   U_FmcMapping : entity atlas_rd53_fw_lib.AtlasRd53FmcSimMapping
       generic map (
          TPD_G => TPD_G)
       port map (
@@ -142,7 +147,7 @@ begin
          fmcLaP     => fmcHpc0LaP,
          fmcLaN     => fmcHpc0LaN);
 
-   U_ClkPgp : entity work.ClkRst
+   U_ClkPgp : entity surf.ClkRst
       generic map (
          CLK_PERIOD_G      => 6.4 ns,   -- 156.25 MHz
          RST_START_DELAY_G => 0 ns,

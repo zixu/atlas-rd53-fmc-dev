@@ -16,9 +16,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiStreamPkg.all;
-use work.Pgp3Pkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiStreamPkg.all;
+use surf.Pgp3Pkg.all;
 
 entity AtlasRd53Pgp3AxisFifo is
    generic (
@@ -52,7 +53,7 @@ architecture mapping of AtlasRd53Pgp3AxisFifo is
 begin
 
    GEN_TX : if (TX_G) generate
-      U_Fifo : entity work.AxiStreamFifoV2
+      U_Fifo : entity surf.AxiStreamFifoV2
          generic map (
             -- General Configurations
             TPD_G               => TPD_G,
@@ -81,7 +82,7 @@ begin
    end generate;
 
    GEN_RX : if (RX_G) generate
-      U_Fifo : entity work.AxiStreamFifoV2
+      U_Fifo : entity surf.AxiStreamFifoV2
          generic map (
             TPD_G               => TPD_G,
             SLAVE_READY_EN_G    => SIMULATION_G,

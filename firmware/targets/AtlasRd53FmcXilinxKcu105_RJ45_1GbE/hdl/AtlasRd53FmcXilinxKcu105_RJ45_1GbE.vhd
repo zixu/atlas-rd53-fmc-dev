@@ -16,11 +16,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.SsiPkg.all;
-use work.EthMacPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.SsiPkg.all;
+use surf.EthMacPkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -109,7 +110,7 @@ architecture top_level of AtlasRd53FmcXilinxKcu105_RJ45_1GbE is
 
 begin
 
-   U_TERM_GTs : entity work.Gthe3ChannelDummy
+   U_TERM_GTs : entity surf.Gthe3ChannelDummy
       generic map (
          TPD_G   => TPD_G,
          WIDTH_G => 2)
@@ -134,13 +135,13 @@ begin
          I => sysClk300,
          O => refClk300MHz);
 
-   U_SysclkRstSync : entity work.RstSync
+   U_SysclkRstSync : entity surf.RstSync
       port map (
          clk      => refClk300MHz,
          asyncRst => extRst,
          syncRst  => refRst300MHz);         
          
-   U_MarvelWrap : entity work.Sgmii88E1111LvdsUltraScale
+   U_MarvelWrap : entity surf.Sgmii88E1111LvdsUltraScale
       generic map (
          TPD_G             => TPD_G,
          STABLE_CLK_FREQ_G => 300.0E+6,

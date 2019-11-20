@@ -16,11 +16,14 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiPkg.all;
-use work.AxiStreamPkg.all;
-use work.RceG3Pkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiPkg.all;
+use surf.AxiStreamPkg.all;
+
+library rce_gen3_fw_lib;
+use rce_gen3_fw_lib.RceG3Pkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -64,7 +67,7 @@ begin
    -------
    -- Core
    -------
-   U_Core : entity work.XilinxZcu102Core
+   U_Core : entity rce_gen3_fw_lib.XilinxZcu102Core
       generic map (
          TPD_G                => TPD_G,
          SIMULATION_G         => ROGUE_SIM_EN_G,
@@ -102,7 +105,7 @@ begin
    ----------
    -- SFP GTs
    ----------
-   U_TERM_GTs : entity work.Gthe4ChannelDummy
+   U_TERM_GTs : entity surf.Gthe4ChannelDummy
       generic map (
          TPD_G   => TPD_G,
          WIDTH_G => 4)

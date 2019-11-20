@@ -16,11 +16,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.SsiPkg.all;
-use work.Pgp3Pkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.SsiPkg.all;
+use surf.Pgp3Pkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -130,13 +131,13 @@ begin
          I => sysClk300,
          O => refClk);
 
-   U_SysclkRstSync : entity work.RstSync
+   U_SysclkRstSync : entity surf.RstSync
       port map (
          clk      => refClk,
          asyncRst => extRst,
          syncRst  => refRst);
          
-   U_MMCM : entity work.ClockManagerUltrascale
+   U_MMCM : entity surf.ClockManagerUltrascale
       generic map(
          TPD_G              => TPD_G,
          TYPE_G             => "MMCM",
@@ -167,7 +168,7 @@ begin
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
 
-   U_PGPv3 : entity work.Pgp3GthUsWrapper
+   U_PGPv3 : entity surf.Pgp3GthUsWrapper
       generic map(
          TPD_G         => TPD_G,
          NUM_LANES_G   => 1,
@@ -212,7 +213,7 @@ begin
          axilWriteMaster   => AXI_LITE_WRITE_MASTER_INIT_C,
          axilWriteSlave    => open);
          
-   U_TERM_GTs : entity work.Gthe3ChannelDummy
+   U_TERM_GTs : entity surf.Gthe3ChannelDummy
       generic map (
          TPD_G   => TPD_G,
          WIDTH_G => 1)

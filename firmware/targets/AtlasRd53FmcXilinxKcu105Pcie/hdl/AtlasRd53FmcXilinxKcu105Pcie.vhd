@@ -16,11 +16,14 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.SsiPkg.all;
-use work.AxiPciePkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.SsiPkg.all;
+
+library axi_pcie_core;
+use axi_pcie_core.AxiPciePkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -99,7 +102,7 @@ architecture top_level of AtlasRd53FmcXilinxKcu105Pcie is
 
 begin
 
-   U_TERM_GTs : entity work.Gthe3ChannelDummy
+   U_TERM_GTs : entity surf.Gthe3ChannelDummy
       generic map (
          TPD_G   => TPD_G,
          WIDTH_G => 2)
@@ -132,7 +135,7 @@ begin
          DIV     => "000",
          O       => sfpClk156Bufg);
 
-   U_MMCM : entity work.ClockManagerUltraScale
+   U_MMCM : entity surf.ClockManagerUltraScale
       generic map(
          TPD_G              => TPD_G,
          SIMULATION_G       => ROGUE_SIM_EN_G,
@@ -164,7 +167,7 @@ begin
    -----------------------         
    -- axi-pcie-core module
    -----------------------         
-   U_Core : entity work.XilinxKcu105Core
+   U_Core : entity axi_pcie_core.XilinxKcu105Core
       generic map (
          TPD_G                => TPD_G,
          ROGUE_SIM_EN_G       => ROGUE_SIM_EN_G,

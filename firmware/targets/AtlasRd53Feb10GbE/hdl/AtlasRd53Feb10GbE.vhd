@@ -16,11 +16,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.SsiPkg.all;
-use work.EthMacPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.SsiPkg.all;
+use surf.EthMacPkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -102,7 +103,7 @@ begin
    led(1) <= not(dmaRst);
    led(0) <= '1';
 
-   U_MMCM : entity work.ClockManager7
+   U_MMCM : entity surf.ClockManager7
       generic map(
          TPD_G              => TPD_G,
          TYPE_G             => "MMCM",
@@ -128,7 +129,7 @@ begin
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
          
-   U_10GigE : entity work.TenGigEthGtx7Wrapper
+   U_10GigE : entity surf.TenGigEthGtx7Wrapper
       generic map (
          TPD_G             => TPD_G,
          REFCLK_DIV2_G     => true) -- TRUE: gtClkP/N = 312.5 MHz
@@ -155,7 +156,7 @@ begin
          gtRxP(0)        => pgpRxP(0),
          gtRxN(0)        => pgpRxN(0));
 
-   U_Gtxe2ChannelDummy : entity work.Gtxe2ChannelDummy
+   U_Gtxe2ChannelDummy : entity surf.Gtxe2ChannelDummy
       generic map (
          TPD_G   => TPD_G,
          WIDTH_G => 3)

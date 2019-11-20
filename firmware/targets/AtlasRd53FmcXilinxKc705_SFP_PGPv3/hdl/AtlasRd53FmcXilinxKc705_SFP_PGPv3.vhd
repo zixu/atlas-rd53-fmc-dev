@@ -27,11 +27,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.SsiPkg.all;
-use work.Pgp3Pkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.SsiPkg.all;
+use surf.Pgp3Pkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -107,7 +108,7 @@ begin
    led(1) <= pgpTxOut.linkReady;
    led(0) <= '1';
 
-   U_MMCM : entity work.ClockManager7
+   U_MMCM : entity surf.ClockManager7
       generic map(
          TPD_G              => TPD_G,
          TYPE_G             => "MMCM",
@@ -135,7 +136,7 @@ begin
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
 
-   U_PGPv3 : entity work.Pgp3Gtx7Wrapper
+   U_PGPv3 : entity surf.Pgp3Gtx7Wrapper
       generic map(
          TPD_G         => TPD_G,
          NUM_LANES_G   => 1,

@@ -18,9 +18,10 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -45,7 +46,7 @@ begin
 
    GEN_PLL_CLK :
    for i in 1 downto 0 generate
-      U_ClkRst : entity work.ClkRst
+      U_ClkRst : entity surf.ClkRst
          generic map (
             CLK_PERIOD_G      => 6.237 ns,
             RST_START_DELAY_G => 0 ns,

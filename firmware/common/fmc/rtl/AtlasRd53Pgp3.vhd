@@ -16,11 +16,14 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.SsiPkg.all;
-use work.Pgp3Pkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.SsiPkg.all;
+use surf.Pgp3Pkg.all;
+
+library atlas_rd53_fw_lib;
 
 entity AtlasRd53Pgp3 is
    generic (
@@ -79,7 +82,7 @@ begin
    end generate GEN_VEC;
 
    -- Data Access VC = [0x0:0x7]
-   U_DeMux : entity work.AxiStreamDeMux
+   U_DeMux : entity surf.AxiStreamDeMux
       generic map (
          TPD_G         => TPD_G,
          NUM_MASTERS_G => 8,
@@ -95,9 +98,7 @@ begin
          sAxisMaster  => dmaIbMasters(0),
          sAxisSlave   => dmaIbSlaves(0));
 
-
-
-   U_Mux : entity work.AxiStreamMux
+   U_Mux : entity surf.AxiStreamMux
       generic map (
          TPD_G                => TPD_G,
          NUM_SLAVES_G         => 8,

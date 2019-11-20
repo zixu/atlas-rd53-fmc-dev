@@ -16,9 +16,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+
+library atlas_rd53_fw_lib;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -109,7 +112,7 @@ begin
          IB => refClk160MHzN,
          O  => refClk160MHz);
 
-   U_PLL : entity work.ClockManager7
+   U_PLL : entity surf.ClockManager7
       generic map(
          TPD_G            => TPD_G,
          TYPE_G           => "PLL",
@@ -135,7 +138,7 @@ begin
    for i in 3 downto 0 generate
       GEN_LANE :
       for j in 3 downto 0 generate
-         U_Lane : entity work.AuroraRxLaneDeser
+         U_Lane : entity atlas_rd53_fw_lib.AuroraRxLaneDeser
             generic map (
                TPD_G => TPD_G)
             port map (
@@ -158,7 +161,7 @@ begin
    ---------------
    -- SRPv3 Module
    ---------------
-   U_SRPv3 : entity work.SrpV3AxiLite
+   U_SRPv3 : entity surf.SrpV3AxiLite
       generic map (
          TPD_G               => TPD_G,
          SLAVE_READY_EN_G    => true,
@@ -186,7 +189,7 @@ begin
    --------------------
    -- AXI-Lite Crossbar
    --------------------
-   U_XBAR : entity work.AxiLiteCrossbar
+   U_XBAR : entity surf.AxiLiteCrossbar
       generic map (
          TPD_G              => TPD_G,
          NUM_SLAVE_SLOTS_G  => 1,
@@ -207,7 +210,7 @@ begin
    --------------------
    -- AxiVersion Module
    --------------------         
-   U_AxiVersion : entity work.AxiVersion
+   U_AxiVersion : entity surf.AxiVersion
       generic map (
          TPD_G        => TPD_G,
          CLK_PERIOD_G => (1.0/DMA_CLK_FREQ_G),
@@ -224,7 +227,7 @@ begin
    ----------------------------------
    -- Emulation Timing/Trigger Module
    ----------------------------------
-   U_EmuTiming : entity work.AtlasRd53EmuTiming
+   U_EmuTiming : entity atlas_rd53_fw_lib.AtlasRd53EmuTiming
       generic map(
          TPD_G         => TPD_G,
          NUM_AXIS_G    => 4,
@@ -250,7 +253,7 @@ begin
    ------------------------   
    GEN_DP :
    for i in 3 downto 0 generate
-      U_Core : entity work.AtlasRd53Core
+      U_Core : entity atlas_rd53_fw_lib.AtlasRd53Core
          generic map (
             TPD_G         => TPD_G,
             AXIS_CONFIG_G => DMA_AXIS_CONFIG_G,
@@ -290,7 +293,7 @@ begin
             dPortCmdN       => dPortCmdN(i));
    end generate GEN_DP;
 
-   U_Mux : entity work.AxiStreamMux
+   U_Mux : entity surf.AxiStreamMux
       generic map (
          TPD_G                => TPD_G,
          NUM_SLAVES_G         => 8,
@@ -311,7 +314,7 @@ begin
          mAxisMaster              => dmaIbMasters(0),
          mAxisSlave               => dmaIbSlaves(0));
 
-   U_DeMux : entity work.AxiStreamDeMux
+   U_DeMux : entity surf.AxiStreamDeMux
       generic map (
          TPD_G         => TPD_G,
          NUM_MASTERS_G => 4,

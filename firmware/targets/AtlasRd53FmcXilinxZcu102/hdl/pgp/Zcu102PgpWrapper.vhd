@@ -18,9 +18,10 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
@@ -115,7 +116,7 @@ begin
    ---------------------
    -- AXI-Lite Crossbar
    ---------------------
-   U_XBAR : entity work.AxiLiteCrossbar
+   U_XBAR : entity surf.AxiLiteCrossbar
       generic map (
          TPD_G              => TPD_G,
          NUM_SLAVE_SLOTS_G  => 1,
@@ -159,7 +160,7 @@ begin
          O       => sfpClk156);
 
    GEN_PGP3_QPLL : if (PGP_TYPE_G = true) generate
-      U_QPLL : entity work.Pgp3GthUsQpll
+      U_QPLL : entity surf.Pgp3GthUsQpll
          generic map (
             TPD_G    => TPD_G,
             RATE_G   => PGP3_RATE_G,
@@ -252,7 +253,7 @@ begin
    -------------------
    -- AXI Stream DEMUX
    -------------------
-   U_Demux : entity work.AxiStreamDeMux
+   U_Demux : entity surf.AxiStreamDeMux
       generic map (
          TPD_G          => TPD_G,
          NUM_MASTERS_G  => 4,
@@ -273,7 +274,7 @@ begin
    -----------------
    -- AXI Stream MUX
    -----------------
-   U_Mux : entity work.AxiStreamMux
+   U_Mux : entity surf.AxiStreamMux
       generic map (
          TPD_G                => TPD_G,
          NUM_SLAVES_G         => 4,

@@ -18,10 +18,13 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
-use work.StdRtlPkg.all;
-use work.AxiLitePkg.all;
-use work.AxiStreamPkg.all;
-use work.I2cPkg.all;
+library surf;
+use surf.StdRtlPkg.all;
+use surf.AxiLitePkg.all;
+use surf.AxiStreamPkg.all;
+use surf.I2cPkg.all;
+
+library atlas_rd53_fw_lib;
 
 entity AtlasRd53FmcCore is
    generic (
@@ -135,7 +138,7 @@ begin
    -------------------
    -- FMC Port Mapping
    -------------------
-   U_FmcMapping : entity work.AtlasRd53FmcMapping
+   U_FmcMapping : entity atlas_rd53_fw_lib.AtlasRd53FmcMapping
       generic map (
          TPD_G        => TPD_G,
          SIMULATION_G => SIMULATION_G,
@@ -170,7 +173,7 @@ begin
    ---------------
    -- SRPv3 Module
    ---------------
-   U_SRPv3 : entity work.SrpV3AxiLite
+   U_SRPv3 : entity surf.SrpV3AxiLite
       generic map (
          TPD_G               => TPD_G,
          SLAVE_READY_EN_G    => true,
@@ -198,7 +201,7 @@ begin
    --------------------
    -- AXI-Lite Crossbar
    --------------------
-   U_XBAR : entity work.AxiLiteCrossbar
+   U_XBAR : entity surf.AxiLiteCrossbar
       generic map (
          TPD_G              => TPD_G,
          NUM_SLAVE_SLOTS_G  => 1,
@@ -219,7 +222,7 @@ begin
    --------------------
    -- AxiVersion Module
    --------------------         
-   U_AxiVersion : entity work.AxiVersion
+   U_AxiVersion : entity surf.AxiVersion
       generic map (
          TPD_G        => TPD_G,
          CLK_PERIOD_G => (1.0/DMA_CLK_FREQ_G),
@@ -236,7 +239,7 @@ begin
    ----------------------------------
    -- Emulation Timing/Trigger Module
    ----------------------------------
-   U_EmuTiming : entity work.AtlasRd53EmuTiming
+   U_EmuTiming : entity atlas_rd53_fw_lib.AtlasRd53EmuTiming
       generic map(
          TPD_G         => TPD_G,
          NUM_AXIS_G    => 4,
@@ -263,7 +266,7 @@ begin
       --------------------
       -- AXI-Lite: PLL SPI
       --------------------
-      U_PLL : entity work.Si5345
+      U_PLL : entity surf.Si5345
          generic map (
             TPD_G              => TPD_G,
             MEMORY_INIT_FILE_G => "Si5345-RevD-Registers-160MHz.mem",
@@ -286,7 +289,7 @@ begin
       ---------------------------
       -- AXI-Lite: I2C Reg Access
       ---------------------------
-      U_PLL_RX_QUAL : entity work.AxiI2cRegMaster
+      U_PLL_RX_QUAL : entity surf.AxiI2cRegMaster
          generic map (
             TPD_G          => TPD_G,
             DEVICE_MAP_G   => PLL_GPIO_I2C_CONFIG_C,
@@ -308,7 +311,7 @@ begin
 
       BUILD_FMC_I2C : if (BUILD_FMC_I2C_G = true) generate
 
-         U_FMC_FRU : entity work.AxiI2cRegMaster
+         U_FMC_FRU : entity surf.AxiI2cRegMaster
             generic map (
                TPD_G          => TPD_G,
                DEVICE_MAP_G   => FMC_FRU_CONFIG_C,
@@ -336,7 +339,7 @@ begin
    ------------------------   
    GEN_DP :
    for i in 3 downto 0 generate
-      U_Core : entity work.AtlasRd53Core
+      U_Core : entity atlas_rd53_fw_lib.AtlasRd53Core
          generic map (
             TPD_G         => TPD_G,
             RX_MAPPING_G  => (0 => "11", 1 => "10", 2 => "01", 3 => "00"),  -- lane reversal in FMC layout
@@ -379,7 +382,7 @@ begin
             dPortCmdN       => dPortCmdN(i));
    end generate GEN_DP;
 
-   U_Mux : entity work.AxiStreamMux
+   U_Mux : entity surf.AxiStreamMux
       generic map (
          TPD_G                => TPD_G,
          NUM_SLAVES_G         => 8,
@@ -400,7 +403,7 @@ begin
          mAxisMaster              => dmaIbMasters(0),
          mAxisSlave               => dmaIbSlaves(0));
 
-   U_DeMux : entity work.AxiStreamDeMux
+   U_DeMux : entity surf.AxiStreamDeMux
       generic map (
          TPD_G         => TPD_G,
          NUM_MASTERS_G => 4,
