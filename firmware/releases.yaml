@@ -1,0 +1,83 @@
+GitBase: ..
+
+Targets:
+  AtlasRd53Feb10GbE:
+    ImageDir: targets/AtlasRd53Feb10GbE/images
+    Extensions:
+      - bit   
+      - mcs
+  AtlasRd53FebPgp3:
+    ImageDir: targets/AtlasRd53FebPgp3/images
+    Extensions:
+      - bit   
+      - mcs   
+  AtlasRd53FmcXilinxKc705_RJ45_1GbE:
+    ImageDir: targets/AtlasRd53FmcXilinxKc705_RJ45_1GbE/images
+    Extensions:
+      - bit   
+      - mcs   
+  AtlasRd53FmcXilinxKc705_SFP_PGPv3:
+    ImageDir: targets/AtlasRd53FmcXilinxKc705_SFP_PGPv3/images
+    Extensions:
+      - bit   
+      - mcs   
+  AtlasRd53FmcXilinxKc705Pcie:
+    ImageDir: targets/AtlasRd53FmcXilinxKc705Pcie/images
+    Extensions:
+      - bit   
+      - mcs   
+  AtlasRd53FmcXilinxKcu105_RJ45_1GbE:
+    ImageDir: targets/AtlasRd53FmcXilinxKcu105_RJ45_1GbE/images
+    Extensions:
+      - bit   
+      - mcs   
+  AtlasRd53FmcXilinxKcu105_SFP_10GbE:
+    ImageDir: targets/AtlasRd53FmcXilinxKcu105_SFP_10GbE/images
+    Extensions:
+      - bit   
+      - mcs   
+  AtlasRd53FmcXilinxKcu105_SFP_PGPv3:
+    ImageDir: targets/AtlasRd53FmcXilinxKcu105_SFP_PGPv3/images
+    Extensions:
+      - bit   
+      - mcs   
+  AtlasRd53FmcXilinxKcu105Pcie:
+    ImageDir: targets/AtlasRd53FmcXilinxKcu105Pcie/images
+    Extensions:
+      - bit   
+      - mcs   
+  AtlasRd53FmcXilinxZcu102:
+    ImageDir: targets/AtlasRd53FmcXilinxZcu102/images
+    Extensions:
+      - bin   
+  AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_1GbE:
+    ImageDir: targets/AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_1GbE/images
+    Extensions:
+      - bin   
+  AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_10GbE:
+    ImageDir: targets/AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_10GbE/images
+    Extensions:
+      - bin    
+  AtlasRd53FmcXilinxZcu102DmaLoopback:
+    ImageDir: targets/AtlasRd53FmcXilinxZcu102DmaLoopback/images
+    Extensions:
+      - bin    
+
+Releases:
+  atlas-rd53-fmc-dev:
+    Targets:
+      - AtlasRd53Feb10GbE
+      - AtlasRd53FebPgp3
+      - AtlasRd53FmcXilinxKc705_RJ45_1GbE
+      - AtlasRd53FmcXilinxKc705_SFP_PGPv3
+      - AtlasRd53FmcXilinxKc705Pcie
+      - AtlasRd53FmcXilinxKcu105_RJ45_1GbE
+      - AtlasRd53FmcXilinxKcu105_SFP_10GbE
+      - AtlasRd53FmcXilinxKcu105_SFP_PGPv3
+      - AtlasRd53FmcXilinxKcu105Pcie
+      - AtlasRd53FmcXilinxZcu102
+      - AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_1GbE
+      - AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_10GbE
+      - AtlasRd53FmcXilinxZcu102DmaLoopback
+    Types:
+      - Firmware-Only
