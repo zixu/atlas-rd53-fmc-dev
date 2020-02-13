@@ -5,7 +5,7 @@ export TIG_PULSE = 1
 export GEN_BIN_IMAGE = 1
 
 # Define target output
-target: bit
+target: gui
 
 # Define target part
 export PRJ_PART = XCZU9EG-FFVB1156-2-E
