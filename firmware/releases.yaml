@@ -1,11 +1,16 @@
 GitBase: ..
 
 Targets:
+  AtlasCdr53bSpiFeb10GbE:
+    ImageDir: targets/AtlasCdr53bSpiFeb10GbE/images
+    Extensions:
+      - bit   
+      - mcs      
   AtlasRd53Feb10GbE:
     ImageDir: targets/AtlasRd53Feb10GbE/images
     Extensions:
       - bit   
-      - mcs
+      - mcs      
   AtlasRd53FebPgp3:
     ImageDir: targets/AtlasRd53FebPgp3/images
     Extensions:
@@ -64,8 +69,10 @@ Targets:
       - bin    
 
 Releases:
-  atlas-rd53-fmc-dev:
+  all:
+    Primary: True
     Targets:
+      - AtlasCdr53bSpiFeb10GbE
       - AtlasRd53Feb10GbE
       - AtlasRd53FebPgp3
       - AtlasRd53FmcXilinxKc705_RJ45_1GbE
@@ -81,3 +88,9 @@ Releases:
       - AtlasRd53FmcXilinxZcu102DmaLoopback
     Types:
       - Firmware-Only
+  AtlasCdr53bSpiFeb10GbE:
+    Targets:
+      - AtlasCdr53bSpiFeb10GbE
+    Types:
+      - Firmware-Only      
+      

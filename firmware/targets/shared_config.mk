@@ -1,5 +1,7 @@
-# Define Firmware Version: v4.0.0.0
-export PRJ_VERSION = 0x04000000
+# Define Firmware Version: v4.0.0.1
+export PRJ_VERSION = 0x04000001
 
 # Define release
-export RELEASE = atlas-rd53-fmc-dev
+ifndef RELEASE
+export RELEASE = all
+endif
