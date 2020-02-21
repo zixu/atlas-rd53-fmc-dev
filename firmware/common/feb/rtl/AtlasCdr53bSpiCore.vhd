@@ -122,7 +122,7 @@ begin
 
       -- Check for a read request            
       if (axilStatus.readEnable = '1') then
-         if (axilReadMaster.araddr(11 downto 0) = x"FC") then
+         if (axilReadMaster.araddr(11 downto 0) = x"FFC") then
             v.axilReadSlave.rdata(31)           := r.rstL;
             v.axilReadSlave.rdata(30 downto 21) := (others => '0');
             v.axilReadSlave.rdata(20)           := r.invCmd;
@@ -137,7 +137,7 @@ begin
 
       -- Check for a write request
       if (axilStatus.writeEnable = '1') then
-         if (axilWriteMaster.awaddr(11 downto 0) = x"FC") then
+         if (axilWriteMaster.awaddr(11 downto 0) = x"FFC") then
             v.rstL       := axilWriteMaster.wdata(31);
             v.invCmd     := axilWriteMaster.wdata(20);
             v.invData    := axilWriteMaster.wdata(19 downto 16);
