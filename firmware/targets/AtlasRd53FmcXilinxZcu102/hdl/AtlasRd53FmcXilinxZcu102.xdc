@@ -36,11 +36,11 @@ set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 DQS_BIAS TRUE EQUALI
 set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 DQS_BIAS TRUE EQUALIZATION EQ_LEVEL0 } [get_ports { fmcHpc0LaP[23] fmcHpc0LaN[23] }]; # DATA[3][2] BANK67:(L16/K16)
 set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 DQS_BIAS TRUE EQUALIZATION EQ_LEVEL0 } [get_ports { fmcHpc0LaP[24] fmcHpc0LaN[24] }]; # DATA[3][3] BANK67:(L12/K12)
 
-set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE } [get_ports { fmcHpcLaP[26] fmcHpcLaN[26] }]; # TLU_INT
-set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE } [get_ports { fmcHpcLaP[27] fmcHpcLaN[27] }]; # TLU_RST
+set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE } [get_ports { fmcHpc0LaP[26] fmcHpc0LaN[26] }]; # TLU_INT
+set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE } [get_ports { fmcHpc0LaP[27] fmcHpc0LaN[27] }]; # TLU_RST
 
-set_property -dict { IOSTANDARD LVDS } [get_ports { fmcHpcLaP[28] fmcHpcLaN[28] }]; # TLU_BSY
-set_property -dict { IOSTANDARD LVDS } [get_ports { fmcHpcLaP[29] fmcHpcLaN[29] }]; # TLU_TRG_CLK
+set_property -dict { IOSTANDARD LVDS } [get_ports { fmcHpc0LaP[28] fmcHpc0LaN[28] }]; # TLU_BSY
+set_property -dict { IOSTANDARD LVDS } [get_ports { fmcHpc0LaP[29] fmcHpc0LaN[29] }]; # TLU_TRG_CLK
 
 ##############################################################################
 
