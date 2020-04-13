@@ -403,11 +403,10 @@ begin
          mAxisMaster              => dmaIbMasters(0),
          mAxisSlave               => dmaIbSlaves(0));
 
-   U_DeMux : entity surf.AxiStreamDeMux
+   U_DeMux : entity atlas_rd53_fw_lib.CmdAxisDeMux
       generic map (
          TPD_G         => TPD_G,
-         NUM_MASTERS_G => 4,
-         PIPE_STAGES_G => 1)
+         NUM_MASTERS_G => 4)
       port map (
          -- Clock and reset
          axisClk      => dmaClk,

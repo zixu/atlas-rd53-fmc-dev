@@ -174,7 +174,7 @@ class FmcDev(pr.Root):
         self._dmaSrp     =  None       
         self._dmaCmd     = [None for i in range(4)]
         self._dmaData    = [None for i in range(4)]
-        self._frameGen   = [None for lane in range(4)]            
+        self._frameGen   = [None for lane in range(5)]            
         self._printFrame = [None for lane in range(4)]    
         
         self.fmcFru      = fmcFru       
@@ -289,6 +289,13 @@ class FmcDev(pr.Root):
 
         # Check if doing test patterns
         if self.testPattern:
+        
+            # Create the frame generator
+            self._frameGen[4] = LoadSimConfig(fullRate)
+                
+            # Connect the frame generator to "broadcast the Cmd from SW to all the MiniDP ports"
+            pr.streamConnect(self._frameGen[4],self._dmaData[0])       # DMA.Lane[0].VC[4].TX
+                
             for i in range(4):
                 
                 # Create the frame generator
@@ -296,8 +303,8 @@ class FmcDev(pr.Root):
                 self._printFrame[i] = PrintSlaveStream()
             
                 # Connect the frame generator
-                pr.streamConnect(self._frameGen[i],self._dmaCmd[i])
-                pr.streamConnect(self._dmaData[i],self._printFrame[i])
+                pr.streamConnect(self._frameGen[i],self._dmaCmd[i])    # DMA.Lane[0].VC[3:0].TX
+                pr.streamConnect(self._dmaData[i],self._printFrame[i]) # DMA.Lane[0].VC[7:4].RX
                 
                 # Create a command to execute the frame generator
                 self.add(pr.BaseCommand(   
