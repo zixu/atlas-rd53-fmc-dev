@@ -16,11 +16,11 @@
 --
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ entity AtlasRd53FmcXilinxKc705_RJ45_1GbE is
       phyMdc     : out   sl;
       phyMdio    : inout sl;
       phyRstN    : out   sl;            -- active low
-      phyIrqN    : in    sl;            -- active low      
+      phyIrqN    : in    sl;            -- active low
       -- FMC Interface
       fmcHpcLaP  : inout slv(33 downto 0);
       fmcHpcLaN  : inout slv(33 downto 0);
@@ -144,7 +144,7 @@ begin
          CLKIN_PERIOD_G     => 16.0,
          DIVCLK_DIVIDE_G    => 1,
          CLKFBOUT_MULT_F_G  => 15.0,
-         CLKOUT0_DIVIDE_F_G => 3.125)   -- 300 MHz = 937.5 MHz/3.125    
+         CLKOUT0_DIVIDE_F_G => 3.125)   -- 300 MHz = 937.5 MHz/3.125
       port map(
          clkIn     => sfpClk62p5,
          rstIn     => dmaRst,
@@ -172,7 +172,7 @@ begin
       port map (
          EFUSEUSR => efuse);
 
-   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)   
+   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)
    localMac(47 downto 24) <= efuse(31 downto 8);
 
    -------------------------
@@ -190,9 +190,9 @@ begin
          -- AXI Streaming Configurations
          AXIS_CONFIG_G      => (others => EMAC_AXIS_CONFIG_C))
       port map (
-         -- Local Configurations      
+         -- Local Configurations
          localMac(0)     => localMac,
-         -- Streaming DMA Interface 
+         -- Streaming DMA Interface
          dmaClk(0)       => dmaClk,
          dmaRst(0)       => dmaRst,
          dmaIbMasters(0) => obMacMaster,
@@ -312,7 +312,7 @@ begin
          dmaIbSlaves  => dmaIbSlaves);
    -------------
    -- FMC Module
-   -------------         
+   -------------
    U_App : entity work.AtlasRd53FmcCore
       generic map (
          TPD_G             => TPD_G,

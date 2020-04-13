@@ -5,11 +5,11 @@
 -- Description: RX PHY Core module
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -64,22 +64,22 @@ architecture mapping of AtlasRd53FmcCore is
          i2cAddress  => "1010000",      -- 2kbit PROM
          dataSize    => 8,              -- in units of bits
          addrSize    => 8,              -- in units of bits
-         endianness  => '0',            -- Little endian                   
-         repeatStart => '0'));          -- Repeat Start          
+         endianness  => '0',            -- Little endian
+         repeatStart => '0'));          -- Repeat Start
 
    constant PLL_GPIO_I2C_CONFIG_C : I2cAxiLiteDevArray(0 to 1) := (
       0              => MakeI2cAxiLiteDevType(
          i2cAddress  => "0100000",      -- PCA9505DGG
          dataSize    => 8,              -- in units of bits
          addrSize    => 8,              -- in units of bits
-         endianness  => '0',            -- Little endian                   
-         repeatStart => '1'),           -- Repeat Start 
+         endianness  => '0',            -- Little endian
+         repeatStart => '1'),           -- Repeat Start
       1              => MakeI2cAxiLiteDevType(
          i2cAddress  => "1011000",      -- LMK61E2
          dataSize    => 8,              -- in units of bits
          addrSize    => 8,              -- in units of bits
-         endianness  => '0',            -- Little endian   
-         repeatStart => '1'));          -- Repeat Start          
+         endianness  => '0',            -- Little endian
+         repeatStart => '1'));          -- Repeat Start
 
    constant NUM_AXIL_MASTERS_C : positive := 13;
 
@@ -180,7 +180,7 @@ begin
          GEN_SYNC_FIFO_G     => true,
          AXI_STREAM_CONFIG_G => DMA_AXIS_CONFIG_G)
       port map (
-         -- Streaming Slave (Rx) Interface (sAxisClk domain) 
+         -- Streaming Slave (Rx) Interface (sAxisClk domain)
          sAxisClk         => dmaClk,
          sAxisRst         => dmaRst,
          sAxisMaster      => dmaObMasters(1),
@@ -221,7 +221,7 @@ begin
 
    --------------------
    -- AxiVersion Module
-   --------------------         
+   --------------------
    U_AxiVersion : entity surf.AxiVersion
       generic map (
          TPD_G        => TPD_G,
@@ -334,9 +334,9 @@ begin
 
    end generate;
 
-   ------------------------   
+   ------------------------
    -- Rd53 CMD/DATA Modules
-   ------------------------   
+   ------------------------
    GEN_DP :
    for i in 3 downto 0 generate
       U_Core : entity atlas_rd53_fw_lib.AtlasRd53Core
@@ -411,7 +411,7 @@ begin
          -- Clock and reset
          axisClk      => dmaClk,
          axisRst      => dmaRst,
-         -- Slave         
+         -- Slave
          sAxisMaster  => dmaObMasters(0),
          sAxisSlave   => dmaObSlaves(0),
          -- Masters

@@ -2,14 +2,14 @@
 -- File       : AtlasRd53FmcXilinxKcu105_RJ45_1GbE.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: 
+-- Description:
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ entity AtlasRd53FmcXilinxKcu105_RJ45_1GbE is
       BUILD_INFO_G : BuildInfoType);
    port (
       extRst     : in    sl;
-      led        : out   slv(7 downto 0);      
+      led        : out   slv(7 downto 0);
       -- ETH GT Pins
       ethClkP    : in    sl;
       ethClkN    : in    sl;
@@ -47,7 +47,7 @@ entity AtlasRd53FmcXilinxKcu105_RJ45_1GbE is
       phyIrqN    : in    sl;            -- active low
       -- 300Mhz System Clock
       sysClk300P : in    sl;
-      sysClk300N : in    sl;      
+      sysClk300N : in    sl;
       -- FMC Interface
       fmcHpcLaP  : inout slv(33 downto 0);
       fmcHpcLaN  : inout slv(33 downto 0);
@@ -120,7 +120,7 @@ begin
          gtRxN  => sfpRxN,
          gtTxP  => sfpTxP,
          gtTxN  => sfpTxN);
-         
+
    U_SysClk300IBUFDS : IBUFDS
       generic map (
          DIFF_TERM    => false,
@@ -139,8 +139,8 @@ begin
       port map (
          clk      => refClk300MHz,
          asyncRst => extRst,
-         syncRst  => refRst300MHz);         
-         
+         syncRst  => refRst300MHz);
+
    U_MarvelWrap : entity surf.Sgmii88E1111LvdsUltraScale
       generic map (
          TPD_G             => TPD_G,
@@ -178,8 +178,8 @@ begin
          sgmiiTxP    => ethTxP,
          sgmiiTxN    => ethTxN,
          sgmiiRxP    => ethRxP,
-         sgmiiRxN    => ethRxN);         
-         
+         sgmiiRxN    => ethRxN);
+
    led(7) <= linkUp;
    led(6) <= speed1000;
    led(5) <= speed100;
@@ -187,7 +187,7 @@ begin
    led(3) <= phyReady;
    led(2) <= phyReady;
    led(1) <= phyReady;
-   led(0) <= phyReady;         
+   led(0) <= phyReady;
 
    U_IDELAYCTRL : IDELAYCTRL
       generic map (
@@ -201,7 +201,7 @@ begin
       port map (
          EFUSEUSR => efuse);
 
-   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)   
+   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)
    localMac(47 downto 24) <= efuse(31 downto 8);
 
    ----------------------
@@ -233,7 +233,7 @@ begin
 
    -------------
    -- FMC Module
-   -------------         
+   -------------
    U_App : entity work.AtlasRd53FmcCore
       generic map (
          TPD_G             => TPD_G,

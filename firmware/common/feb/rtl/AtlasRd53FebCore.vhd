@@ -5,11 +5,11 @@
 -- Description: AD53 FEB readout core module
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -168,7 +168,7 @@ begin
          GEN_SYNC_FIFO_G     => true,
          AXI_STREAM_CONFIG_G => DMA_AXIS_CONFIG_G)
       port map (
-         -- Streaming Slave (Rx) Interface (sAxisClk domain) 
+         -- Streaming Slave (Rx) Interface (sAxisClk domain)
          sAxisClk         => dmaClk,
          sAxisRst         => dmaRst,
          sAxisMaster      => dmaObMasters(1),
@@ -209,7 +209,7 @@ begin
 
    --------------------
    -- AxiVersion Module
-   --------------------         
+   --------------------
    U_AxiVersion : entity surf.AxiVersion
       generic map (
          TPD_G        => TPD_G,
@@ -248,9 +248,9 @@ begin
          emuTimingMasters => emuTimingMasters,
          emuTimingSlaves  => emuTimingSlaves);
 
-   ------------------------   
+   ------------------------
    -- Rd53 CMD/DATA Modules
-   ------------------------   
+   ------------------------
    GEN_DP :
    for i in 3 downto 0 generate
       U_Core : entity atlas_rd53_fw_lib.AtlasRd53Core
@@ -323,7 +323,7 @@ begin
          -- Clock and reset
          axisClk      => dmaClk,
          axisRst      => dmaRst,
-         -- Slave         
+         -- Slave
          sAxisMaster  => dmaObMasters(0),
          sAxisSlave   => dmaObSlaves(0),
          -- Masters

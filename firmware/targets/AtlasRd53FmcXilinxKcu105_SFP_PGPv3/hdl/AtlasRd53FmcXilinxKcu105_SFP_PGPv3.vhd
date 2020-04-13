@@ -2,14 +2,14 @@
 -- File       : AtlasRd53FmcXilinxKcu105_SFP_PGPv3.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: 
+-- Description:
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -83,7 +83,7 @@ architecture top_level of AtlasRd53FmcXilinxKcu105_SFP_PGPv3 is
 
    signal refClk  : sl;
    signal refRst  : sl;
-   
+
    signal pgpRxIn  : Pgp3RxInType  := PGP3_RX_IN_INIT_C;
    signal pgpRxOut : Pgp3RxOutType := PGP3_RX_OUT_INIT_C;
 
@@ -98,7 +98,7 @@ architecture top_level of AtlasRd53FmcXilinxKcu105_SFP_PGPv3 is
 
    signal pgpClk : sl;
    signal pgpRst : sl;
-   
+
 
    attribute IODELAY_GROUP                 : string;
    attribute IODELAY_GROUP of U_IDELAYCTRL : label is "rd53_aurora";
@@ -136,7 +136,7 @@ begin
          clk      => refClk,
          asyncRst => extRst,
          syncRst  => refRst);
-         
+
    U_MMCM : entity surf.ClockManagerUltrascale
       generic map(
          TPD_G              => TPD_G,
@@ -150,15 +150,15 @@ begin
          CLKIN_PERIOD_G     => 3.333,
          DIVCLK_DIVIDE_G    => 1,
          CLKFBOUT_MULT_F_G  => 3.125,
-         CLKOUT0_DIVIDE_F_G => 3.125,   -- 300 MHz = 937.5 MHz/3.125    
-         CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6     
+         CLKOUT0_DIVIDE_F_G => 3.125,   -- 300 MHz = 937.5 MHz/3.125
+         CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6
       port map(
          clkIn     => refClk,
          rstIn     => refRst,
          clkOut(0) => refClk300MHz,
          clkOut(1) => dmaClk,
          rstOut(0) => refRst300MHz,
-         rstOut(1) => dmaRst);         
+         rstOut(1) => dmaRst);
 
    U_IDELAYCTRL : IDELAYCTRL
       generic map (
@@ -212,7 +212,7 @@ begin
          axilReadSlave     => open,
          axilWriteMaster   => AXI_LITE_WRITE_MASTER_INIT_C,
          axilWriteSlave    => open);
-         
+
    U_TERM_GTs : entity surf.Gthe3ChannelDummy
       generic map (
          TPD_G   => TPD_G,
@@ -249,7 +249,7 @@ begin
 
    -------------
    -- FMC Module
-   -------------         
+   -------------
    U_App : entity work.AtlasRd53FmcCore
       generic map (
          TPD_G             => TPD_G,

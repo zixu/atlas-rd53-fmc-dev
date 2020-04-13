@@ -2,14 +2,14 @@
 -- File       : AtlasRd53FmcXilinxKcu105_SFP_10GbE.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: 
+-- Description:
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -160,7 +160,7 @@ begin
       port map (
          -- Local Configurations
          localMac(0)     => localMac,
-         -- Streaming DMA Interface 
+         -- Streaming DMA Interface
          dmaClk(0)       => dmaClk,
          dmaRst(0)       => dmaRst,
          dmaIbMasters(0) => obMacMaster,
@@ -196,7 +196,7 @@ begin
       port map (
          EFUSEUSR => efuse);
 
-   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)   
+   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)
    localMac(47 downto 24) <= efuse(31 downto 8);
 
    ----------------------
@@ -228,7 +228,7 @@ begin
 
    -------------
    -- FMC Module
-   -------------         
+   -------------
    U_App : entity work.AtlasRd53FmcCore
       generic map (
          TPD_G             => TPD_G,

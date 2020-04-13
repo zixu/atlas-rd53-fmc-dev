@@ -5,11 +5,11 @@
 -- Description: CDR53b SPI module
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ architecture rtl of AtlasCdr53bSpiCore is
       rstL           => '1',
       invCmd         => '0',
       invData        => (others => '1'),   -- Invert by default
-      sclkPeriod     => toSlv(156/2, 16),  -- ~1 MHz SCLK 
+      sclkPeriod     => toSlv(156/2, 16),  -- ~1 MHz SCLK
       axilReadSlave  => AXI_LITE_READ_SLAVE_INIT_C,
       axilWriteSlave => AXI_LITE_WRITE_SLAVE_INIT_C,
       state          => IDLE_S);
@@ -120,7 +120,7 @@ begin
       -- Determine the transaction type
       axiSlaveWaitTxn(axilWriteMaster, axilReadMaster, v.axilWriteSlave, v.axilReadSlave, axilStatus);
 
-      -- Check for a read request            
+      -- Check for a read request
       if (axilStatus.readEnable = '1') then
          if (axilReadMaster.araddr(11 downto 0) = x"FFC") then
             v.axilReadSlave.rdata(31)           := r.rstL;
@@ -151,11 +151,11 @@ begin
          axiSlaveWriteResponse(v.axilWriteSlave, AXI_RESP_OK_C);
       end if;
 
-      ----------------------------------------------------------------------      
-      -- State Machine      
-      ----------------------------------------------------------------------      
+      ----------------------------------------------------------------------
+      -- State Machine
+      ----------------------------------------------------------------------
       case (r.state) is
-         ----------------------------------------------------------------------      
+         ----------------------------------------------------------------------
          when IDLE_S =>
             -- Check for SW start flag
             if (v.start = '1') then
@@ -166,7 +166,7 @@ begin
                -- Next state
                v.state    := DATA_SAMPLE_S;
             end if;
-         ----------------------------------------------------------------------      
+         ----------------------------------------------------------------------
          when DATA_SAMPLE_S =>
             -- Wait half a clock period
             if (r.clkCnt = r.sclkPeriod) then
@@ -180,7 +180,7 @@ begin
                -- Increment the counter
                v.clkCnt := r.clkCnt + 1;
             end if;
-         ----------------------------------------------------------------------      
+         ----------------------------------------------------------------------
          when DATA_SHIFT_S =>
             -- Wait half a clock period
             if (r.clkCnt = r.sclkPeriod) then
@@ -208,7 +208,7 @@ begin
                -- Increment the counter
                v.clkCnt := r.clkCnt + 1;
             end if;
-         ----------------------------------------------------------------------      
+         ----------------------------------------------------------------------
          when LOAD_SAMPLE_S =>
             -- Wait half a clock period
             if (r.clkCnt = r.sclkPeriod) then
@@ -222,7 +222,7 @@ begin
                -- Increment the counter
                v.clkCnt := r.clkCnt + 1;
             end if;
-         ----------------------------------------------------------------------      
+         ----------------------------------------------------------------------
          when LOAD_SHIFT_S =>
             -- Wait half a clock period
             if (r.clkCnt = r.sclkPeriod)then
@@ -238,7 +238,7 @@ begin
                -- Increment the counter
                v.clkCnt := r.clkCnt + 1;
             end if;
-      ----------------------------------------------------------------------      
+      ----------------------------------------------------------------------
       end case;
 
       -- Outputs

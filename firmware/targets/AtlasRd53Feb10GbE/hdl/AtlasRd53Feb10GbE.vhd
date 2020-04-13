@@ -5,11 +5,11 @@
 -- Description: Top-Level module using 10 GbE communication
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ architecture top_level of AtlasRd53Feb10GbE is
 
    attribute KEEP_HIERARCHY                 : string;
    attribute KEEP_HIERARCHY of U_IDELAYCTRL : label is "TRUE";
-   
+
 begin
 
    qsfpLpMode <= '0';
@@ -116,7 +116,7 @@ begin
          CLKIN_PERIOD_G     => 6.4,
          DIVCLK_DIVIDE_G    => 1,
          CLKFBOUT_MULT_F_G  => 6.0,
-         CLKOUT0_DIVIDE_F_G => 3.125)   -- 300 MHz = 937.5 MHz/3.125    
+         CLKOUT0_DIVIDE_F_G => 3.125)   -- 300 MHz = 937.5 MHz/3.125
                port map(
          clkIn     => dmaClk,
          rstIn     => dmarst,
@@ -128,7 +128,7 @@ begin
          RDY    => iDelayCtrlRdy,
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
-         
+
    U_10GigE : entity surf.TenGigEthGtx7Wrapper
       generic map (
          TPD_G             => TPD_G,
@@ -136,7 +136,7 @@ begin
       port map (
          -- Local Configurations
          localMac(0)     => localMac,
-         -- Streaming DMA Interface 
+         -- Streaming DMA Interface
          dmaClk(0)       => dmaClk,
          dmaRst(0)       => dmaRst,
          dmaIbMasters(0) => obMacMaster,
@@ -171,7 +171,7 @@ begin
       port map (
          EFUSEUSR => efuse);
 
-   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)   
+   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)
    localMac(47 downto 24) <= efuse(31 downto 8);
 
    ----------------------
@@ -203,7 +203,7 @@ begin
 
    -------------
    -- FEB Module
-   -------------         
+   -------------
    U_App : entity work.AtlasRd53FebCore
       generic map (
          TPD_G             => TPD_G,

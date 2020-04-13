@@ -5,11 +5,11 @@
 -- Description: Top Level Firmware Target
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ entity AtlasRd53FmcXilinxZcu102 is
       SIMULATION_G : boolean := false;
       -- PGP_TYPE_G   : boolean := false;        -- False: PGPv2b
       PGP_TYPE_G   : boolean := true;        -- True: PGPv3
-      PGP3_RATE_G  : string  := "6.25Gbps";      
+      PGP3_RATE_G  : string  := "6.25Gbps";
       BUILD_INFO_G : BuildInfoType);
    port (
       -- FMC Interface
@@ -117,7 +117,7 @@ begin
    dmaRst <= (others => axilRst);
 
    --------------------------
-   -- Reference 300 MHz clock 
+   -- Reference 300 MHz clock
    --------------------------
    U_MMCM : entity surf.ClockManagerUltraScale
       generic map(
@@ -187,9 +187,9 @@ begin
          AXIL_CLK_FREQ_G      => 125.0E+6,  -- units of Hz
          AXI_BASE_ADDR_G      => x"A000_0000")
       port map (
-         ------------------------      
+         ------------------------
          --  Top Level Interfaces
-         ------------------------    
+         ------------------------
          -- Reference Clock
          sfpClk156       => sfpClk156,
          -- AXI-Lite Interface

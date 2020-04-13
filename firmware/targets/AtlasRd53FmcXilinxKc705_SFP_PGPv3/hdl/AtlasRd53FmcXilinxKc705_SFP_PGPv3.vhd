@@ -16,11 +16,11 @@
 --
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -121,8 +121,8 @@ begin
          CLKIN_PERIOD_G     => 16.0,
          DIVCLK_DIVIDE_G    => 1,
          CLKFBOUT_MULT_F_G  => 15.0,
-         CLKOUT0_DIVIDE_F_G => 3.125,   -- 300 MHz = 937.5 MHz/3.125    
-         CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6     
+         CLKOUT0_DIVIDE_F_G => 3.125,   -- 300 MHz = 937.5 MHz/3.125
+         CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6
       port map(
          clkIn     => sfpClk62p5,
          clkOut(0) => refClk300MHz,
@@ -182,7 +182,7 @@ begin
          axilReadSlave     => open,
          axilWriteMaster   => AXI_LITE_WRITE_MASTER_INIT_C,
          axilWriteSlave    => open);
-         
+
    -----------------------
    -- PGPv3-to-DMA Mapping
    -----------------------
@@ -208,7 +208,7 @@ begin
 
    -------------
    -- FMC Module
-   -------------         
+   -------------
    U_App : entity work.AtlasRd53FmcCore
       generic map (
          TPD_G             => TPD_G,

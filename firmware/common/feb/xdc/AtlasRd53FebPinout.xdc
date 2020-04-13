@@ -1,10 +1,10 @@
 ##############################################################################
 ## This file is part of 'ATLAS RD53 DEV'.
-## It is subject to the license terms in the LICENSE.txt file found in the 
-## top-level directory of this distribution and at: 
-##    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
-## No part of 'ATLAS RD53 DEV', including this file, 
-## may be copied, modified, propagated, or distributed except according to 
+## It is subject to the license terms in the LICENSE.txt file found in the
+## top-level directory of this distribution and at:
+##    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+## No part of 'ATLAS RD53 DEV', including this file,
+## may be copied, modified, propagated, or distributed except according to
 ## the terms contained in the LICENSE.txt file.
 ##############################################################################
 
@@ -281,6 +281,6 @@ set_property -dict { PACKAGE_PIN M16 IOSTANDARD LVCMOS33 } [get_ports { led[3] }
 set_property CFGBVS VCCO         [current_design]
 set_property CONFIG_VOLTAGE 3.3  [current_design]
 
-set_property BITSTREAM.CONFIG.CONFIGRATE 50 [current_design] 
+set_property BITSTREAM.CONFIG.CONFIGRATE 50 [current_design]
 
 ##############################################################################

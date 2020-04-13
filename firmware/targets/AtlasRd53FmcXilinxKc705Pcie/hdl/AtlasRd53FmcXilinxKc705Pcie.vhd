@@ -7,16 +7,16 @@
 -- https://www.xilinx.com/products/boards-and-kits/kc705.html
 --
 -- Note: Using the QSPI (not BPI) for booting from PROM.
---       J3 needs to have the jumper installed 
+--       J3 needs to have the jumper installed
 --       SW13 needs to be in the "00001" position to set FPGA.M[2:0] = "001"
 --
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -41,9 +41,9 @@ entity AtlasRd53FmcXilinxKc705Pcie is
       ROGUE_SIM_EN_G : boolean := false;
       BUILD_INFO_G   : BuildInfoType);
    port (
-      ---------------------   
+      ---------------------
       --  Application Ports
-      ---------------------   
+      ---------------------
       -- FMC Interface
       fmcHpcLaP  : inout slv(33 downto 0);
       fmcHpcLaN  : inout slv(33 downto 0);
@@ -58,7 +58,7 @@ entity AtlasRd53FmcXilinxKc705Pcie is
       sfpRxN     : in    sl;
       -------------------
       --  Top Level Ports
-      -------------------       
+      -------------------
       -- System Ports
       emcClk     : in    sl;
       -- Boot Memory Ports
@@ -120,7 +120,7 @@ begin
          CLKIN_PERIOD_G     => 16.0,
          DIVCLK_DIVIDE_G    => 1,
          CLKFBOUT_MULT_F_G  => 15.0,
-         CLKOUT0_DIVIDE_F_G => 3.125)   -- 300 MHz = 937.5 MHz/3.125    
+         CLKOUT0_DIVIDE_F_G => 3.125)   -- 300 MHz = 937.5 MHz/3.125
       port map(
          clkIn     => sfpClk62p5,
          rstIn     => dmaRst,
@@ -144,9 +144,9 @@ begin
          gtTxP(0) => sfpTxP,
          gtTxN(0) => sfpTxN);
 
-   -----------------------         
+   -----------------------
    -- axi-pcie-core module
-   -----------------------           
+   -----------------------
    U_Core : entity axi_pcie_core.XilinxKc705Core
       generic map (
          TPD_G                => TPD_G,
@@ -156,9 +156,9 @@ begin
          BUILD_INFO_G         => BUILD_INFO_G,
          DMA_SIZE_G           => 2)
       port map (
-         ------------------------      
+         ------------------------
          --  Top Level Interfaces
-         ------------------------              
+         ------------------------
          -- DMA Interfaces
          dmaClk         => dmaClk,
          dmaRst         => dmaRst,
@@ -170,7 +170,7 @@ begin
          appClk         => dmaClk,
          appRst         => dmaRst,
          ------------------------------------------------------------------------------------------------------
-         -- Not using IOMEMORY interface because the slow I2C transactions would bottleneck the CPU performance 
+         -- Not using IOMEMORY interface because the slow I2C transactions would bottleneck the CPU performance
          -- We will use SRPv3 on the DMA to do register access through a messaging protocol instead
          ------------------------------------------------------------------------------------------------------
          appReadMaster  => open,
@@ -179,14 +179,14 @@ begin
          appWriteSlave  => AXI_LITE_WRITE_SLAVE_EMPTY_OK_C,
          -------------------
          --  Top Level Ports
-         -------------------             
+         -------------------
          -- System Ports
          emcClk         => emcClk,
-         -- Boot Memory Ports 
+         -- Boot Memory Ports
          bootCsL        => bootCsL,
          bootMosi       => bootMosi,
          bootMiso       => bootMiso,
-         -- PCIe Ports 
+         -- PCIe Ports
          pciRstL        => pciRstL,
          pciRefClkP     => pciRefClkP,
          pciRefClkN     => pciRefClkN,
@@ -197,7 +197,7 @@ begin
 
    -------------
    -- FMC Module
-   -------------         
+   -------------
    U_App : entity work.AtlasRd53FmcCore
       generic map (
          TPD_G             => TPD_G,

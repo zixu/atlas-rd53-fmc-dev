@@ -5,11 +5,11 @@
 -- Description: Top Level Firmware Target
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -101,7 +101,7 @@ begin
    led(7) <= phyReady;
 
    --------------------------
-   -- Reference 300 MHz clock 
+   -- Reference 300 MHz clock
    --------------------------
    U_MMCM : entity surf.ClockManagerUltraScale
       generic map(
@@ -118,7 +118,7 @@ begin
          DIVCLK_DIVIDE_G    => 1,
          CLKFBOUT_MULT_F_G  => 6.0,
          CLKOUT0_DIVIDE_F_G => 3.125,   -- 300 MHz = 937.5 MHz/3.125
-         CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6   
+         CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6
       port map(
          clkIn     => dmaClk,
          clkOut(0) => refClk300MHz,
@@ -145,7 +145,7 @@ begin
       port map (
          -- Local Configurations
          localMac(0)     => localMac,
-         -- Streaming DMA Interface 
+         -- Streaming DMA Interface
          dmaClk(0)       => dmaClk,
          dmaRst(0)       => dmaRst,
          dmaIbMasters(0) => obMacMaster,
@@ -186,7 +186,7 @@ begin
       port map (
          EFUSEUSR => efuse);
 
-   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)   
+   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)
    localMac(47 downto 24) <= efuse(31 downto 8);
 
    ----------------------

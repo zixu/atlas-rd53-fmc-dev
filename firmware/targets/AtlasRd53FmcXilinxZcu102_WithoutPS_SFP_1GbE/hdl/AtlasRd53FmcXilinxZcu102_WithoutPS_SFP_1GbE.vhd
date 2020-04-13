@@ -5,11 +5,11 @@
 -- Description: Top Level Firmware Target
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ use unisim.vcomponents.all;
 entity AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_1GbE is
    generic (
       TPD_G        : time    := 1 ns;
-      SIMULATION_G : boolean := false;  
+      SIMULATION_G : boolean := false;
       BUILD_INFO_G : BuildInfoType);
    port (
       -- FMC Interface
@@ -78,7 +78,7 @@ architecture TOP_LEVEL of AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_1GbE is
    signal iDelayCtrlRdy : sl;
    signal refClk300MHz  : sl;
    signal refRst300MHz  : sl;
-   signal phyReady  : sl;   
+   signal phyReady  : sl;
 
    attribute IODELAY_GROUP                 : string;
    attribute IODELAY_GROUP of U_IDELAYCTRL : label is "rd53_aurora";
@@ -89,7 +89,7 @@ architecture TOP_LEVEL of AtlasRd53FmcXilinxZcu102_WithoutPS_SFP_1GbE is
 begin
 
    --------------------------
-   -- Reference 300 MHz clock 
+   -- Reference 300 MHz clock
    --------------------------
    U_MMCM : entity surf.ClockManagerUltraScale
       generic map(
@@ -106,14 +106,14 @@ begin
          DIVCLK_DIVIDE_G    => 1,
          CLKFBOUT_MULT_F_G  => 7.5,
          CLKOUT0_DIVIDE_F_G => 3.125,   -- 300 MHz = 937.5 MHz/3.125
-         CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6   
+         CLKOUT1_DIVIDE_G   => 6)       -- 156.25 MHz = 937.5 MHz/6
       port map(
          clkIn     => dmaClk,
          clkOut(0) => refClk300MHz,
          clkOut(1) => open,
          rstOut(0) => refRst300MHz,
          rstOut(1) => open);
-         
+
    U_IDELAYCTRL : IDELAYCTRL
       generic map (
          SIM_DEVICE => "ULTRASCALE")
@@ -121,7 +121,7 @@ begin
          RDY    => iDelayCtrlRdy,
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
-         
+
    U_1GigE : entity surf.GigEthGthUltraScaleWrapper
       generic map (
          TPD_G              => TPD_G,
@@ -138,7 +138,7 @@ begin
       port map (
          -- Local Configurations
          localMac(0)     => localMac,
-         -- Streaming DMA Interface 
+         -- Streaming DMA Interface
          dmaClk(0)       => dmaClk,
          dmaRst(0)       => dmaRst,
          dmaIbMasters(0) => obMacMaster,
@@ -157,8 +157,8 @@ begin
          gtTxP(0)        => sfpTxP(0),
          gtTxN(0)        => sfpTxN(0),
          gtRxP(0)        => sfpRxP(0),
-         gtRxN(0)        => sfpRxN(0));       
-         
+         gtRxN(0)        => sfpRxN(0));
+
    U_TERM_GTs : entity surf.Gthe4ChannelDummy
       generic map (
          TPD_G   => TPD_G,
@@ -168,13 +168,13 @@ begin
          gtRxP  => sfpRxP(3 downto 1),
          gtRxN  => sfpRxN(3 downto 1),
          gtTxP  => sfpTxP(3 downto 1),
-         gtTxN  => sfpTxN(3 downto 1));           
-         
+         gtTxN  => sfpTxN(3 downto 1));
+
    U_EFuse : EFUSE_USR
       port map (
          EFUSEUSR => efuse);
 
-   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)   
+   localMac(23 downto 0)  <= x"56_00_08";  -- 08:00:56:XX:XX:XX (big endian SLV)
    localMac(47 downto 24) <= efuse(31 downto 8);
 
    ----------------------
@@ -203,7 +203,7 @@ begin
          dmaObSlaves  => dmaObSlaves,
          dmaIbMasters => dmaIbMasters,
          dmaIbSlaves  => dmaIbSlaves);
-         
+
    -------------
    -- FMC Module
    -------------

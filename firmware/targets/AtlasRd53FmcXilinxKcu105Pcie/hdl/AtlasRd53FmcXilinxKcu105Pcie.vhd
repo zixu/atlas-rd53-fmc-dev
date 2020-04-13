@@ -2,14 +2,14 @@
 -- File       : AtlasRd53FmcXilinxKcu105Pcie.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: 
+-- Description:
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -34,9 +34,9 @@ entity AtlasRd53FmcXilinxKcu105Pcie is
       ROGUE_SIM_EN_G : boolean := false;
       BUILD_INFO_G   : BuildInfoType);
    port (
-      ---------------------   
+      ---------------------
       --  Application Ports
-      ---------------------   
+      ---------------------
       -- FMC Interface
       fmcHpcLaP  : inout slv(33 downto 0);
       fmcHpcLaN  : inout slv(33 downto 0);
@@ -54,7 +54,7 @@ entity AtlasRd53FmcXilinxKcu105Pcie is
       --------------
       -- System Ports
       emcClk     : in    sl;
-      -- Boot Memory Ports 
+      -- Boot Memory Ports
       flashCsL   : out   sl;
       flashMosi  : out   sl;
       flashMiso  : in    sl;
@@ -164,9 +164,9 @@ begin
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
 
-   -----------------------         
+   -----------------------
    -- axi-pcie-core module
-   -----------------------         
+   -----------------------
    U_Core : entity axi_pcie_core.XilinxKcu105Core
       generic map (
          TPD_G                => TPD_G,
@@ -177,9 +177,9 @@ begin
          DMA_AXIS_CONFIG_G    => DMA_AXIS_CONFIG_C,
          DMA_SIZE_G           => 2)
       port map (
-         ------------------------      
+         ------------------------
          --  Top Level Interfaces
-         ------------------------        
+         ------------------------
          -- DMA Interfaces
          dmaClk         => dmaClk,
          dmaRst         => dmaRst,
@@ -191,7 +191,7 @@ begin
          appClk         => dmaClk,
          appRst         => dmaRst,
          ------------------------------------------------------------------------------------------------------
-         -- Not using IOMEMORY interface because the slow I2C transactions would bottleneck the CPU performance 
+         -- Not using IOMEMORY interface because the slow I2C transactions would bottleneck the CPU performance
          -- We will use SRPv3 on the DMA to do register access through a messaging protocol instead
          ------------------------------------------------------------------------------------------------------
          appReadMaster  => open,
@@ -203,13 +203,13 @@ begin
          --------------
          -- System Ports
          emcClk         => emcClk,
-         -- Boot Memory Ports 
+         -- Boot Memory Ports
          flashCsL       => flashCsL,
          flashMosi      => flashMosi,
          flashMiso      => flashMiso,
          flashHoldL     => flashHoldL,
          flashWp        => flashWp,
-         -- PCIe Ports 
+         -- PCIe Ports
          pciRstL        => pciRstL,
          pciRefClkP     => pciRefClkP,
          pciRefClkN     => pciRefClkN,
@@ -220,7 +220,7 @@ begin
 
    -------------
    -- FMC Module
-   -------------         
+   -------------
    U_App : entity work.AtlasRd53FmcCore
       generic map (
          TPD_G             => TPD_G,

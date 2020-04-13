@@ -5,11 +5,11 @@
 -- Description: Zcu102PgpWrapper File
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -32,14 +32,14 @@ entity Zcu102PgpWrapper is
       ROGUE_SIM_EN_G       : boolean                     := false;
       ROGUE_SIM_PORT_NUM_G : natural range 1024 to 49151 := 4000;
       DMA_AXIS_CONFIG_G    : AxiStreamConfigType;
-      PGP_TYPE_G           : boolean                     := true;  -- False: PGPv2b, True: PGPv3, 
-      PGP3_RATE_G          : string                      := "6.25Gbps";  -- or "10.3125Gbps" 
+      PGP_TYPE_G           : boolean                     := true;  -- False: PGPv2b, True: PGPv3,
+      PGP3_RATE_G          : string                      := "6.25Gbps";  -- or "10.3125Gbps"
       AXIL_CLK_FREQ_G      : real                        := 156.25E+6;  -- units of Hz
       AXI_BASE_ADDR_G      : slv(31 downto 0)            := x"0000_0000");
    port (
-      ------------------------      
+      ------------------------
       --  Top Level Interfaces
-      ------------------------    
+      ------------------------
       -- Reference Clock
       sfpClk156       : out sl;
       -- AXI-Lite Interface

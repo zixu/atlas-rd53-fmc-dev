@@ -5,11 +5,11 @@
 -- Description: Wrapper for PGPv3 communication
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ library atlas_rd53_fw_lib;
 entity AtlasRd53Pgp3 is
    generic (
       TPD_G        : time    := 1 ns;
-      SIMULATION_G : boolean := false);  -- or "10.3125Gbps"  
+      SIMULATION_G : boolean := false);  -- or "10.3125Gbps"
    port (
       -- DMA Interface (dmaClk domain)
       dmaClk       : in  sl;
@@ -91,7 +91,7 @@ begin
          -- Clock and reset
          axisClk      => dmaClk,
          axisRst      => dmaRst,
-         -- Slave         
+         -- Slave
          mAxisMasters => txMasters(7 downto 0),
          mAxisSlaves  => txSlaves(7 downto 0),
          -- Masters

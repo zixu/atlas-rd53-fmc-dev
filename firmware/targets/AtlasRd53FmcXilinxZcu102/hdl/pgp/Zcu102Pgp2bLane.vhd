@@ -3,11 +3,11 @@
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
--- It is subject to the license terms in the LICENSE.txt file found in the 
--- top-level directory of this distribution and at: 
---    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
--- No part of 'ATLAS RD53 FMC DEV', including this file, 
--- may be copied, modified, propagated, or distributed except according to 
+-- It is subject to the license terms in the LICENSE.txt file found in the
+-- top-level directory of this distribution and at:
+--    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+-- No part of 'ATLAS RD53 FMC DEV', including this file,
+-- may be copied, modified, propagated, or distributed except according to
 -- the terms contained in the LICENSE.txt file.
 -------------------------------------------------------------------------------
 
@@ -181,7 +181,7 @@ begin
             -- Frame Receive Interface
             pgpRxMasters    => pgpRxMasters,
             pgpRxCtrl       => pgpRxCtrl,
-            -- AXI-Lite Interface 
+            -- AXI-Lite Interface
             axilClk         => axilClk,
             axilRst         => axilRst);
 
@@ -241,9 +241,9 @@ begin
 
    end generate SIM_PGP;
 
-   --------------         
+   --------------
    -- PGP Monitor
-   --------------         
+   --------------
    U_PgpMon : entity surf.Pgp2bAxi
       generic map (
          TPD_G              => TPD_G,

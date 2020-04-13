@@ -1,10 +1,10 @@
 ##############################################################################
 ## This file is part of 'ATLAS RD53 FMC DEV'.
-## It is subject to the license terms in the LICENSE.txt file found in the 
-## top-level directory of this distribution and at: 
-##    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html. 
-## No part of 'ATLAS RD53 FMC DEV', including this file, 
-## may be copied, modified, propagated, or distributed except according to 
+## It is subject to the license terms in the LICENSE.txt file found in the
+## top-level directory of this distribution and at:
+##    https://confluence.slac.stanford.edu/display/ppareg/LICENSE.html.
+## No part of 'ATLAS RD53 FMC DEV', including this file,
+## may be copied, modified, propagated, or distributed except according to
 ## the terms contained in the LICENSE.txt file.
 ##############################################################################
 
@@ -63,7 +63,7 @@ set_clock_groups -asynchronous -group [get_clocks {clk125}] -group [get_clocks -
 
 set_property UNAVAILABLE_DURING_CALIBRATION TRUE [get_ports fmcHpc0LaP[20]]
 
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets U_App/U_FmcMapping/GEN_PLL_CLK[1].U_IBUFDS/O] 
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets U_App/U_FmcMapping/GEN_PLL_CLK[1].U_IBUFDS/O]
 
 set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins {U_Pgp/GEN_LANE[0].GEN_PGP2b.U_Lane/REAL_PGP.U_Pgp/PgpGthCoreWrapper_1/U_PgpGthCore/inst/gen_gtwizard_gthe4_top.PgpGthCore_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_channel_container[2].gen_enabled_channel.gthe4_channel_wrapper_inst/channel_inst/gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST/RXOUTCLK}]] -group [get_clocks -of_objects [get_pins {U_Pgp/GEN_LANE[0].GEN_PGP2b.U_Lane/REAL_PGP.U_Pgp/PgpGthCoreWrapper_1/U_PgpGthCore/inst/gen_gtwizard_gthe4_top.PgpGthCore_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_channel_container[2].gen_enabled_channel.gthe4_channel_wrapper_inst/channel_inst/gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST/TXOUTCLK}]]
 set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins {U_Pgp/GEN_LANE[1].GEN_PGP2b.U_Lane/REAL_PGP.U_Pgp/PgpGthCoreWrapper_1/U_PgpGthCore/inst/gen_gtwizard_gthe4_top.PgpGthCore_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_channel_container[2].gen_enabled_channel.gthe4_channel_wrapper_inst/channel_inst/gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST/RXOUTCLK}]] -group [get_clocks -of_objects [get_pins {U_Pgp/GEN_LANE[1].GEN_PGP2b.U_Lane/REAL_PGP.U_Pgp/PgpGthCoreWrapper_1/U_PgpGthCore/inst/gen_gtwizard_gthe4_top.PgpGthCore_gtwizard_gthe4_inst/gen_gtwizard_gthe4.gen_channel_container[2].gen_enabled_channel.gthe4_channel_wrapper_inst/channel_inst/gthe4_channel_gen.gen_gthe4_channel_inst[0].GTHE4_CHANNEL_PRIM_INST/TXOUTCLK}]]
