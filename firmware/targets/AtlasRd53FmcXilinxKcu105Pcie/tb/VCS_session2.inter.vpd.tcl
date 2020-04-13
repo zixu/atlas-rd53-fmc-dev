@@ -74,8 +74,8 @@ gui_src_preferences -tabstop 8 -maxbits 24 -windownumber 1
 
 if {![gui_exist_window -window TopLevel.1]} {
     set TopLevel.1 [ gui_create_window -type TopLevel \
-       -icon $::env(DVE)/auxx/gui/images/toolbars/dvewin.xpm] 
-} else { 
+       -icon $::env(DVE)/auxx/gui/images/toolbars/dvewin.xpm]
+} else {
     set TopLevel.1 TopLevel.1
 }
 gui_show_window -window ${TopLevel.1} -show_state maximized -rect {{1 38} {2560 923}}
@@ -179,8 +179,8 @@ gui_update_layout -id ${Source.1} {{show_state maximized} {dock_state undocked} 
 
 if {![gui_exist_window -window TopLevel.2]} {
     set TopLevel.2 [ gui_create_window -type TopLevel \
-       -icon $::env(DVE)/auxx/gui/images/toolbars/dvewin.xpm] 
-} else { 
+       -icon $::env(DVE)/auxx/gui/images/toolbars/dvewin.xpm]
+} else {
     set TopLevel.2 TopLevel.2
 }
 gui_show_window -window ${TopLevel.2} -show_state maximized -rect {{1 38} {2560 923}}
@@ -244,8 +244,8 @@ gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {d
 
 if {![gui_exist_window -window TopLevel.3]} {
     set TopLevel.3 [ gui_create_window -type TopLevel \
-       -icon $::env(DVE)/auxx/gui/images/toolbars/dvewin.xpm] 
-} else { 
+       -icon $::env(DVE)/auxx/gui/images/toolbars/dvewin.xpm]
+} else {
     set TopLevel.3 TopLevel.3
 }
 gui_show_window -window ${TopLevel.3} -show_state maximized -rect {{1 38} {2560 923}}
@@ -319,7 +319,7 @@ gui_update_statusbar_target_frame ${TopLevel.3}
 
 #<Database>
 
-# DVE Open design session: 
+# DVE Open design session:
 
 if { [llength [lindex [gui_get_db -design Sim] 0]] == 0 } {
 gui_set_env SIMSETUP::SIMARGS {{-ucligui }}
@@ -334,7 +334,7 @@ gui_set_precision 1ps
 gui_set_time_units 1us
 #</Database>
 
-# DVE Global setting session: 
+# DVE Global setting session:
 
 
 # Global: Breakpoints
@@ -459,7 +459,7 @@ foreach __top [gui_ekki_get_window_ids -type TopLevel] {
     }
 }
 gui_set_loading_session_type noSession
-# DVE View/pane content session: 
+# DVE View/pane content session:
 
 
 # Hier 'Hier.1'
