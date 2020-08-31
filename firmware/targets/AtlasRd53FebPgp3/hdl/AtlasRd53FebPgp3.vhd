@@ -143,7 +143,7 @@ begin
          RATE_G        => "6.25Gbps",
          REFCLK_TYPE_G => PGP3_REFCLK_312_C,
          EN_PGP_MON_G  => false,
-         EN_GTH_DRP_G  => false,
+         EN_GT_DRP_G   => false,
          EN_QPLL_DRP_G => false)
       port map (
          -- Stable Clock and Reset

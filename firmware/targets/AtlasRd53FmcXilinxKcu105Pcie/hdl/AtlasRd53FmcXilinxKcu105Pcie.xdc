@@ -36,6 +36,12 @@ set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 DQS_BIAS TRUE EQUALI
 set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 DQS_BIAS TRUE EQUALIZATION EQ_LEVEL0 } [get_ports {fmcHpcLaP[23] fmcHpcLaN[23]}]; # DATA[3][2]
 set_property -dict { IOSTANDARD LVDS DIFF_TERM_ADV TERM_100 DQS_BIAS TRUE EQUALIZATION EQ_LEVEL0 } [get_ports {fmcHpcLaP[24] fmcHpcLaN[24]}]; # DATA[3][3]
 
+set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE } [get_ports {fmcHpcLaP[26] fmcHpcLaN[26]}]; # TLU[INT]
+set_property -dict { IOSTANDARD LVDS DIFF_TERM TRUE } [get_ports {fmcHpcLaP[27] fmcHpcLaN[27]}]; # TLU[RST]
+set_property -dict { IOSTANDARD LVDS }                [get_ports {fmcHpcLaP[28] fmcHpcLaN[28]}]; # TLU[BSY]
+set_property -dict { IOSTANDARD LVDS }                [get_ports {fmcHpcLaP[29] fmcHpcLaN[29]}]; # TLU[TrgClk]
+
+
 ##############################################################################
 
 ####################

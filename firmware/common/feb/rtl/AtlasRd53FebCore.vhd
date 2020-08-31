@@ -100,6 +100,8 @@ architecture mapping of AtlasRd53FebCore is
    signal clk160MHz : sl;
    signal rst160MHz : sl;
 
+   signal cmdBusyAll : sl;
+   signal cmdBusyVec : slv(3 downto 0);
    signal serDesData : Slv8Array(15 downto 0);
    signal dlyLoad    : slv(15 downto 0);
    signal dlyCfg     : Slv9Array(15 downto 0);
@@ -251,6 +253,7 @@ begin
    ------------------------
    -- Rd53 CMD/DATA Modules
    ------------------------
+   cmdBusyAll <= uOr(cmdBusyVec);
    GEN_DP :
    for i in 3 downto 0 generate
       U_Core : entity atlas_rd53_fw_lib.AtlasRd53Core
@@ -262,6 +265,9 @@ begin
             XIL_DEVICE_G  => XIL_DEVICE_G,
             SYNTH_MODE_G  => SYNTH_MODE_G)
          port map (
+            -- CMD busy Flag
+            cmdBusyOut      => cmdBusyVec(i),
+            cmdBusyAll      => cmdBusyAll,
             -- AXI-Lite Interface
             axilClk         => dmaClk,
             axilRst         => dmaRst,
