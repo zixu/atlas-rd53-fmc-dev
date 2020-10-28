@@ -250,14 +250,14 @@ class FmcDev(pr.Root):
             ))
 
             # SRPv3 on DMA.Lane[1]
-            self._dmaSrp = rogue.hardware.axi.AxiStreamDma(dev,(0x80*1)+0,True)
+            self._dmaSrp = rogue.hardware.axi.AxiStreamDma(dev,(0x100*1)+0,True)
 
             for i in range(4):
                 # CMD on DMA.Lane[0].VC[3:0]
-                self._dmaCmd[i]  = rogue.hardware.axi.AxiStreamDma(dev,(0x80*0)+i+0,True)
+                self._dmaCmd[i]  = rogue.hardware.axi.AxiStreamDma(dev,(0x100*0)+i+0,True)
 
                 # DATA on DMA.Lane[0].VC[7:4]
-                self._dmaData[i] = rogue.hardware.axi.AxiStreamDma(dev,(0x80*0)+i+4,True)
+                self._dmaData[i] = rogue.hardware.axi.AxiStreamDma(dev,(0x100*0)+i+4,True)
 
 
         elif (hwType == 'rce'):
