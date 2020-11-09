@@ -1,8 +1,5 @@
 -------------------------------------------------------------------------------
--- File       : RudpServers.vhd
 -- Company    : SLAC National Accelerator Laboratory
--- Created    : 2015-01-30
--- Last update: 2019-04-18
 -------------------------------------------------------------------------------
 -- Description: RUDP Server Modules
 -------------------------------------------------------------------------------
@@ -53,7 +50,7 @@ end RudpServers;
 architecture mapping of RudpServers is
 
    constant TIMEOUT_C          : real     := 1.0E-3;  -- In units of seconds
-   constant WINDOW_ADDR_SIZE_C : positive := ite(JUMBO_G, 3, 4);
+   constant WINDOW_ADDR_SIZE_C : positive := ite(JUMBO_G, 3, 6);  -- 64kb for both jumbo and standard frames
    constant MAX_SEG_SIZE_C     : positive := ite(JUMBO_G, 8192, 1024);  -- Jumbo frame chucking
 
    constant APP_AXIS_CONFIG_C : AxiStreamConfigArray(0 downto 0) := (others => DMA_AXIS_CONFIG_G);
