@@ -198,6 +198,8 @@ class FmcDev(pr.Root):
                 port    = 8192,
                 packVer = 2,
             )
+            self.rudpData.locMaxBuffers(64) # Set the SW RSSI buffer to 64 buffers (instead of default=32)
+            self.add(self.rudpData)         # Add the RSSI protocol to the GUI's device tree
 
             # Connected to FW DMA.Lane[1]
             self.rudpSrp = pr.protocols.UdpRssiPack(
@@ -205,6 +207,8 @@ class FmcDev(pr.Root):
                 port    = 8193,
                 packVer = 2,
             )
+            self.rudpSrp.locMaxBuffers(64) # Set the SW RSSI buffer to 64 buffers (instead of default=32)
+            self.add(self.rudpSrp)         # Add the RSSI protocol to the GUI's device tree
 
             # SRPv3 on DMA.Lane[1]
             self._dmaSrp  = self.rudpSrp.application(0)
