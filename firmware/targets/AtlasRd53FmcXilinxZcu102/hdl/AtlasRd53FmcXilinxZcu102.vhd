@@ -33,8 +33,8 @@ entity AtlasRd53FmcXilinxZcu102 is
       TPD_G        : time    := 1 ns;
       SIMULATION_G : boolean := false;
       -- PGP_TYPE_G   : boolean := false;        -- False: PGPv2b
-      PGP_TYPE_G   : boolean := true;        -- True: PGPv3
-      PGP3_RATE_G  : string  := "6.25Gbps";
+      PGP_TYPE_G   : boolean := true;        -- True: PGPv4
+      PGP4_RATE_G  : string  := "6.25Gbps";
       BUILD_INFO_G : BuildInfoType);
    port (
       -- FMC Interface
@@ -183,7 +183,7 @@ begin
          ROGUE_SIM_PORT_NUM_G => 4000,
          DMA_AXIS_CONFIG_G    => RCEG3_AXIS_DMA_ACP_CONFIG_C,
          PGP_TYPE_G           => PGP_TYPE_G,
-         PGP3_RATE_G          => PGP3_RATE_G,
+         PGP4_RATE_G          => PGP4_RATE_G,
          AXIL_CLK_FREQ_G      => 125.0E+6,  -- units of Hz
          AXI_BASE_ADDR_G      => x"A000_0000")
       port map (

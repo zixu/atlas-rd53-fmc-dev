@@ -32,8 +32,8 @@ entity Zcu102PgpWrapper is
       ROGUE_SIM_EN_G       : boolean                     := false;
       ROGUE_SIM_PORT_NUM_G : natural range 1024 to 49151 := 4000;
       DMA_AXIS_CONFIG_G    : AxiStreamConfigType;
-      PGP_TYPE_G           : boolean                     := true;  -- False: PGPv2b, True: PGPv3,
-      PGP3_RATE_G          : string                      := "6.25Gbps";  -- or "10.3125Gbps"
+      PGP_TYPE_G           : boolean                     := true;  -- False: PGPv2b, True: PGPv4,
+      PGP4_RATE_G          : string                      := "6.25Gbps";  -- or "10.3125Gbps"
       AXIL_CLK_FREQ_G      : real                        := 156.25E+6;  -- units of Hz
       AXI_BASE_ADDR_G      : slv(31 downto 0)            := x"0000_0000");
    port (
@@ -163,7 +163,7 @@ begin
       U_QPLL : entity surf.Pgp3GthUsQpll
          generic map (
             TPD_G    => TPD_G,
-            RATE_G   => PGP3_RATE_G,
+            RATE_G   => PGP4_RATE_G,
             EN_DRP_G => false)
          port map (
             -- Stable Clock and Reset
@@ -184,13 +184,13 @@ begin
    for i in 3 downto 0 generate
 
       GEN_PGP3 : if (PGP_TYPE_G = true) generate
-         U_Lane : entity work.Zcu102Pgp3Lane
+         U_Lane : entity work.Zcu102Pgp4Lane
             generic map (
                TPD_G                => TPD_G,
                ROGUE_SIM_EN_G       => ROGUE_SIM_EN_G,
                ROGUE_SIM_PORT_NUM_G => (ROGUE_SIM_PORT_NUM_G + i*34),
                DMA_AXIS_CONFIG_G    => DMA_AXIS_CONFIG_G,
-               RATE_G               => PGP3_RATE_G,
+               RATE_G               => PGP4_RATE_G,
                AXIL_CLK_FREQ_G      => AXIL_CLK_FREQ_G,
                AXI_BASE_ADDR_G      => AXIL_CONFIG_C(i).baseAddr)
             port map (

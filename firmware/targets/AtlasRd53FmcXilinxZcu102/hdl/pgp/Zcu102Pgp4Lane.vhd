@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- File       : Zcu102Pgp3Lane.vhd
+-- File       : Zcu102Pgp4Lane.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 FMC DEV'.
@@ -20,14 +20,14 @@ library surf;
 use surf.StdRtlPkg.all;
 use surf.AxiLitePkg.all;
 use surf.AxiStreamPkg.all;
-use surf.Pgp3Pkg.all;
+use surf.Pgp4Pkg.all;
 
-entity Zcu102Pgp3Lane is
+entity Zcu102Pgp4Lane is
    generic (
       TPD_G                : time                        := 1 ns;
       ROGUE_SIM_EN_G       : boolean                     := false;
       ROGUE_SIM_PORT_NUM_G : natural range 1024 to 49151 := 7000;
-      DMA_AXIS_CONFIG_G    : AxiStreamConfigType := PGP3_AXIS_CONFIG_C;
+      DMA_AXIS_CONFIG_G    : AxiStreamConfigType := PGP4_AXIS_CONFIG_C;
       RATE_G               : string                      := "10.3125Gbps";  -- or "6.25Gbps" or "3.125Gbps"
       AXIL_CLK_FREQ_G      : real                        := 156.25E+6;  -- units of Hz
       AXI_BASE_ADDR_G      : slv(31 downto 0)            := (others => '0'));
@@ -56,9 +56,9 @@ entity Zcu102Pgp3Lane is
       axilReadSlave   : out AxiLiteReadSlaveType;
       axilWriteMaster : in  AxiLiteWriteMasterType;
       axilWriteSlave  : out AxiLiteWriteSlaveType);
-end Zcu102Pgp3Lane;
+end Zcu102Pgp4Lane;
 
-architecture mapping of Zcu102Pgp3Lane is
+architecture mapping of Zcu102Pgp4Lane is
 
    constant NUM_VC_C : positive := 16;
 
@@ -66,13 +66,13 @@ architecture mapping of Zcu102Pgp3Lane is
    signal pgpRst : sl;
    signal wdtRst : sl;
 
-   signal pgpTxIn      : Pgp3TxInType := PGP3_TX_IN_INIT_C;
-   signal pgpTxOut     : Pgp3TxOutType;
+   signal pgpTxIn      : Pgp4TxInType := PGP4_TX_IN_INIT_C;
+   signal pgpTxOut     : Pgp4TxOutType;
    signal pgpTxMasters : AxiStreamMasterArray(NUM_VC_C-1 downto 0);
    signal pgpTxSlaves  : AxiStreamSlaveArray(NUM_VC_C-1 downto 0);
 
-   signal pgpRxIn      : Pgp3RxInType := PGP3_RX_IN_INIT_C;
-   signal pgpRxOut     : Pgp3RxOutType;
+   signal pgpRxIn      : Pgp4RxInType := PGP4_RX_IN_INIT_C;
+   signal pgpRxOut     : Pgp4RxOutType;
    signal pgpRxMasters : AxiStreamMasterArray(NUM_VC_C-1 downto 0);
    signal pgpRxCtrl    : AxiStreamCtrlArray(NUM_VC_C-1 downto 0);
    signal pgpRxSlaves  : AxiStreamSlaveArray(NUM_VC_C-1 downto 0);
@@ -110,7 +110,7 @@ begin
    -- PGP Core
    -----------
    REAL_PGP : if (not ROGUE_SIM_EN_G) generate
-      U_Pgp : entity surf.Pgp3GthUs
+      U_Pgp : entity surf.Pgp4GthUs
          generic map (
             TPD_G            => TPD_G,
             EN_PGP_MON_G     => true,
@@ -203,7 +203,7 @@ begin
          TPD_G            => TPD_G,
          NUM_VC_G         => NUM_VC_C,
          APP_AXI_CONFIG_G => DMA_AXIS_CONFIG_G,
-         PHY_AXI_CONFIG_G => PGP3_AXIS_CONFIG_C)
+         PHY_AXI_CONFIG_G => PGP4_AXIS_CONFIG_C)
       port map (
          -- AXIS Interface (axisClk domain)
          axisClk      => axilClk,
@@ -227,7 +227,7 @@ begin
          ROGUE_SIM_EN_G   => ROGUE_SIM_EN_G,
          NUM_VC_G         => NUM_VC_C,
          APP_AXI_CONFIG_G => DMA_AXIS_CONFIG_G,
-         PHY_AXI_CONFIG_G => PGP3_AXIS_CONFIG_C)
+         PHY_AXI_CONFIG_G => PGP4_AXIS_CONFIG_C)
       port map (
          -- AXIS Interface (axisClk domain)
          axisClk      => axilClk,

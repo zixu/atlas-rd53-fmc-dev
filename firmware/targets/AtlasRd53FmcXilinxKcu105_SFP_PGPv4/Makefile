@@ -1,11 +1,11 @@
-# Use the PGPv3 6G core
-export INCLUDE_PGP3_6G = 1
+# Use the PGPv4 6G core
+export INCLUDE_PGP4_6G = 1
 
 # Define target output
 target: bit
 
 # Define target part
-export PRJ_PART = XC7K325TFFG900-2
+export PRJ_PART = XCKU040-FFVA1156-2-E
 
 # Using a non-standard target directory structure, 
 # which requires me to define the TOP_DIR path

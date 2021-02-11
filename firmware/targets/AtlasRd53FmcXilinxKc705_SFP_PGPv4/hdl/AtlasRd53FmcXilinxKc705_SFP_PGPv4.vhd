@@ -2,7 +2,7 @@
 -- File       : AtlasRd53FmcXilinxKc705_SFP_PGPv3.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: AXI PCIe Core for Xilinx KC705 board (PGPv3 on the SFP)
+-- Description: AXI PCIe Core for Xilinx KC705 board (PGPv4 on the SFP)
 --
 -- https://www.xilinx.com/products/boards-and-kits/kc705.html
 --
@@ -32,12 +32,12 @@ use surf.StdRtlPkg.all;
 use surf.AxiLitePkg.all;
 use surf.AxiStreamPkg.all;
 use surf.SsiPkg.all;
-use surf.Pgp3Pkg.all;
+use surf.Pgp4Pkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
 
-entity AtlasRd53FmcXilinxKc705_SFP_PGPv3 is
+entity AtlasRd53FmcXilinxKc705_SFP_PGPv4 is
    generic (
       TPD_G        : time := 1 ns;
       BUILD_INFO_G : BuildInfoType);
@@ -56,12 +56,12 @@ entity AtlasRd53FmcXilinxKc705_SFP_PGPv3 is
       sfpTxN     : out   sl;
       sfpRxP     : in    sl;
       sfpRxN     : in    sl);
-end AtlasRd53FmcXilinxKc705_SFP_PGPv3;
+end AtlasRd53FmcXilinxKc705_SFP_PGPv4;
 
-architecture top_level of AtlasRd53FmcXilinxKc705_SFP_PGPv3 is
+architecture top_level of AtlasRd53FmcXilinxKc705_SFP_PGPv4 is
 
    constant DMA_CLK_FREQ_C    : real                := 156.25E+6;  -- Units of Hz
-   constant DMA_AXIS_CONFIG_C : AxiStreamConfigType := PGP3_AXIS_CONFIG_C;
+   constant DMA_AXIS_CONFIG_C : AxiStreamConfigType := PGP4_AXIS_CONFIG_C;
 
    signal dmaClk       : sl;
    signal dmaRst       : sl;
@@ -76,11 +76,11 @@ architecture top_level of AtlasRd53FmcXilinxKc705_SFP_PGPv3 is
    signal refClk300MHz  : sl;
    signal refRst300MHz  : sl;
 
-   signal pgpRxIn  : Pgp3RxInType  := PGP3_RX_IN_INIT_C;
-   signal pgpRxOut : Pgp3RxOutType := PGP3_RX_OUT_INIT_C;
+   signal pgpRxIn  : Pgp4RxInType  := PGP4_RX_IN_INIT_C;
+   signal pgpRxOut : Pgp4RxOutType := PGP4_RX_OUT_INIT_C;
 
-   signal pgpTxIn  : Pgp3TxInType  := PGP3_TX_IN_INIT_C;
-   signal pgpTxOut : Pgp3TxOutType := PGP3_TX_OUT_INIT_C;
+   signal pgpTxIn  : Pgp4TxInType  := PGP4_TX_IN_INIT_C;
+   signal pgpTxOut : Pgp4TxOutType := PGP4_TX_OUT_INIT_C;
 
    signal pgpTxMasters : AxiStreamMasterArray(8 downto 0) := (others => AXI_STREAM_MASTER_INIT_C);
    signal pgpTxSlaves  : AxiStreamSlaveArray(8 downto 0)  := (others => AXI_STREAM_SLAVE_FORCE_C);
@@ -136,13 +136,13 @@ begin
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
 
-   U_PGPv3 : entity surf.Pgp3Gtx7Wrapper
+   U_PGPv4 : entity surf.Pgp4Gtx7Wrapper
       generic map(
          TPD_G         => TPD_G,
          NUM_LANES_G   => 1,
          NUM_VC_G      => 9,
          RATE_G        => "6.25Gbps",
-         REFCLK_TYPE_G => PGP3_REFCLK_125_C,
+         REFCLK_FREQ_G => 312.5E+6,
          EN_PGP_MON_G  => false,
          EN_GT_DRP_G   => false,
          EN_QPLL_DRP_G => false)
@@ -186,7 +186,7 @@ begin
    -----------------------
    -- PGPv3-to-DMA Mapping
    -----------------------
-   U_Mapping : entity work.AtlasRd53Pgp3
+   U_Mapping : entity work.AtlasRd53Pgp4
       generic map (
          TPD_G => TPD_G)
       port map (

@@ -1,6 +1,9 @@
 export GEN_BIN_IMAGE = 1
 export TIG_PULSE = 1
 
+# Use the PGPv4 6G core
+export INCLUDE_PGP4_6G = 1
+
 # ZCU102 builds use .BIN files
 export GEN_BIN_IMAGE = 1
 
