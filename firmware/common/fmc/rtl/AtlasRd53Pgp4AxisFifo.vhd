@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53Pgp3AxisFifo.vhd
+-- File       : AtlasRd53Pgp4AxisFifo.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
 -- Description: PGP FIFO wrapper
@@ -19,17 +19,17 @@ use ieee.std_logic_1164.all;
 library surf;
 use surf.StdRtlPkg.all;
 use surf.AxiStreamPkg.all;
-use surf.Pgp3Pkg.all;
+use surf.Pgp4Pkg.all;
 
-entity AtlasRd53Pgp3AxisFifo is
+entity AtlasRd53Pgp4AxisFifo is
    generic (
       TPD_G               : time                := 1 ns;
       SIMULATION_G        : boolean             := false;
       SYNTH_MODE_G        : string              := "inferred";
       TX_G                : boolean             := true;
       RX_G                : boolean             := true;
-      SLAVE_AXI_CONFIG_G  : AxiStreamConfigType := PGP3_AXIS_CONFIG_C;
-      MASTER_AXI_CONFIG_G : AxiStreamConfigType := PGP3_AXIS_CONFIG_C);
+      SLAVE_AXI_CONFIG_G  : AxiStreamConfigType := PGP4_AXIS_CONFIG_C;
+      MASTER_AXI_CONFIG_G : AxiStreamConfigType := PGP4_AXIS_CONFIG_C);
    port (
       -- System Interface (axilClk domain)
       sysClk      : in  sl;
@@ -46,9 +46,9 @@ entity AtlasRd53Pgp3AxisFifo is
       pgpRxCtrl   : out AxiStreamCtrlType   := AXI_STREAM_CTRL_UNUSED_C;
       pgpTxMaster : out AxiStreamMasterType := AXI_STREAM_MASTER_INIT_C;
       pgpTxSlave  : in  AxiStreamSlaveType  := AXI_STREAM_SLAVE_FORCE_C);
-end AtlasRd53Pgp3AxisFifo;
+end AtlasRd53Pgp4AxisFifo;
 
-architecture mapping of AtlasRd53Pgp3AxisFifo is
+architecture mapping of AtlasRd53Pgp4AxisFifo is
 
 begin
 
@@ -67,7 +67,7 @@ begin
             FIFO_ADDR_WIDTH_G   => 9,
             -- AXI Stream Port Configurations
             SLAVE_AXI_CONFIG_G  => SLAVE_AXI_CONFIG_G,
-            MASTER_AXI_CONFIG_G => PGP3_AXIS_CONFIG_C)
+            MASTER_AXI_CONFIG_G => PGP4_AXIS_CONFIG_C)
          port map (
             -- Slave Port
             sAxisClk    => sysClk,
@@ -92,7 +92,7 @@ begin
             FIFO_ADDR_WIDTH_G   => 12,
             FIFO_FIXED_THRESH_G => true,
             FIFO_PAUSE_THRESH_G => 128,
-            SLAVE_AXI_CONFIG_G  => PGP3_AXIS_CONFIG_C,
+            SLAVE_AXI_CONFIG_G  => PGP4_AXIS_CONFIG_C,
             MASTER_AXI_CONFIG_G => MASTER_AXI_CONFIG_G)
          port map (
             -- Slave Port

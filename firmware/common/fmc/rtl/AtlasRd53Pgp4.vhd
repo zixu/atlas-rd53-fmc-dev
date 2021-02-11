@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53Pgp3.vhd
+-- File       : AtlasRd53Pgp4.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: Wrapper for PGPv3 communication
+-- Description: Wrapper for PGPv4 communication
 -------------------------------------------------------------------------------
 -- This file is part of 'ATLAS RD53 DEV'.
 -- It is subject to the license terms in the LICENSE.txt file found in the
@@ -21,14 +21,14 @@ use surf.StdRtlPkg.all;
 use surf.AxiLitePkg.all;
 use surf.AxiStreamPkg.all;
 use surf.SsiPkg.all;
-use surf.Pgp3Pkg.all;
+use surf.Pgp4Pkg.all;
 
 library atlas_rd53_fw_lib;
 
-entity AtlasRd53Pgp3 is
+entity AtlasRd53Pgp4 is
    generic (
       TPD_G        : time    := 1 ns;
-      SIMULATION_G : boolean := false);  -- or "10.3125Gbps"
+      SIMULATION_G : boolean := false);
    port (
       -- DMA Interface (dmaClk domain)
       dmaClk       : in  sl;
@@ -45,9 +45,9 @@ entity AtlasRd53Pgp3 is
       pgpRxMasters : in  AxiStreamMasterArray(8 downto 0);
       pgpRxSlaves  : out AxiStreamSlaveArray(8 downto 0);
       pgpRxCtrl    : out AxiStreamCtrlArray(8 downto 0));
-end AtlasRd53Pgp3;
+end AtlasRd53Pgp4;
 
-architecture mapping of AtlasRd53Pgp3 is
+architecture mapping of AtlasRd53Pgp4 is
 
    signal txMasters : AxiStreamMasterArray(8 downto 0) := (others => AXI_STREAM_MASTER_INIT_C);
    signal txSlaves  : AxiStreamSlaveArray(8 downto 0)  := (others => AXI_STREAM_SLAVE_FORCE_C);
@@ -58,7 +58,7 @@ begin
 
    GEN_VEC : for i in 8 downto 0 generate
 
-      U_Fifo : entity work.AtlasRd53Pgp3AxisFifo
+      U_Fifo : entity work.AtlasRd53Pgp4AxisFifo
          generic map (
             TPD_G        => TPD_G,
             SIMULATION_G => SIMULATION_G)

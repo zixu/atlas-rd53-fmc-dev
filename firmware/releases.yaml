@@ -11,8 +11,8 @@ Targets:
     Extensions:
       - bit   
       - mcs      
-  AtlasRd53FebPgp3:
-    ImageDir: targets/AtlasRd53FebPgp3/images
+  AtlasRd53FebPgp4:
+    ImageDir: targets/AtlasRd53FebPgp4/images
     Extensions:
       - bit   
       - mcs   
@@ -74,7 +74,7 @@ Releases:
     Targets:
       - AtlasCdr53bSpiFeb10GbE
       - AtlasRd53Feb10GbE
-      - AtlasRd53FebPgp3
+      - AtlasRd53FebPgp4
       - AtlasRd53FmcXilinxKc705_RJ45_1GbE
       - AtlasRd53FmcXilinxKc705_SFP_PGPv3
       - AtlasRd53FmcXilinxKc705Pcie
