@@ -12,4 +12,4 @@ set_clock_groups -asynchronous \
     -group [get_clocks -include_generated_clocks -of_objects [get_pins -hier -filter {name=~*gt0_Pgp3Gtx7Ip6G_i*gtxe2_i*TXOUTCLK}]] \
     -group [get_clocks -include_generated_clocks -of_objects [get_pins -hier -filter {name=~*gt0_Pgp3Gtx7Ip6G_i*gtxe2_i*RXOUTCLK}]]
 
-set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins U_MMCM/MmcmGen.U_Mmcm/CLKOUT1]] -group [get_clocks -of_objects [get_pins U_PGPv4/REAL_PGP.U_TX_PLL/PllGen.U_Pll/CLKOUT1]]
+set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins U_PGPv3/REAL_PGP.U_TX_PLL/PllGen.U_Pll/CLKOUT1]] -group [get_clocks -of_objects [get_pins U_MMCM/MmcmGen.U_Mmcm/CLKOUT1]]
