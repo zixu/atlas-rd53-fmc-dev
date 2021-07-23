@@ -1,10 +1,10 @@
 -------------------------------------------------------------------------------
--- File       : AtlasRd53FebPgp4.vhd
+-- File       : AtlasRd53FebPgp3.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -------------------------------------------------------------------------------
--- Description: Top-Level module using four lanes of 6.0 Gbps PGPv4 communication
+-- Description: Top-Level module using four lanes of 6.0 Gbps PGPv3 communication
 --
--- Note: 10 Gbps is the standard link rate for PGPv4.  This means the back-end
+-- Note: 10 Gbps is the standard link rate for PGPv3.  This means the back-end
 --       receiver will need to have special firmware to run at this
 --       non-standard rate of 6 Gpbs
 --
@@ -26,12 +26,12 @@ use surf.StdRtlPkg.all;
 use surf.AxiLitePkg.all;
 use surf.AxiStreamPkg.all;
 use surf.SsiPkg.all;
-use surf.Pgp4Pkg.all;
+use surf.Pgp3Pkg.all;
 
 library unisim;
 use unisim.vcomponents.all;
 
-entity AtlasRd53FebPgp4 is
+entity AtlasRd53FebPgp3 is
    generic (
       TPD_G        : time := 1 ns;
       BUILD_INFO_G : BuildInfoType);
@@ -56,12 +56,12 @@ entity AtlasRd53FebPgp4 is
       pgpRxN        : in  slv(3 downto 0);
       pgpTxP        : out slv(3 downto 0);
       pgpTxN        : out slv(3 downto 0));
-end AtlasRd53FebPgp4;
+end AtlasRd53FebPgp3;
 
-architecture top_level of AtlasRd53FebPgp4 is
+architecture top_level of AtlasRd53FebPgp3 is
 
    constant DMA_CLK_FREQ_C    : real                := 156.25E+6;  -- Units of Hz
-   constant DMA_AXIS_CONFIG_C : AxiStreamConfigType := PGP4_AXIS_CONFIG_C;
+   constant DMA_AXIS_CONFIG_C : AxiStreamConfigType := PGP3_AXIS_CONFIG_C;
 
    signal dmaClk       : sl;
    signal dmaRst       : sl;
@@ -75,11 +75,11 @@ architecture top_level of AtlasRd53FebPgp4 is
    signal refClk300MHz  : sl;
    signal refRst300MHz  : sl;
 
-   signal pgpRxIn  : Pgp4RxInType  := PGP4_RX_IN_INIT_C;
-   signal pgpRxOut : Pgp4RxOutType := PGP4_RX_OUT_INIT_C;
+   signal pgpRxIn  : Pgp3RxInType  := PGP3_RX_IN_INIT_C;
+   signal pgpRxOut : Pgp3RxOutType := PGP3_RX_OUT_INIT_C;
 
-   signal pgpTxIn  : Pgp4TxInType  := PGP4_TX_IN_INIT_C;
-   signal pgpTxOut : Pgp4TxOutType := PGP4_TX_OUT_INIT_C;
+   signal pgpTxIn  : Pgp3TxInType  := PGP3_TX_IN_INIT_C;
+   signal pgpTxOut : Pgp3TxOutType := PGP3_TX_OUT_INIT_C;
 
    signal pgpTxMasters : AxiStreamMasterArray(8 downto 0) := (others => AXI_STREAM_MASTER_INIT_C);
    signal pgpTxSlaves  : AxiStreamSlaveArray(8 downto 0)  := (others => AXI_STREAM_SLAVE_FORCE_C);
@@ -135,7 +135,7 @@ begin
          REFCLK => refClk300MHz,
          RST    => refRst300MHz);
 
-   U_PGPv4 : entity surf.Pgp4Gtx7Wrapper
+   U_PGPv3 : entity surf.Pgp3Gtx7Wrapper
       generic map(
          TPD_G         => TPD_G,
          NUM_LANES_G   => 1,
@@ -193,10 +193,10 @@ begin
          gtTxP  => pgpTxP(3 downto 1),
          gtTxN  => pgpTxN(3 downto 1));
 
-   ---------------------
+   -----------------------
    -- PGP-to-DMA Mapping
-   ---------------------
-   U_Mapping : entity work.AtlasRd53Pgp4
+   -----------------------
+   U_Mapping : entity work.AtlasRd53Pgp4 -- Can use the same modules as PGPv4
       generic map (
          TPD_G => TPD_G)
       port map (
