@@ -7,6 +7,6 @@
 ## may be copied, modified, propagated, or distributed except according to
 ## the terms contained in the LICENSE.txt file.
 ##############################################################################
-
-set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins {U_PGPv4/REAL_PGP.GEN_LANE[0].U_Pgp/U_Pgp3Gtx7IpWrapper/U_RX_PLL/PllGen.U_Pll/CLKOUT1}]] -group [get_clocks -of_objects [get_pins U_PGPv4/REAL_PGP.U_TX_PLL/PllGen.U_Pll/CLKOUT1]]
-set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins U_MMCM/MmcmGen.U_Mmcm/CLKOUT1]] -group [get_clocks -of_objects [get_pins U_PGPv4/REAL_PGP.U_TX_PLL/PllGen.U_Pll/CLKOUT1]]
+set format     "mcs"
+set inteface   "spix1"
+set size       "256"
